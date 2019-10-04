@@ -4,7 +4,7 @@ object Deps {
     private val versions = mapOf(
         "global" to mapOf(
             "jetbrains" to mapOf(
-                "kotlin" to "1.3.41"
+                "kotlin" to "1.3.50"
             ),
             "android" to mapOf(
                 "minSdk" to "17",

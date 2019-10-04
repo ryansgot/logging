@@ -1,7 +1,7 @@
 import deps.Deps.mainDep
 import deps.Deps.testDep
 import tools.GitTools
-import java.util.Date
+import tools.Info
 
 plugins {
     java
@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.fsryan.tools"
-version = "0.0.1${if (project.hasProperty("postfixDate")) ".${Date().time}" else ""}"
+version = "0.0.1${if (project.hasProperty("postfixDate")) ".${Info.timestamp}" else ""}"
 
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_1_8

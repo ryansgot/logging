@@ -2,7 +2,7 @@ import deps.Deps.mainDep
 import deps.Deps.ver
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import tools.GitTools
-import java.util.Date
+import tools.Info
 
 plugins {
     id("com.android.library")
@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "com.fsryan.tools"
-version = "0.0.1${if (project.hasProperty("postfixDate")) ".${Date().getTime()}" else ""}"
+version = "0.0.1${if (project.hasProperty("postfixDate")) ".${Info.timestamp}" else ""}"
 
 android {
 
