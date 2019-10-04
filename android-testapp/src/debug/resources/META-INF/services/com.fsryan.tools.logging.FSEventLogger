@@ -1,0 +1,2 @@
+com.fsryan.tools.logging.android.FirebaseAnalyticsEventLogger
+com.fsryan.tools.logging.android.LogcatEventLogger

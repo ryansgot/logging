@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "246056472248",
+    "firebase_url": "https://logging-test-2f0f0.firebaseio.com",
+    "project_id": "logging-test-2f0f0",
+    "storage_bucket": "logging-test-2f0f0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:246056472248:android:e64861a164e7a2a78c2e4d",
+        "android_client_info": {
+          "package_name": "com.fsryan.tools.loggingtestapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "246056472248-4jhkektmmvigmirobkvo37slkjo3hekd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrkI1kqCY-95AS1NvhCY7xtEhA-r-uDEk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "246056472248-4jhkektmmvigmirobkvo37slkjo3hekd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

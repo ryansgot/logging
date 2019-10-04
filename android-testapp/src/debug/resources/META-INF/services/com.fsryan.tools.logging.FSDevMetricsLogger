@@ -1,0 +1,4 @@
+com.fsryan.tools.logging.android.CrashlyticsDevMetricsLogger
+com.fsryan.tools.logging.android.FirebaseAnalyticsMetricsLogger
+com.fsryan.tools.logging.android.LogcatDevMetricsLogger
+com.fsryan.tools.logging.android.CrashingDevMetricsLogger
