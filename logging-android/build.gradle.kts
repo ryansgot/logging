@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "com.fsryan.tools"
-version = "0.0.1${if (project.hasProperty("postfixDate")) ".${Info.timestamp}" else ""}"
+version = "0.0.2${if (project.hasProperty("postfixDate")) ".${Info.timestamp}" else ""}"
 
 android {
 
