@@ -31,15 +31,13 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-
+            consumerProguardFiles("proguard-rules.pro")
             buildConfigField("boolean", "CRASHLYTICS_ENABLED_BY_DEFAULT", "false")
         }
 
         getByName("debug") {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-
+            consumerProguardFiles("proguard-rules.pro")
             buildConfigField("boolean", "CRASHLYTICS_ENABLED_BY_DEFAULT", "true")
         }
     }
