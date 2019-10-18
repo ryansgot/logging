@@ -59,8 +59,13 @@ dependencies {
     implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
 
     implementation(project(":logging"))
+    implementation(project(":logging-android"))
 
     implementation(mainDep(producer = "jetbrains", name = "kotlin-stdlib"))
+
+    implementation(mainDep(producer = "google", name = "firebase-core"))
+    implementation(mainDep(producer = "google", name = "firebase-analytics"))
+    implementation(mainDep(producer = "google", name = "firebase-crashlytics-jdk"))
 }
 
 fsPublishingConfig {
@@ -73,7 +78,7 @@ fsPublishingConfig {
     versionName = project.version.toString()
     releaseRepoUrl = "s3://repo.fsryan.com/release"
     snapshotRepoUrl = "s3://repo.fsryan.com/snapshot"
-    description = "Logging for Analytics events and Developer events on Dalvik or ART"
+    description = "Logging for Analytics events and Developer events on Dalvik or ART with Firebase destinations"
     awsAccessKeyId = if (project.hasProperty("awsMavenAccessKey")) project.property("awsMavenAccessKey").toString() else System.getenv()["AWS_ACCES_KEY_ID"]!!
     awsSecretKey = if (project.hasProperty("awsMavenSecretKey")) project.property("awsMavenSecretKey").toString() else System.getenv()["AWS_SECRET_KEY"]!!
     extraPomProperties = mapOf(
