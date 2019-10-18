@@ -31,9 +31,17 @@ The process of logging something for developer purposes is similar, however, con
 
 In order to avoid an infinite loop, you should not log from within a logger unless you filter out the destination that is performing the logging. [FSEventLog](logging/src/main/java/com/fsryan/tools/logging/FSEventLog.kt) and [FSDevMetrics](logging/src/main/java/com/fsryan/tools/logging/FSDevMetrics.kt)'s public API allow you to specify which destinations you want to log to. These destinations are resolved by the ID logger. 
 
-### Logging-Android artifact
+### logging-android artifact
 
-This contains implementations of [FSEventLogger](logging/src/main/java/com/fsryan/tools/logging/FSLoggers.kt) and [FSDevMetricsLogger](logging/src/main/java/com/fsryan/tools/logging/FSLoggers.kt) that are specific to Android, Crashlytics, and Firebase Analytics.
+This contains implementations of [FSEventLogger](logging/src/main/java/com/fsryan/tools/logging/FSLoggers.kt) and [FSDevMetricsLogger](logging/src/main/java/com/fsryan/tools/logging/FSLoggers.kt) that are specific to Android.
+
+### logging-android-appcenter artifact
+
+This contains implementations of [FSEventLogger](logging/src/main/java/com/fsryan/tools/logging/FSLoggers.kt) and [FSDevMetricsLogger](logging/src/main/java/com/fsryan/tools/logging/FSLoggers.kt) that are specific to Microsoft AppCenter's Analytics Android integration.
+
+### logging-android-firebase artifact
+
+This contains implementations of [FSEventLogger](logging/src/main/java/com/fsryan/tools/logging/FSLoggers.kt) and [FSDevMetricsLogger](logging/src/main/java/com/fsryan/tools/logging/FSLoggers.kt) that are specific to Google Firebase's Analytics and Crashlytics Android integration.
 
 ## How to register a Logger
 
