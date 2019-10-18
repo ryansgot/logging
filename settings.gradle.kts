@@ -1,7 +1,10 @@
 include(
     ":logging",
     ":logging-android",
+    ":logging-android-firebase",
+    ":logging-android-appcenter",
     ":kotlin-testapp",
     ":java-testapp",
-    ":android-testapp"
+    ":android-firebase-testapp",
+    ":android-appcenter-testapp"
 )

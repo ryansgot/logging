@@ -7,9 +7,9 @@ object Deps {
                 "kotlin" to "1.3.50"
             ),
             "android" to mapOf(
-                "minSdk" to "17",
-                "targetSdk" to "28",
-                "compileSdk" to "28"
+                "minSdk" to "16",
+                "targetSdk" to "29",
+                "compileSdk" to "29"
             )
         ),
         "plugins" to mapOf(),
@@ -35,6 +35,9 @@ object Deps {
                 "firebase-crashlytics-jdk" to "2.10.1",
                 "gms-base" to "17.0.0",
                 "jsr305" to "3.0.2"
+            ),
+            "microsoft" to mapOf(
+                "appcenter" to "2.4.0"
             )
         )
     )
@@ -69,6 +72,10 @@ object Deps {
             ),
             "jetbrains" to mapOf(
                 "kotlin-stdlib" to "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${ver("global", "jetbrains", "kotlin")}"
+            ),
+            "microsoft" to mapOf(
+                "appcenter-analytics" to "com.microsoft.appcenter:appcenter-analytics:${ver("main", "microsoft", "appcenter")}",
+                "appcenter-crashes" to "com.microsoft.appcenter:appcenter-crashes:${ver("main", "microsoft", "appcenter")}"
             )
         )
     )

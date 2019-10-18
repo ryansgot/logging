@@ -32,13 +32,13 @@ android {
         getByName("release") {
             isMinifyEnabled = false
             consumerProguardFiles("proguard-rules.pro")
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED_BY_DEFAULT", "false")
+            buildConfigField("boolean", "APPCENTER_ENABLED_BY_DEFAULT", "false")
         }
 
         getByName("debug") {
             isMinifyEnabled = false
             consumerProguardFiles("proguard-rules.pro")
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED_BY_DEFAULT", "true")
+            buildConfigField("boolean", "APPCENTER_ENABLED_BY_DEFAULT", "true")
         }
     }
 
@@ -59,8 +59,11 @@ dependencies {
     implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
 
     implementation(project(":logging"))
+    implementation(project(":logging-android"))
 
     implementation(mainDep(producer = "jetbrains", name = "kotlin-stdlib"))
+    implementation(mainDep(producer = "microsoft", name = "appcenter-analytics"))
+    implementation(mainDep(producer = "microsoft", name = "appcenter-crashes"))
 }
 
 fsPublishingConfig {
@@ -73,7 +76,7 @@ fsPublishingConfig {
     versionName = project.version.toString()
     releaseRepoUrl = "s3://repo.fsryan.com/release"
     snapshotRepoUrl = "s3://repo.fsryan.com/snapshot"
-    description = "Logging for Analytics events and Developer events on Dalvik or ART"
+    description = "Logging for Analytics events and Developer events on Dalvik or ART with appcenter destinations"
     awsAccessKeyId = if (project.hasProperty("awsMavenAccessKey")) project.property("awsMavenAccessKey").toString() else System.getenv()["AWS_ACCES_KEY_ID"]!!
     awsSecretKey = if (project.hasProperty("awsMavenSecretKey")) project.property("awsMavenSecretKey").toString() else System.getenv()["AWS_SECRET_KEY"]!!
     extraPomProperties = mapOf(
