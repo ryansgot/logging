@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.fsryan.tools"
-version = "0.0.2${if (project.hasProperty("postfixDate")) ".${Info.timestamp}" else ""}"
+version = "0.0.3${if (project.hasProperty("postfixDate")) ".${Info.timestamp}" else ""}"
 
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_1_8
