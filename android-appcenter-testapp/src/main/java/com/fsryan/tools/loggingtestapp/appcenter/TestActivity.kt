@@ -1,11 +1,13 @@
 package com.fsryan.tools.loggingtestapp.appcenter
 
 import android.os.Bundle
+import androidx.annotation.ArrayRes
 import androidx.appcompat.app.AppCompatActivity
 import com.fsryan.tools.logging.FSDevMetrics
 import com.fsryan.tools.logging.FSEventLog
 import com.microsoft.appcenter.crashes.Crashes
 import kotlinx.android.synthetic.main.activity_test.*
+import kotlin.random.Random
 
 class TestActivity : AppCompatActivity() {
 
@@ -38,9 +40,13 @@ class TestActivity : AppCompatActivity() {
                 eventName = "example_add_event",
                 attrs = mapOf(
                     "key1" to "val1",
-                    "key2" to "val2"
+                    randomStringArrayValue(R.array.fs_appcenter_double_properties) to Random.nextDouble().toString(),
+                    randomStringArrayValue(R.array.fs_appcenter_long_properties) to Random.nextLong().toString(),
+                    randomStringArrayValue(R.array.fs_appcenter_boolean_properties) to Random.nextBoolean().toString()
                 )
             )
         }
     }
+
+    private fun randomStringArrayValue(@ArrayRes id: Int): String = resources.getStringArray(id).random()
 }

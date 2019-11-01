@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- You have to override the following to get double/long/boolean
+       - properties
+      -->
+    <string-array name="fs_appcenter_double_properties">
+        <item>double_prop_1</item>
+        <item>double_prop_2</item>
+        <item>double_prop_3</item>
+        <item>double_prop_4</item>
+    </string-array>
+    <string-array name="fs_appcenter_long_properties">
+        <item>long_prop_1</item>
+        <item>long_prop_2</item>
+        <item>long_prop_3</item>
+        <item>long_prop_4</item>
+    </string-array>
+    <string-array name="fs_appcenter_boolean_properties">
+        <item>boolean_prop_1</item>
+        <item>boolean_prop_2</item>
+        <item>boolean_prop_3</item>
+        <item>boolean_prop_4</item>
+    </string-array>
+</resources>

@@ -12,6 +12,12 @@ import com.microsoft.appcenter.AppCenter
 import com.microsoft.appcenter.analytics.Analytics
 import com.microsoft.appcenter.crashes.Crashes
 
+/**
+ * A [ContentProvider] which will start [AppCenter] at the earliest moment so
+ * you can start catching crashes and logging analytics events ASAP. If you
+ * ever resolve this [ContentProvider] and attempt to access any of its
+ * methods, then your app will crash.
+ */
 class AppCenterInitializationProvider : ContentProvider() {
 
     override fun attachInfo(context: Context, info: ProviderInfo) {
@@ -43,10 +49,9 @@ class AppCenterInitializationProvider : ContentProvider() {
     ): Int = throw UnsupportedOperationException()
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int = throw UnsupportedOperationException()
 
-
     private fun discoverAppSecret(context: Context, authority: String): String {
         val info = context.packageManager.resolveContentProvider(authority, PackageManager.GET_META_DATA)
-        val ret = info?.metaData?.getString("acsecret", "") ?: ""
+        val ret = info?.metaData?.getString("fsacsec", "") ?: ""
         if (ret.isEmpty()) {
             throw Exception("Your provider must have meta-data indicating the app secret")
         }

@@ -23,7 +23,7 @@
             android:name="com.fsryan.tools.logging.android.AppCenterInitializationProvider"
             android:enabled="true"
             android:exported="false">
-            <meta-data android:name="acsecret" android:value="${testapp.acsecret}" />
+            <meta-data android:name="fsacsec" android:value="${testapp.acsecret}" />
         </provider>
     </application>
 </manifest>
