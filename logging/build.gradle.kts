@@ -11,7 +11,7 @@ import java.util.Date
 plugins {
     java
     id("org.jetbrains.kotlin.jvm")
-    id("com.jfrog.bintray") version "1.8.4"
+    id("com.jfrog.bintray")
     id("maven-publish")
     id("fsryan-gradle-publishing")
     id("org.jetbrains.dokka") version "0.10.0"
@@ -50,6 +50,7 @@ fsPublishingConfig {
     extraPomProperties = mapOf(
         "gitrev" to GitTools.gitHash(true)
     )
+    additionalPublications.add("bintray")
 }
 
 bintray {
@@ -97,4 +98,8 @@ tasks {
     val dokka by getting(DokkaTask::class) {
         outputFormat = "javadoc"
     }
+}
+
+project.afterEvaluate {
+    checkNotNull(project.tasks.findByName("release")).dependsOn(checkNotNull(project.tasks.findByName("bintrayUpload")))
 }

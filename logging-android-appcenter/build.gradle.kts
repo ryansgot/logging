@@ -10,10 +10,10 @@ import java.util.Date
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    id("com.jfrog.bintray") version "1.8.4"
     id("maven-publish")
-    id("com.github.dcendents.android-maven")
+    id("android-maven")
     id("fsryan-gradle-publishing")
+    id("com.jfrog.bintray")
 }
 
 group = "com.fsryan.tools"
@@ -69,6 +69,8 @@ dependencies {
     implementation(mainDep(producer = "microsoft", name = "appcenter-crashes"))
 }
 
+
+
 fsPublishingConfig {
     developerName = "Ryan Scott"
     developerId = "fsryan"
@@ -85,12 +87,13 @@ fsPublishingConfig {
     extraPomProperties = mapOf(
         "gitrev" to GitTools.gitHash(true)
     )
+    additionalPublications.add("bintray")
 }
 
 bintray {
     user = if (project.hasProperty("bintrayUser")) project.property("bintrayUser").toString() else ""
     key = if (project.hasProperty("bintrayApiKey")) project.property("bintrayApiKey").toString() else ""
-    setPublications("mavenToBintray")
+    setPublications("${project.name}ReleaseToBintray")
     publish = false
 
     pkg.apply {
@@ -109,4 +112,8 @@ bintray {
             vcsTag = "v${project.version}"
         }
     }
+}
+
+project.afterEvaluate {
+    checkNotNull(project.tasks.findByName("release")).dependsOn(checkNotNull(project.tasks.findByName("bintrayUpload")))
 }

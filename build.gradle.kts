@@ -21,6 +21,7 @@ buildscript {
         classpath("io.fabric.tools:gradle:1.31.0")
         classpath("com.fsryan.gradle:fsryan-gradle-publishing:0.0.5")
         classpath("com.github.dcendents:android-maven-gradle-plugin:2.1")
+        classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4")
     }
 }
 
