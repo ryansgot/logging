@@ -10,6 +10,6 @@ fun main(args: Array<String>) {
     FSDevMetrics.signalShutdown()
     FSEventLog.addAttr("attr name", "attr val")
     FSEventLog.addEvent("event name", mapOf("key1" to "val1", "key2" to "val2"))
-    FSEventLog.incrementAttrValue("attr to increment")
+    FSEventLog.incrementCountableAttr("attr to increment")
     FSEventLog.signalShutdown()
 }

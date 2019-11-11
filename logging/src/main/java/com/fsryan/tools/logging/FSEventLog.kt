@@ -22,6 +22,11 @@ import java.util.concurrent.ExecutorService
  * `resources/META-INF/services/com.fsryan.tools.logging.FSDevMetricsLogger`
  * file.
  *
+ * You are encouraged as an app developer to write your own extension functions
+ * on this object that allow you to develop a contract for particular kinds of
+ * events. Furthermore, adding extension functions will allow you to add a
+ * measure of type safety that the API does not allow.
+ *
  * Threading: any thread
  * Note that each method call will distribute the work to the executor you have
  * created in your implementation of [FSLoggingConfig]. If you do not supply an
@@ -52,35 +57,91 @@ object FSEventLog {
         executor = config.createExecutor()
     }
 
+    /**
+     * Retrieve all extensions of [FSEventLogger] that are assignable from the
+     * class [T]. You may want to use this to affect some required
+     * configuration of some underlying logger. Ideally, this function is
+     * called very early in the application's lifecycle.
+     */
     @Suppress("UNCHECKED_CAST")
     fun <T : FSEventLogger> loggersOfType(cls: Class<T>): List<T> = loggers.values
         .filter { cls.isAssignableFrom(it.javaClass) }
         .map { it as T }
 
+    /**
+     * Attributes are named values that are persisted throughout a session.
+     * These values can be modified by either calling this method again with a
+     * different value, by calling the [addAttrs] bulk addition method with the
+     * same [attrName] as a key of the input map, or by calling
+     * [incrementCountableAttr] for countable attrs.
+     *
+     * By passing in a specific value for [destinations], you can limit the
+     * destination of the attr addition to one or more loggers.
+     *
+     * @see addAttrs
+     * @see incrementCountableAttr
+     */
     @JvmStatic
     @JvmOverloads
     fun addAttr(attrName: String, attrValue: String, vararg destinations: String = emptyArray()) = executor.execute {
         loggers.onSomeOrAll(destinations) { addAttr(attrName, attrValue)}
     }
 
+    /**
+     * This is the same as [addAttr], but in bulk. The keys of [attrs] are the
+     * attr names, and their corresponding values are the attr values.
+     *
+     * By passing in a specific value for [destinations], you can limit the
+     * destination of the attr additions to one or more loggers.
+     *
+     * @see addAttr
+     * @see incrementCountableAttr
+     */
     @JvmStatic
     @JvmOverloads
     fun addAttrs(attrs: Map<String, String>, vararg destinations: String = emptyArray()) = executor.execute {
         loggers.onSomeOrAll(destinations) { addAttrs(attrs) }
     }
 
+    /**
+     * If your attr is countable (meaning that it is parsable to a Long), then
+     * this method will increase the value by 1.
+     *
+     * By passing in a specific value for [destinations], you can limit the
+     * destination of the attr increment to one or more loggers.
+     *
+     * @see addAttr
+     * @see addAttrs
+     */
     @JvmStatic
     @JvmOverloads
-    fun incrementAttrValue(attrName: String, vararg destinations: String = emptyArray()) = executor.execute {
+    fun incrementCountableAttr(attrName: String, vararg destinations: String = emptyArray()) = executor.execute {
         loggers.onSomeOrAll(destinations) { incrementAttrValue(attrName) }
     }
 
+    /**
+     * Log an event with the name [eventName]. This log will take the
+     * event-specific attributes within the [attrs] map. If you input a key in
+     * this [attrs] map that collides with an attr that you have previously
+     * added (via [addAttr], [addAttrs], or [incrementCountableAttr]), then the
+     * ultimate behavior is defined by each registered [FSEventLogger]
+     * implementation.
+     *
+     * By passing in a specific value for [destinations], you can limit the
+     * destination of the event to one or more loggers.
+     */
     @JvmStatic
     @JvmOverloads
     fun addEvent(eventName: String, attrs: Map<String, String> = emptyMap(), vararg destinations: String = emptyArray()) = executor.execute {
         loggers.onSomeOrAll(destinations) { addEvent(eventName, attrs) }
     }
 
+    /**
+     * If the [executor] is an [ExecutorService], shut down immediately. Use
+     * this call if the event logging [executor] is preventing clean shutdown.
+     *
+     * After this call, further logging will fail.
+     */
     @JvmStatic
     fun signalShutdown() {
         if (executor is ExecutorService) {

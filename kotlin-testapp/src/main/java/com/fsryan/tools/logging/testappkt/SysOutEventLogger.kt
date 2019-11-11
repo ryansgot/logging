@@ -9,7 +9,7 @@ class SysOutEventLogger : FSEventLogger {
     }
 
     override fun incrementAttrValue(attrName: String) {
-        println("incrementAttrValue $attrName")
+        println("incrementCountableAttr $attrName")
     }
 
     override fun addEvent(eventName: String, attrs: Map<String, String>) {

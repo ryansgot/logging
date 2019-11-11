@@ -4,16 +4,20 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import tools.GitTools
 import tools.Info
 
+import java.text.SimpleDateFormat
+import java.util.Date
+
 plugins {
     id("com.android.library")
     id("kotlin-android")
+    id("com.jfrog.bintray") version "1.8.4"
     id("maven-publish")
     id("com.github.dcendents.android-maven")
     id("fsryan-gradle-publishing")
 }
 
 group = "com.fsryan.tools"
-version = "0.0.3${if (project.hasProperty("postfixDate")) ".${Info.timestamp}" else ""}"
+version = "${ver(domain = "global", producer = "fsryan", name = "publication")}${if (project.hasProperty("postfixDate")) ".${Info.timestamp}" else ""}"
 
 android {
 
@@ -52,7 +56,6 @@ android {
         // type became Any
         (this as KotlinJvmOptions).jvmTarget = "1.8"
     }
-
 }
 
 dependencies {
@@ -82,4 +85,28 @@ fsPublishingConfig {
     extraPomProperties = mapOf(
         "gitrev" to GitTools.gitHash(true)
     )
+}
+
+bintray {
+    user = if (project.hasProperty("bintrayUser")) project.property("bintrayUser").toString() else ""
+    key = if (project.hasProperty("bintrayApiKey")) project.property("bintrayApiKey").toString() else ""
+    setPublications("mavenToBintray")
+    publish = false
+
+    pkg.apply {
+        repo = "maven"
+        name = project.name
+        desc = "Android library building upon the android logging library with Microsoft AppCenter specific loggers."
+        websiteUrl = "https://github.com/ryansgot/logging/${project.name}"
+        issueTrackerUrl = "https://github.com/ryansgot/logging/issues"
+        vcsUrl = "https://github.com/ryansgot/logging.git"
+        publicDownloadNumbers = true
+        setLicenses("Apache-2.0")
+        setLabels("jvm", "logging", "android", "appcenter", "analytics", "analytics events", "telemetry")
+        version.apply {
+            name = project.version.toString()
+            released = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").format(Date())
+            vcsTag = "v${project.version}"
+        }
+    }
 }

@@ -10,6 +10,9 @@ object Deps {
                 "minSdk" to "16",
                 "targetSdk" to "29",
                 "compileSdk" to "29"
+            ),
+            "fsryan" to mapOf(
+                "publication" to "0.0.4"
             )
         ),
         "plugins" to mapOf(),

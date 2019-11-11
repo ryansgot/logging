@@ -5,7 +5,13 @@ import java.util.concurrent.Executors
 
 /**
  * Register this via [Java SPI](https://www.baeldung.com/java-spi). This exists
- * mainly to provide a means of configuring tests
+ * mainly to provide a means of configuring tests, however, you should consider
+ * using it if the thread on which logging occurs is particularly important to
+ * you.
+ *
+ * If you do not supply your own [FSLoggingConfig] via SPI, then you will get a
+ * unique [Executors.newSingleThreadExecutor] for each of [FSDevMetrics] and
+ * [FSEventLog] to use.
  */
 interface FSLoggingConfig {
     fun createExecutor(): Executor
@@ -38,20 +44,22 @@ interface FSLogger {
  */
 interface FSDevMetricsLogger : FSLogger {
     /**
-     * An alarm is a condition that we believe should not occur. If it does
-     * occur, then we want to be alerted.
+     * An alarm is a condition that you believe should not occur. If it does
+     * occur, then using this function declares your intent to be alerted while
+     * not crashing the app.
      */
     fun alarm(t: Throwable) {}
 
     /**
      * Use to watch to monitor conditions where the severity is low enough that
-     * we want to pull for updates as opposed to having them pushed to us.
+     * you would want to specifically query your analytics system for these
+     * kind of events.
      */
     fun watch(msg: String, info: String? = null, extraInfo: String? = null) {}
 
     /**
-     * Something we would like to inform ourselves about, but that is not
-     * severe.
+     * Use info to monitor events that you have some interest in, but are not
+     * particularly worrisome as to warrant either a [watch] or an [alarm]
      */
     fun info(msg: String, info: String? = null, extraInfo: String? = null) {}
 }
@@ -64,8 +72,11 @@ interface FSDevMetricsLogger : FSLogger {
  */
 interface FSEventLogger : FSLogger {
     /**
-     * Add an attribute. Ostensibly, this will cause some effect when further
-     * events are logged, this is up to the individual [FSEventLogger]
+     * Add an attribute. The actual effect of adding an attribute is specific
+     * to the implementaion of [FSEventLogger] that is receiving the attr.
+     * However, in general, an attr is intended to be logged for every event,
+     * whereas, an event attr (passed in on the [addEvent] function) is only
+     * relevant for that specific event.
      */
     fun addAttr(attrName: String, attrValue: String)
 

@@ -50,7 +50,7 @@ class FSEventLogTest {
     @DisplayName("Should log to one logger when only one logger's id given")
     fun logToSingleDestination() {
         val attrName = "attrName"
-        FSEventLog.incrementAttrValue(attrName, testLogger1().id())
+        FSEventLog.incrementCountableAttr(attrName, testLogger1().id())
 
         verify { testLogger1().wrappedMock.incrementAttrValue(attrName) }
         verify(exactly = 0) { testLogger3().wrappedMock.incrementAttrValue(any()) }

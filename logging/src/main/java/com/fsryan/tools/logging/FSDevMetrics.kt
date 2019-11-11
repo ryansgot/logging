@@ -47,18 +47,25 @@ object FSDevMetrics {
             println("WARNING: no FSDevMetrics found")
         }
 
-        val config = ServiceLoader.load(FSLoggingConfig::class.java).firstOrNull() ?: createDefaultConfig("FSDevMetrics")
-        executor = config.createExecutor()
+        val config = ServiceLoader.load(FSLoggingConfig::class.java).firstOrNull()
+        executor = (config ?: createDefaultConfig("FSDevMetrics")).createExecutor()
     }
 
+    /**
+     * Retrieve all extensions of [FSDevMetricsLogger] that are assignable from
+     * the class [T]. You may want to use this to affect some required
+     * configuration of some underlying logger. Ideally, this function is
+     * called very early in the application's lifecycle.
+     */
     @Suppress("UNCHECKED_CAST")
     fun <T : FSDevMetricsLogger> loggersOfType(cls: Class<T>): List<T> = loggers.values
         .filter { cls.isAssignableFrom(it.javaClass) }
         .map { it as T }
 
     /**
-     * Either sends the alarm specifically to the [dest] when supplied, or
-     * sends the info to all registered [loggers] when [dest] not supplied
+     * Either sends the alarm specifically to the [destinations] when supplied,
+     * or sends the info to all registered [loggers] when [destinations] not
+     * supplied.
      * @see [FSDevMetricsLogger.alarm]
      */
     @JvmStatic
@@ -101,6 +108,12 @@ object FSDevMetrics {
         loggers.onSomeOrAll(destinations) { info(msg, info, extraInfo) }
     }
 
+    /**
+     * If the [executor] is an [ExecutorService], shut down immediately. Use
+     * this call if the event logging [executor] is preventing clean shutdown.
+     *
+     * After this call, further logging will fail.
+     */
     @JvmStatic
     fun signalShutdown() {
         if (executor is ExecutorService) {

@@ -12,13 +12,14 @@ buildscript {
                 setSecretKey(if (project.hasProperty("awsMavenSecretKey")) project.property("awsMavenSecretKey").toString() else System.getenv()["AWS_SECRET_KEY"]!!)
             }
         }
+        mavenLocal()
     }
     dependencies {
         classpath("com.android.tools.build:gradle:3.5.1")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.50")
         classpath("com.google.gms:google-services:4.3.2")
         classpath("io.fabric.tools:gradle:1.31.0")
-        classpath("com.fsryan.gradle:fsryan-gradle-publishing:0.0.4")
+        classpath("com.fsryan.gradle:fsryan-gradle-publishing:0.0.5")
         classpath("com.github.dcendents:android-maven-gradle-plugin:2.1")
     }
 }

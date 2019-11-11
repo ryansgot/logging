@@ -17,7 +17,7 @@ public class Main {
             put("key1", "val1");
             put("key2", "val2");
         }});
-        FSEventLog.incrementAttrValue("attr to increment");
+        FSEventLog.incrementCountableAttr("attr to increment");
         FSEventLog.signalShutdown();
     }
 }

@@ -11,7 +11,7 @@ class LogcatEventLogger : FSEventLogger {
     }
 
     override fun incrementAttrValue(attrName: String) {
-        Log.i("FSEventLog", "incrementAttrValue('$attrName')")
+        Log.i("FSEventLog", "incrementCountableAttr('$attrName')")
     }
 
     override fun addEvent(eventName: String, attrs: Map<String, String>) {
