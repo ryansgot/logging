@@ -8,18 +8,33 @@ This repository contains the logging modules that we can leverage for logging wi
 * Different variants of the application should be able to be configured independently from one another.
 * Logging should be relevant for both developers (app behavior) and business (user behavior)
 
-
-
 ## Dual purpose of logging
 
+In an ideal scenario, you would know exactly what your users wanted, how they want to interact with your application, and how the application can maximize its value prior to developing the application. Additionally, in an ideal scenario, you'd develop an application that is capable of meeting the customer need and providing maximum value. This suite of libraries attempts to provide an API around the measurement and analytics tools you use to determine success/failure at both indicators of success.
 
-In order to support pluggability, the ServiceLocator
+Logging events facilitates two purposes:
+1. The Developer gets a sense for how the app is behaving to determine successful implementation
+2. The product manager gets a sense for how users are using the app to determine possible value maximization
 
 ## Artifact Breakup
 
-There are two artifacts published from this library:
+There are four artifacts produced by this project:
 1. group: com.fsryan.tools, artifact: logging, packaging: jar
 2. group: com.fsryan.tools, artifact: logging-android, packaging: aar
+3. group: com.fsryan.tools, artifact: logging-android-appcenter, packaging: aar
+4. group: com.fsryan.tools, artifact: logging-android-firebase, packaging: aar
+
+Each artifact has a different purpose, and they build upon one-another. The combination of libraries that you should use depends upon your environment
+
+
+| Library                   | Analytics Framework | Platform    |
+| ------------------------- | ------------------- | ----------- |
+| logging                   | nonspecific         | JVM/Android |
+| logging-android           | nonspecific         | Android     |
+| logging-android-appcenter | Microsoft AppCenter | Android     |
+| logging-android-firebase  | Google Firebase     | Android     |
+
+So, if you have a JVM project, then you can only use the logging library at this time. However, if you have an Android project, then you can at least get some Android-specific behaviors. The extent to which you can benefit depends upon whether you either use Google Firebase or Microsoft AppCenter analytics libraries.
 
 ### Logging artifact
 
@@ -37,7 +52,7 @@ This contains implementations of [FSEventLogger](logging/src/main/java/com/fsrya
 
 ### logging-android-appcenter artifact
 
-This contains implementations of [FSEventLogger](logging/src/main/java/com/fsryan/tools/logging/FSLoggers.kt) and [FSDevMetricsLogger](logging/src/main/java/com/fsryan/tools/logging/FSLoggers.kt) that are specific to Microsoft AppCenter's Analytics Android integration.
+This contains implementations of [FSEventLogger](logging/src/main/java/com/fsryan/tools/logging/FSLoggers.kt) and [FSDevMetricsLogger](logging/src/main/java/com/fsryan/tools/logging/FSLoggers.kt) that are specific to Microsoft AppCenter's Analytics Android integration. The AppCenter crashes and analytics libraries do not have a built-in way to ensure the libraries are initialized early on in the application's lifecycle, so the [AppCenterInitializationProvider](logging-android-appcenter/src/main/java/com/fsryan/tools/logging/android/AppCenterInitializationProvider.kt) was added to this library to fill that void.
 
 ### logging-android-firebase artifact
 
