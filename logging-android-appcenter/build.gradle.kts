@@ -69,8 +69,6 @@ dependencies {
     implementation(mainDep(producer = "microsoft", name = "appcenter-crashes"))
 }
 
-
-
 fsPublishingConfig {
     developerName = "Ryan Scott"
     developerId = "fsryan"
@@ -93,7 +91,7 @@ fsPublishingConfig {
 bintray {
     user = if (project.hasProperty("bintrayUser")) project.property("bintrayUser").toString() else ""
     key = if (project.hasProperty("bintrayApiKey")) project.property("bintrayApiKey").toString() else ""
-    setPublications("${project.name}ReleaseToBintray")
+    setPublications("${project.name}ReleaseToBintray", "${project.name}DebugToBintray")
     publish = false
 
     pkg.apply {

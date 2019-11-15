@@ -88,7 +88,7 @@ fsPublishingConfig {
 bintray {
     user = if (project.hasProperty("bintrayUser")) project.property("bintrayUser").toString() else ""
     key = if (project.hasProperty("bintrayApiKey")) project.property("bintrayApiKey").toString() else ""
-    setPublications("${project.name}ReleaseToBintray")
+    setPublications("${project.name}ReleaseToBintray", "${project.name}DebugToBintray")
     publish = false
 
     pkg.apply {
