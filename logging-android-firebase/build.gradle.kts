@@ -88,6 +88,14 @@ fsPublishingConfig {
     extraPomProperties = mapOf(
         "gitrev" to GitTools.gitHash(true)
     )
+    dependencyNameOverrides = mapOf(
+        "logging-android-firebaseDebug" to mapOf(
+            "logging-android" to "logging-android-debug"
+        ),
+        "logging-android-firebaseDebugToBintray" to mapOf(
+            "logging-android" to "logging-android-debug"
+        )
+    )
     additionalPublications.add("bintray")
 }
 
@@ -101,8 +109,8 @@ bintray {
         repo = "maven"
         name = project.name
         desc = "Android library building upon the android logging library with Google Firebase/Crashlytics specific loggers."
-        websiteUrl = "https://github.com/ryansgot/android-testtools/${project.name}"
-        issueTrackerUrl = "https://github.com/ryansgot/android-testtools/issues"
+        websiteUrl = "https://github.com/ryansgot/logging/${project.name}"
+        issueTrackerUrl = "https://github.com/ryansgot/logging/issues"
         vcsUrl = "https://github.com/ryansgot/android-testtools.git"
         publicDownloadNumbers = true
         setLicenses("Apache-2.0")

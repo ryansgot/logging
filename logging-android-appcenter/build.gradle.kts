@@ -86,6 +86,14 @@ fsPublishingConfig {
         "gitrev" to GitTools.gitHash(true)
     )
     additionalPublications.add("bintray")
+    dependencyNameOverrides = mapOf(
+        "logging-android-appcenterDebug" to mapOf(
+            "logging-android" to "logging-android-debug"
+        ),
+        "logging-android-appcenterDebugToBintray" to mapOf(
+            "logging-android" to "logging-android-debug"
+        )
+    )
 }
 
 bintray {
