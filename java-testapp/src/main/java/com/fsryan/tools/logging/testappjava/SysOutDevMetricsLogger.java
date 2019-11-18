@@ -27,4 +27,9 @@ public class SysOutDevMetricsLogger implements FSDevMetricsLogger {
     public void info(@Nonnull String msg, @Nullable String info, @Nullable String extraInfo) {
         System.out.println("[FS/INFO]: " + DevMetricsUtil.safeConcat(msg, info, extraInfo));
     }
+
+    @Override
+    public void metric(@Nonnull String operationName, long durationNanos) {
+        System.out.println("[FS/METRIC]: '" + operationName + "' took " + durationNanos + " nanos");
+    }
 }
