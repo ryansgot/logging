@@ -1,0 +1,3 @@
+# Android Logging to Firebase Analytics/Crashlytics Example App
+
+This is an example project you can use to manually verify this library's efficacy in logging to Firebase Analytics/Crashlytics. Feel free to install it in order to test it with your own app on the Firebase Console. If you do this, then you should replace the google-services.json file with your own and update the package name of the test app if it differs from what is already there. 

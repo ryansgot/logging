@@ -1,6 +1,7 @@
 package com.fsryan.tools.loggingtestapp.appcenter
 
 import android.os.Bundle
+import android.view.View
 import androidx.annotation.ArrayRes
 import androidx.appcompat.app.AppCompatActivity
 import com.fsryan.tools.logging.FSDevMetrics
@@ -46,6 +47,21 @@ class TestActivity : AppCompatActivity() {
                 )
             )
         }
+        timedOperationButton.setOnClickListener(object: View.OnClickListener {
+
+            private var opId = -1
+
+            override fun onClick(v: View?) {
+                if (timedOperationButton.text.toString() == "Start Timed Operation") {
+                    timedOperationButton.text = "Commit Timed Operation"
+                    opId = FSDevMetrics.startTimedOperation("example timed operation")
+                } else {
+                    FSDevMetrics.commitTimedOperation(operationName = "example timed operation", operationId = opId)
+                    timedOperationButton.text = "Start Timed Operation"
+                }
+            }
+
+        })
     }
 
     private fun randomStringArrayValue(@ArrayRes id: Int): String = resources.getStringArray(id).random()

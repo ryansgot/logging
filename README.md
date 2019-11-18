@@ -1,6 +1,6 @@
-# Android-Logging
+# Logging Overview
 
-This repository contains the logging modules that we can leverage for logging within our applications. The values of the library are the following:
+This repository contains the logging modules that you can leverage for logging within you applications. The values of the library are the following:
 * Do not prescribe the values, tags, messages, or otherwise that can be logged
 * Separate the destination of the log from the act of logging--allowing the consumer to determine the destination via plugins
 * Loggers should be pluggable--allowing different (and even platform-specific) behaviors
@@ -69,3 +69,8 @@ The lines of each file should be the fully-qualified names of the classes that i
 ## How to configure logging
 
 Currently, you can only configure the thread on which logging occurs. This is especially useful for testing. See [FSTestLoggingConfig](logging/src/test/java/com/fsryan/tools/logging/FSTestLoggingConfig.kt) for an example that performs logging synchronously. However, you can configure a custom configuration by adding the `src/main/resources/META-INF/services/com.fsryan.tools.logging.FSLoggingConfig` file in your resources and providing one line that has your custom implementation of the `FSLoggingConfig` interface. This will allow you to choose the executor that executes the logging work. I recommend using a single-threaded executor. However, if you fail to register your configuration, then a default single threaded `Executor` will be created by this library to handle the work associated with logging. You should be especially mindful of the executor being used to log when you write custom loggers.
+
+## Example integrations:
+
+- [Android using Microsoft AppCenter](android-appcenter-testapp/README.md)
+- [Android using Google Firebase](android-firebase-testapp/README.md)
