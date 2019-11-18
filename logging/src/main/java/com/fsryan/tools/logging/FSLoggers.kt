@@ -62,6 +62,16 @@ interface FSDevMetricsLogger : FSLogger {
      * particularly worrisome as to warrant either a [watch] or an [alarm]
      */
     fun info(msg: String, info: String? = null, extraInfo: String? = null) {}
+
+    /**
+     * Use to measure the performance characteristics of an operation. The
+     * [FSDevMetrics] object has a handy set of functions that you should call
+     * with respect to metrics: [FSDevMetrics.startTimedOperation],
+     * [FSDevMetrics.commitTimedOperation], and
+     * [FSDevMetrics.cancelTimedOperation] are relevant to note (so don't call
+     * this function yourself).
+     */
+    fun metric(operationName: String, durationNanos: Long) {}
 }
 
 /**

@@ -8,6 +8,7 @@ import java.util.HashMap;
 public class Main {
 
     public static void main(String[] args) {
+        int opId = FSDevMetrics.startTimedOperation("full_run");
         FSDevMetrics.alarm(new Exception("Some exception"));
         FSDevMetrics.watch("watch msg", "watch info", "watch extra info");
         FSDevMetrics.info("info msg", "info info", "info extra info");
@@ -18,6 +19,7 @@ public class Main {
             put("key2", "val2");
         }});
         FSEventLog.incrementCountableAttr("attr to increment");
+        FSDevMetrics.commitTimedOperation("full_run", opId);
         FSEventLog.signalShutdown();
     }
 }

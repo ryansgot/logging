@@ -3,9 +3,11 @@
 package com.fsryan.tools.logging
 
 import java.util.ServiceLoader
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
 import kotlin.collections.LinkedHashMap
+import kotlin.random.Random
 
 /**
  * The single place you need to use in order to log developer-centric events.
@@ -38,6 +40,18 @@ object FSDevMetrics {
      */
     internal val loggers: LinkedHashMap<String, FSDevMetricsLogger> = LinkedHashMap()
     private val executor: Executor
+
+    /**
+     * Threading: writes/reads may happen on any thread, but in accordance with
+     * the [ConcurrentHashMap] documentation:
+     * > Retrieval operations (including get) generally do not block, so may
+     * overlap with update operations (including put and remove). Retrievals
+     * reflect the results of the most recently completed update operations
+     * holding upon their onset.
+     *
+     * Visibility: visible for inner access (avoids synthetic accessor)
+     */
+    internal val metricMap: ConcurrentHashMap<String, ConcurrentHashMap<Int, Long>> = ConcurrentHashMap()
 
     init {
         val loader = ServiceLoader.load(FSDevMetricsLogger::class.java)
@@ -90,6 +104,54 @@ object FSDevMetrics {
     ) = executor.execute {
         loggers.onSomeOrAll(destinations) { watch(msg, info, extraInfo) }
     }
+
+    /**
+     * Starts a timer for the operation [operationName] and returns the
+     * [operationId] used along with the [operationName] to either
+     * [cancelTimedOperation] or to [commitTimedOperation]. If you do not
+     * supply the [operationId] yourself, then a randomly generated id will be
+     * returned.
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun startTimedOperation(operationName: String, operationId: Int = Random.nextInt()): Int {
+        val startTime = System.nanoTime()
+        var current = metricMap[operationName]
+        if (current == null) {
+            current = ConcurrentHashMap()
+            metricMap[operationName] = current
+        }
+        current[operationId] = startTime
+        return operationId
+    }
+
+    /**
+     * Cancels the timer for the operation.
+     */
+    @JvmStatic
+    fun cancelTimedOperation(operationName: String, operationId: Int) {
+        metricMap[operationName]?.remove(operationId)
+    }
+
+    /**
+     * Commits the timed operation with the name [operationName] and id
+     * [operationId] input to the [destinations] (or all destinations if none
+     * specified).
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun commitTimedOperation(
+        operationName: String,
+        operationId: Int,
+        vararg destinations: String = emptyArray()
+    ) {
+        val stopTime = System.nanoTime()
+        metricMap[operationName]?.remove(operationId)?.let { startTime ->
+            val diff = stopTime - startTime
+            loggers.onSomeOrAll(destinations) { metric(operationName, diff) }
+        }
+    }
+
 
     /**
      * Either sends the info specifically to the [destinations] when supplied,
