@@ -3,11 +3,20 @@ package com.fsryan.tools.logging.android
 import android.util.Log
 import com.fsryan.tools.logging.FSEventLogger
 
+/**
+ * Importantly, this does not hold on to any attrs--it just logs the fact that
+ * the attr was added/removed. So you'll have to look at your log in order to
+ * tell what attrs would have been logged.
+ */
 class LogcatEventLogger : FSEventLogger {
     override fun id() = "logcat"
 
     override fun addAttr(attrName: String, attrValue: String) {
         Log.i("FSEventLog", "addAttr('$attrName', '$attrValue')")
+    }
+
+    override fun removeAttr(attrName: String) {
+        Log.i("FSEventLog", "removeAttr('$attrName')")
     }
 
     override fun incrementAttrValue(attrName: String) {

@@ -54,6 +54,8 @@ dependencies {
     implementation(project(":logging-android"))
     implementation(project(":logging-android-appcenter"))
 
+    implementation(project(":android-loggingtestapp-lib"))
+
     implementation(mainDep(producer = "jetbrains", name = "kotlin-stdlib"))
 
     implementation(mainDep(producer = "androidx", name = "appcompat"))

@@ -88,6 +88,33 @@ object FSEventLog {
     }
 
     /**
+     * Because attributes are persisted throughout a session, instead of
+     * changing the value of an attr, you may want to remove the attr entirely.
+     * Do so by calling this function.
+     *
+     * @see addAttr
+     * @see removeAttrs
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun removeAttr(attrName: String, vararg destinations: String = emptyArray()) = executor.execute {
+        loggers.onSomeOrAll(destinations) { removeAttr(attrName) }
+    }
+
+    /**
+     * Because attributes are persisted throughout a session, instead of
+     * changing the value of an attr, you may want to remove the attr entirely.
+     * Do so by calling this function.
+     *
+     * @see addAttr
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun removeAttrs(attrNames: Iterable<String>, vararg destinations: String = emptyArray()) = executor.execute {
+        loggers.onSomeOrAll(destinations) { removeAttrs(attrNames) }
+    }
+
+    /**
      * This is the same as [addAttr], but in bulk. The keys of [attrs] are the
      * attr names, and their corresponding values are the attr values.
      *

@@ -18,9 +18,9 @@ class AppCenterAnalyticsEventLogger : ContextSpecificEventLogger {
     override fun id() = "appcenter"
 
     override fun initialize(context: Context) {
-        storePropertyNamesInto(context, "fs_appcenter_double_properties", doubleProperties)
-        storePropertyNamesInto(context, "fs_appcenter_long_properties", longProperties)
-        storePropertyNamesInto(context, "fs_appcenter_boolean_properties", booleanProperties)
+        storePropertyNamesInto(context, "fs_logging_double_properties", doubleProperties)
+        storePropertyNamesInto(context, "fs_logging_long_properties", longProperties)
+        storePropertyNamesInto(context, "fs_logging_boolean_properties", booleanProperties)
     }
 
     override fun addAttr(attrName: String, attrValue: String) {
@@ -28,6 +28,10 @@ class AppCenterAnalyticsEventLogger : ContextSpecificEventLogger {
         try {
             countableAttrs[attrName] = attrValue.toLong()
         } catch (nfe: NumberFormatException) {}
+    }
+
+    override fun removeAttr(attrName: String) {
+        userProperties.remove(attrName)
     }
 
     override fun incrementAttrValue(attrName: String) = addAttr(attrName, ((countableAttrs[attrName] ?: 0L) + 1).toString())

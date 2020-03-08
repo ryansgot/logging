@@ -16,13 +16,14 @@ class CrashlyticsDevMetricsLogger : FSDevMetricsLogger {
 
     override fun id() = "crashlytics"
 
-    override fun alarm(t: Throwable) {
+    override fun alarm(t: Throwable, attrs: Map<String, String>) {
         if (!enabled.get()) {
             return
         }
 
         Crashlytics.setLong("system_uptime", SystemClock.uptimeMillis())
         Crashlytics.setLong("app_uptime", System.currentTimeMillis() - appStartTimeMillis)
+        attrs.entries.forEach { Crashlytics.setString(it.key, it.value) }
         Crashlytics.logException(t)
     }
 }
