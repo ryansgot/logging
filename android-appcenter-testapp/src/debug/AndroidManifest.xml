@@ -9,5 +9,7 @@
                  android:supportsRtl="true"
                  android:theme="@style/AppTheme">
         <meta-data android:name="crashing_dev_metrics_level" android:value="watch" />
+        <meta-data android:name="internal_dev_metrics_log" android:value="logs/dev_metrics_log.txt" />
+        <meta-data android:name="internal_event_log" android:value="logs/event_log.txt" />
     </application>
 </manifest>
