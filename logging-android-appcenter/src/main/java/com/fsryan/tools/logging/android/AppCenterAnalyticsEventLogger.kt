@@ -18,9 +18,9 @@ class AppCenterAnalyticsEventLogger : ContextSpecificEventLogger {
     override fun id() = "appcenter"
 
     override fun initialize(context: Context) {
-        storePropertyNamesInto(context, "fs_appcenter_double_properties", doubleProperties)
-        storePropertyNamesInto(context, "fs_appcenter_long_properties", longProperties)
-        storePropertyNamesInto(context, "fs_appcenter_boolean_properties", booleanProperties)
+        storePropertyNamesInto(context, "fs_logging_double_properties", doubleProperties)
+        storePropertyNamesInto(context, "fs_logging_long_properties", longProperties)
+        storePropertyNamesInto(context, "fs_logging_boolean_properties", booleanProperties)
     }
 
     override fun addAttr(attrName: String, attrValue: String) {

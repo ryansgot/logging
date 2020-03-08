@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="fs_logging_double_properties"></string-array>
+    <string-array name="fs_logging_long_properties"></string-array>
+    <string-array name="fs_logging_boolean_properties"></string-array>
+</resources>
