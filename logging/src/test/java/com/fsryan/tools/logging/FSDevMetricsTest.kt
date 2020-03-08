@@ -23,11 +23,12 @@ class FSDevMetricsTest {
         val msg = "msg"
         val info = "info"
         val extraInfo = "extraInfo"
-        FSDevMetrics.watch(msg, info, extraInfo)
+        val attrs = mapOf("attr1" to "attr1val", "attr2" to "attr2val")
+        FSDevMetrics.watch(msg, info, extraInfo, attrs)
         verifyOrder {
-            testLogger1().wrappedMock.watch(msg, info, extraInfo)
-            testLogger2().wrappedMock.watch(msg, info, extraInfo)
-            testLogger3().wrappedMock.watch(msg, info, extraInfo)
+            testLogger1().wrappedMock.watch(msg, info, extraInfo, attrs)
+            testLogger2().wrappedMock.watch(msg, info, extraInfo, attrs)
+            testLogger3().wrappedMock.watch(msg, info, extraInfo, attrs)
         }
     }
 
@@ -37,26 +38,27 @@ class FSDevMetricsTest {
         val msg = "msg"
         val info = "info"
         val extraInfo = "extraInfo"
-        FSDevMetrics.info(msg, info, extraInfo, testLogger3().id(), testLogger2().id())
+        val attrs = mapOf("attr1" to "attr1val", "attr2" to "attr2val")
+        FSDevMetrics.info(msg, info, extraInfo, attrs, testLogger3().id(), testLogger2().id())
         verifyOrder {
-            testLogger3().wrappedMock.info(msg, info, extraInfo)
-            testLogger2().wrappedMock.info(msg, info, extraInfo)
+            testLogger3().wrappedMock.info(msg, info, extraInfo, attrs)
+            testLogger2().wrappedMock.info(msg, info, extraInfo, attrs)
         }
-        verify(exactly = 0) { testLogger1().wrappedMock.info(any(), any(), any()) }
+        verify(exactly = 0) { testLogger1().wrappedMock.info(any(), any(), any(), any()) }
     }
 
     @Test
     @DisplayName("Should log to one logger when only one logger's id given")
     fun logToSingleDestination() {
         val exception = Exception()
-        FSDevMetrics.alarm(exception, testLogger1().id())
+        val attrs = mapOf("attr1" to "attr1val", "attr2" to "attr2val")
+        FSDevMetrics.alarm(exception, attrs, testLogger1().id())
 
-        verify { testLogger1().wrappedMock.alarm(exception) }
-        verify(exactly = 0) { testLogger3().wrappedMock.alarm(any()) }
-        verify(exactly = 0) { testLogger2().wrappedMock.alarm(any()) }
+        verify { testLogger1().wrappedMock.alarm(exception, attrs) }
+        verify(exactly = 0) { testLogger3().wrappedMock.alarm(any(), any()) }
+        verify(exactly = 0) { testLogger2().wrappedMock.alarm(any(), any()) }
     }
-
-
+    
     private fun testLogger1() = FSDevMetrics.loggersOfType(MockKFSDevMetricsLogger1::class.java).first()
     private fun testLogger2() = FSDevMetrics.loggersOfType(MockKFSDevMetricsLogger2::class.java).first()
     private fun testLogger3() = FSDevMetrics.loggersOfType(MockKFSDevMetricsLogger3::class.java).first()
