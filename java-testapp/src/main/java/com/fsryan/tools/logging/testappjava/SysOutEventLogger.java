@@ -18,6 +18,11 @@ public class SysOutEventLogger implements FSEventLogger {
     }
 
     @Override
+    public void removeAttr(@Nonnull String attrName) {
+        System.out.println("remove attr " + attrName);
+    }
+
+    @Override
     public void incrementAttrValue(@Nonnull String attrName) {
         System.out.println("incrementCountableAttr " + attrName);
     }

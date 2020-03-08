@@ -3,10 +3,9 @@ import deps.Deps.ver
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 
 plugins {
-    id("com.android.application")
+    id("com.android.library")
     id("kotlin-android")
     id("kotlin-android-extensions")
-    id("io.fabric")
 }
 
 android {
@@ -14,7 +13,6 @@ android {
     compileSdkVersion(ver("global", "android", "compileSdk").toInt())
 
     defaultConfig {
-        applicationId = "com.fsryan.tools.loggingtestapp.firebase"
         minSdkVersion(ver("global", "android", "minSdk").toInt())
         targetSdkVersion(ver("global", "android", "targetSdk").toInt())
         versionCode = 1
@@ -51,20 +49,10 @@ dependencies {
 
     implementation(project(":logging"))
     implementation(project(":logging-android"))
-    implementation(project(":logging-android-firebase"))
-
-    implementation(project(":android-loggingtestapp-lib"))
 
     implementation(mainDep(producer = "jetbrains", name = "kotlin-stdlib"))
 
     implementation(mainDep(producer = "androidx", name = "appcompat"))
     implementation(mainDep(producer = "androidx", name = "core-ktx"))
     implementation(mainDep(producer = "androidx", name = "constraint-layout"))
-
-    implementation(mainDep(producer = "google", name = "firebase-core"))
-    implementation(mainDep(producer = "google", name = "firebase-analytics"))
-    implementation(mainDep(producer = "google", name = "firebase-crashlytics-jdk"))
-    implementation(mainDep(producer = "google", name = "gms-tagmanager"))
 }
-
-apply(plugin = "com.google.gms.google-services")

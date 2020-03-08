@@ -14,13 +14,17 @@ class FirebaseAnalyticsEventLogger : ContextSpecificEventLogger {
         fbAnalytics = FirebaseAnalytics.getInstance(context.applicationContext)
     }
 
-    override fun id() = "gtm"
+    override fun id() = "firebase"
 
     override fun addAttr(attrName: String, attrValue: String) {
         fbAnalytics.setUserProperty(attrName, attrValue)
         try {
             countableAttrs[attrName] = attrValue.toLong()
         } catch (nfe: NumberFormatException) {}
+    }
+
+    override fun removeAttr(attrName: String) {
+        fbAnalytics.setUserProperty(attrName, null)
     }
 
     override fun incrementAttrValue(attrName: String) {

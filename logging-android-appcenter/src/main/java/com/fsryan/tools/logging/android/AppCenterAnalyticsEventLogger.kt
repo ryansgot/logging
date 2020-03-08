@@ -30,6 +30,10 @@ class AppCenterAnalyticsEventLogger : ContextSpecificEventLogger {
         } catch (nfe: NumberFormatException) {}
     }
 
+    override fun removeAttr(attrName: String) {
+        userProperties.remove(attrName)
+    }
+
     override fun incrementAttrValue(attrName: String) = addAttr(attrName, ((countableAttrs[attrName] ?: 0L) + 1).toString())
 
     override fun addEvent(eventName: String, attrs: Map<String, String>) = Analytics.trackEvent(

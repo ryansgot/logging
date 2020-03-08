@@ -1,9 +1,8 @@
-package com.fsryan.tools.loggingtestapp.appcenter
+package com.fsryan.tools.android.loggingtestapplib
 
 import android.app.Application
 import com.fsryan.tools.logging.FSDevMetrics
 import com.fsryan.tools.logging.FSEventLog
-import com.fsryan.tools.logging.android.NonFatalDevMetricsLogger
 import com.fsryan.tools.logging.android.initFSLogging
 
 class App : Application() {
@@ -19,8 +18,5 @@ class App : Application() {
             destinations = *arrayOf("logcat")
         )
         initFSLogging()
-        // Regardless of what the library says, you can set the
-        // NonFatalDevMetricsLogger to enabled
-        FSDevMetrics.loggersOfType(NonFatalDevMetricsLogger::class.java).forEach { it.enabled.set(true) }
     }
 }

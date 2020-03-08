@@ -39,11 +39,25 @@
       app:layout_constraintTop_toBottomOf="@id/infoButton"
       app:layout_constraintStart_toStartOf="parent" />
   <Button
+      android:id="@+id/addAttrButton"
+      android:text="Add Attr"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/logAnalyticsButton"
+      app:layout_constraintStart_toStartOf="parent" />
+  <Button
+      android:id="@+id/removeAttrButton"
+      android:text="Remove Attr"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/addAttrButton"
+      app:layout_constraintStart_toStartOf="parent" />
+  <Button
       android:id="@+id/timedOperationButton"
       android:text="Start Timed Operation"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      app:layout_constraintTop_toBottomOf="@id/logAnalyticsButton"
+      app:layout_constraintTop_toBottomOf="@id/removeAttrButton"
       app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,6 +10,10 @@ class LogcatEventLogger : FSEventLogger {
         Log.i("FSEventLog", "addAttr('$attrName', '$attrValue')")
     }
 
+    override fun removeAttr(attrName: String) {
+        Log.i("FSEventLog", "removeAttr('$attrName')")
+    }
+
     override fun incrementAttrValue(attrName: String) {
         Log.i("FSEventLog", "incrementCountableAttr('$attrName')")
     }

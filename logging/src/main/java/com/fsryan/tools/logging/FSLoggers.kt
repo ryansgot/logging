@@ -91,6 +91,13 @@ interface FSEventLogger : FSLogger {
     fun addAttr(attrName: String, attrValue: String)
 
     /**
+     * Attrs are sent for every event. This function allows you to remove an
+     * attr. Implementations are free to do what they wish if the attr does not
+     * exist at the time of removal.
+     */
+    fun removeAttr(attrName: String)
+
+    /**
      * Increment an attribute value. The attribute should be countable, but
      * since this is not guaranteed, implementations should gracefully handle
      * the case in which the attribute is not countable.
@@ -108,6 +115,11 @@ interface FSEventLogger : FSLogger {
  * Add multiple attributes at one time in a map.
  */
 fun FSEventLogger.addAttrs(attrs: Map<String, String>) = attrs.entries.forEach { addAttr(it.key, it.value) }
+
+/**
+ * Remove multiple attributes at one time.
+ */
+fun FSEventLogger.removeAttrs(attrNames: Iterable<String>) = attrNames.forEach { removeAttr(it) }
 
 /**
  * Run on all when [keys] is empty and run on specific entries when [keys] is
