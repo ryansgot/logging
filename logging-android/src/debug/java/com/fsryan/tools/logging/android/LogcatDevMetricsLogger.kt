@@ -22,9 +22,9 @@ class LogcatDevMetricsLogger : FSDevMetricsLogger {
     override fun metric(operationName: String, durationNanos: Long) {
         Log.i("FSDevMetrics", "metric: '$operationName' took $durationNanos nanos")
     }
-
-    private fun combine(info: String?, extraInfo: String?, attrs: Map<String, String>) = attrs + mapOf(
-        "info" to (info ?: ""),
-        "extraInfo" to (extraInfo ?: "")
-    )
 }
+
+internal fun combine(info: String?, extraInfo: String?, attrs: Map<String, String>) = attrs + mapOf(
+    "info" to (info ?: ""),
+    "extraInfo" to (extraInfo ?: "")
+)
