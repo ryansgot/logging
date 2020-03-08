@@ -12,7 +12,7 @@ object Deps {
                 "compileSdk" to "29"
             ),
             "fsryan" to mapOf(
-                "publication" to "0.0.7"
+                "publication" to "0.0.8"
             )
         ),
         "plugins" to mapOf(),
