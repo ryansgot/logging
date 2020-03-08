@@ -30,20 +30,41 @@ class CrashingDevMetricsLogger : ContextSpecificDevMetricsLogger {
         crashLevel = info.metaData?.getString("crashing_dev_metrics_level", "") ?: ""
     }
 
-    override fun id() = "crashonalarm"
-    override fun info(msg: String, info: String?, extraInfo: String?) = crashIfLevelIs("info")
-    override fun watch(msg: String, info: String?, extraInfo: String?) = crashIfLevelIs("watch")
-    override fun alarm(t: Throwable) = crashIfLevelIs("alarm", t)
+    override fun id() = "crashing"
 
-    private fun crashIfLevelIs(level: String, withThrowable: Throwable? = null) {
+    override fun info(
+        msg: String,
+        info: String?,
+        extraInfo: String?,
+        attrs: Map<String, String>
+    ) = crashIfLevelIs(level = "info", attrs = attrs)
+
+    override fun watch(
+        msg: String,
+        info: String?,
+        extraInfo: String?,
+        attrs: Map<String, String>
+    ) = crashIfLevelIs(level = "watch", attrs = attrs)
+
+    override fun alarm(t: Throwable, attrs: Map<String, String>) = crashIfLevelIs(
+        level = "alarm",
+        withThrowable = t,
+        attrs = attrs
+    )
+
+    private fun crashIfLevelIs(level: String, attrs: Map<String, String>, withThrowable: Throwable? = null) {
         if (crashLevel == "") {
             return
         }
 
         if (crashLevel == "info"
             || level == crashLevel
-            || (level == "alarm" && crashLevel == "watch")) {
-            throw RuntimeException(withThrowable ?: Exception())
+            || (level == "alarm" && crashLevel == "watch")
+        ) {
+            when (withThrowable) {
+                null -> throw RuntimeException("attrs: $attrs", withThrowable)
+                else -> throw RuntimeException("attrs: $attrs")
+            }
         }
     }
 }

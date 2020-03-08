@@ -1,5 +1,3 @@
-@file:JvmName("DevMetricsUtil")
-
 package com.fsryan.tools.logging
 
 import java.util.ServiceLoader
@@ -79,13 +77,13 @@ object FSDevMetrics {
     /**
      * Either sends the alarm specifically to the [destinations] when supplied,
      * or sends the info to all registered [loggers] when [destinations] not
-     * supplied.
+     * supplied. Add supplemental attributes via the [attrs] parameter.
      * @see [FSDevMetricsLogger.alarm]
      */
     @JvmStatic
     @JvmOverloads
-    fun alarm(t: Throwable, vararg destinations: String = emptyArray()) = executor.execute {
-        loggers.onSomeOrAll(destinations) { alarm(t) }
+    fun alarm(t: Throwable, attrs: Map<String, String> = emptyMap(), vararg destinations: String = emptyArray()) = executor.execute {
+        loggers.onSomeOrAll(destinations) { alarm(t, attrs) }
     }
 
     /**
@@ -100,9 +98,10 @@ object FSDevMetrics {
         msg: String,
         info: String? = null,
         extraInfo: String? = null,
+        attrs: Map<String, String> = emptyMap(),
         vararg destinations: String = emptyArray()
     ) = executor.execute {
-        loggers.onSomeOrAll(destinations) { watch(msg, info, extraInfo) }
+        loggers.onSomeOrAll(destinations) { watch(msg, info, extraInfo, attrs) }
     }
 
     /**
@@ -165,9 +164,10 @@ object FSDevMetrics {
         msg: String,
         info: String? = null,
         extraInfo: String? = null,
+        attrs: Map<String, String> = emptyMap(),
         vararg destinations: String = emptyArray()
     ) = executor.execute {
-        loggers.onSomeOrAll(destinations) { info(msg, info, extraInfo) }
+        loggers.onSomeOrAll(destinations) { info(msg, info, extraInfo, attrs) }
     }
 
     /**
@@ -182,26 +182,4 @@ object FSDevMetrics {
             executor.shutdown()
         }
     }
-}
-
-/**
- * Utility method to safely concatenate log elements
- */
-fun safeConcat(msg: String?, info: String?, extraInfo: String?): String {
-    val sb = StringBuilder()
-    if (msg != null) {
-        sb.append(msg)
-    }
-
-    if (info != null) {
-        sb.append("/")
-        sb.append(info)
-    }
-
-    if (extraInfo != null) {
-        sb.append("/")
-        sb.append(extraInfo)
-    }
-
-    return sb.toString()
 }

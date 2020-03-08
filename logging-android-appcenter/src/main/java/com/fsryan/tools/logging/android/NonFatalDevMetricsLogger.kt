@@ -20,7 +20,7 @@ class NonFatalDevMetricsLogger : FSDevMetricsLogger {
 
     override fun id() = "nonfatal"
 
-    override fun alarm(t: Throwable) {
+    override fun alarm(t: Throwable, attrs: Map<String, String>) {
         if (!enabled.get()) {
             return
         }
@@ -34,7 +34,7 @@ class NonFatalDevMetricsLogger : FSDevMetricsLogger {
 
         Analytics.trackEvent(
             "nonfatal",
-            mapOf(
+            attrs + mapOf(
                 "system_uptime" to SystemClock.uptimeMillis().toString(),
                 "app_uptime" to (System.currentTimeMillis() - appStartTimeMillis).toString(),
                 "exception" to stacktrace

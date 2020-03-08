@@ -46,22 +46,25 @@ interface FSDevMetricsLogger : FSLogger {
     /**
      * An alarm is a condition that you believe should not occur. If it does
      * occur, then using this function declares your intent to be alerted while
-     * not crashing the app.
+     * not crashing the app. Add supplemental attributes via the [attrs]
+     * parameter.
      */
-    fun alarm(t: Throwable) {}
+    fun alarm(t: Throwable, attrs: Map<String, String> = emptyMap()) {}
 
     /**
      * Use to watch to monitor conditions where the severity is low enough that
      * you would want to specifically query your analytics system for these
-     * kind of events.
+     * kind of events. Add supplemental attributes via the [attrs]
+     * parameter.
      */
-    fun watch(msg: String, info: String? = null, extraInfo: String? = null) {}
+    fun watch(msg: String, info: String? = null, extraInfo: String? = null, attrs: Map<String, String> = emptyMap()) {}
 
     /**
      * Use info to monitor events that you have some interest in, but are not
-     * particularly worrisome as to warrant either a [watch] or an [alarm]
+     * particularly worrisome as to warrant either a [watch] or an [alarm]. Add
+     * supplemental attributes via the [attrs] parameter.
      */
-    fun info(msg: String, info: String? = null, extraInfo: String? = null) {}
+    fun info(msg: String, info: String? = null, extraInfo: String? = null, attrs: Map<String, String> = emptyMap()) {}
 
     /**
      * Use to measure the performance characteristics of an operation. The
