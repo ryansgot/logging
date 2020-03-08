@@ -12,7 +12,7 @@ class FirebaseAnalyticsMetricsLogger: ContextSpecificDevMetricsLogger {
         fbAnalytics = FirebaseAnalytics.getInstance(context.applicationContext)
     }
 
-    override fun id() = "gtm"
+    override fun id() = "firebase"
     override fun watch(msg: String, info: String?, extraInfo: String?) = send("watch", msg, info, extraInfo)
     override fun info(msg: String, info: String?, extraInfo: String?) = send("info", msg, info, extraInfo)
 
