@@ -1,3 +1,0 @@
-# Android Logging to Microsoft AppCenter Example App
-
-This is an example project you can use to manually verify this library's efficacy in logging to app center. Feel free to install it in order to test it with your own app on AppCenter. If you do this, be sure to add `-Ptestapp.acsecret=your_app_secret` to the command line when you install (or just add `testapp.acsecret=your_app_secret` in your `gradle.properties` file. This should bring up an interface whereby you can start creating events.

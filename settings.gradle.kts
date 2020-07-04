@@ -5,7 +5,5 @@ include(
     ":logging-android-appcenter",
     ":kotlin-testapp",
     ":java-testapp",
-    ":android-loggingtestapp-lib",
-    ":android-firebase-testapp",
-    ":android-appcenter-testapp"
+    ":android-loggingtestapp"
 )
