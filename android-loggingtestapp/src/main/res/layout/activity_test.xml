@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent"
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto">
+  <Button
+      android:id="@+id/crashButton"
+      android:text="@string/crash"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toStartOf="parent" />
+  <Button
+      android:id="@+id/alarmButton"
+      android:text="@string/dev_metrics_alarm"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/crashButton"
+      app:layout_constraintStart_toStartOf="parent" />
+  <Button
+      android:id="@+id/watchButton"
+      android:text="@string/dev_metrics_watch"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/alarmButton"
+      app:layout_constraintStart_toStartOf="parent" />
+  <Button
+      android:id="@+id/infoButton"
+      android:text="@string/dev_metrics_info"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/watchButton"
+      app:layout_constraintStart_toStartOf="parent" />
+  <Button
+      android:id="@+id/logAnalyticsButton"
+      android:text="@string/log_analytics"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/infoButton"
+      app:layout_constraintStart_toStartOf="parent" />
+  <Button
+      android:id="@+id/addAttrButton"
+      android:text="@string/add_attribute"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/logAnalyticsButton"
+      app:layout_constraintStart_toStartOf="parent" />
+  <Button
+      android:id="@+id/removeAttrButton"
+      android:text="@string/remove_attribute"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/addAttrButton"
+      app:layout_constraintStart_toStartOf="parent" />
+  <Button
+      android:id="@+id/timedOperationButton"
+      android:text="@string/start_timed_operation"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/removeAttrButton"
+      app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
