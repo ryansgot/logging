@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "659443613064",
+    "firebase_url": "https://loggin-testapp-datadog.firebaseio.com",
+    "project_id": "loggin-testapp-datadog",
+    "storage_bucket": "loggin-testapp-datadog.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:659443613064:android:0c0d66f5c9b6e5c8c3ce3d",
+        "android_client_info": {
+          "package_name": "com.fsryan.tools.loggingtestapp.datadog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "659443613064-8tanrpkh7ldrr3a28r627761dnsbcvcm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHyCQeoAC5mw9MkYlBVgVt0VnJS1DKTTg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "659443613064-8tanrpkh7ldrr3a28r627761dnsbcvcm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

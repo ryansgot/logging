@@ -4,7 +4,7 @@ object Deps {
     private val versions = mapOf(
         "global" to mapOf(
             "jetbrains" to mapOf(
-                "kotlin" to "1.3.50"
+                "kotlin" to "1.3.72"
             ),
             "android" to mapOf(
                 "minSdk" to "16",
@@ -32,6 +32,9 @@ object Deps {
             "androidx" to mapOf(
                 "core" to "1.0.2",
                 "constraint-layout" to "1.1.3"
+            ),
+            "datadog" to mapOf(
+                "ddsdk" to "1.4.3"
             ),
             "google" to mapOf(
                 "firebase-core" to "17.1.0",
@@ -65,6 +68,9 @@ object Deps {
                 "appcompat" to "androidx.appcompat:appcompat:${ver("main", "androidx", "core")}",
                 "core-ktx" to "androidx.core:core-ktx:${ver("main", "androidx", "core")}",
                 "constraint-layout" to "androidx.constraintlayout:constraintlayout:${ver("main", "androidx", "constraint-layout")}"
+            ),
+            "datadog" to mapOf(
+                "ddsdk" to "com.datadoghq:dd-sdk-android:${ver("main", "datadog", "ddsdk")}"
             ),
             "google" to mapOf(
                 "firebase-analytics" to "com.google.firebase:firebase-analytics:${ver("main", "google", "firebase-core")}",

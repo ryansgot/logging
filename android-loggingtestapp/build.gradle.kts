@@ -37,6 +37,13 @@ android {
     flavorDimensions("integration")
 
     productFlavors {
+        create("datadog") {
+            setDimension("integration")
+            applicationIdSuffix = ".datadog"
+            setMinSdkVersion(19)
+
+            manifestPlaceholders["testapp.datadogtoken"] = project.findProperty("testapp.datadogtoken") ?: ""
+        }
         create("firebase") {
             setDimension("integration")
             applicationIdSuffix = ".firebase"
@@ -84,6 +91,10 @@ dependencies {
     appcenterImplementation(project(":logging-android-appcenter"))
     appcenterImplementation(mainDep(producer = "microsoft", name = "appcenter-analytics"))
     appcenterImplementation(mainDep(producer = "microsoft", name = "appcenter-crashes"))
+
+    // datadog
+    datadogImplementation(project(":logging-android-datadog"))
+    datadogImplementation(mainDep(producer = "datadog", name = "ddsdk"))
 }
 
 fun DependencyHandlerScope.appcenterImplementation(dependencyNotation: Any) = add(
@@ -93,6 +104,11 @@ fun DependencyHandlerScope.appcenterImplementation(dependencyNotation: Any) = ad
 
 fun DependencyHandlerScope.firebaseImplementation(dependencyNotation: Any) = add(
     configurationName = "firebaseImplementation",
+    dependencyNotation = dependencyNotation
+)
+
+fun DependencyHandlerScope.datadogImplementation(dependencyNotation: Any) = add(
+    configurationName = "datadogImplementation",
     dependencyNotation = dependencyNotation
 )
 
