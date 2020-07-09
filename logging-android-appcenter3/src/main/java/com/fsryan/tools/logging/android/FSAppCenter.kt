@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Looper
 import androidx.annotation.MainThread
 import com.microsoft.appcenter.AppCenter
+import com.microsoft.appcenter.AppCenterService
 import com.microsoft.appcenter.analytics.Analytics
 import com.microsoft.appcenter.crashes.Crashes
 import java.util.concurrent.atomic.AtomicBoolean
@@ -23,7 +24,11 @@ object FSAppCenter {
 
     /**
      * Takes the configured properties from the meta-data of the application in
-     * order to initialize
+     * order to initialize when [initFSLogging] is called from meta-data
+     * attached to the context.
+     *
+     * You can set the following meta-data:
+     * `
      */
     @MainThread
     fun ensureInitialized(context: Context) {
@@ -47,12 +52,20 @@ object FSAppCenter {
             Crashes.setEnabled(crashesEnabled)
             Analytics.setEnabled(analyticsEnabled)
         } else {
-            AppCenter.start(
-                context.applicationContext as Application,
-                appSecret,
-                Analytics::class.java,
-                Crashes::class.java
-            )
+            val toStart = mutableListOf<Class<out AppCenterService>>()
+            if (analyticsEnabled) {
+                toStart.add(Analytics::class.java)
+            }
+            if (crashesEnabled) {
+                toStart.add(Crashes::class.java)
+            }
+            if (toStart.isNotEmpty()) {
+                AppCenter.start(
+                    context.applicationContext as Application,
+                    appSecret,
+                    *toStart.toTypedArray()
+                )
+            }
         }
     }
 }
