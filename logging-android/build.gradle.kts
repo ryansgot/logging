@@ -28,7 +28,7 @@ android {
         targetSdkVersion(ver("global", "android", "targetSdk").toInt())
         versionCode = 1
         versionName = "1.0"
-
+        consumerProguardFile("consumer-proguard-rules.pro")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -36,13 +36,11 @@ android {
         getByName("release") {
             isMinifyEnabled = false
             consumerProguardFiles("proguard-rules.pro")
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED_BY_DEFAULT", "false")
         }
 
         getByName("debug") {
             isMinifyEnabled = false
             consumerProguardFiles("proguard-rules.pro")
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED_BY_DEFAULT", "true")
         }
     }
 
