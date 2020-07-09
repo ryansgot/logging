@@ -7,7 +7,6 @@ import androidx.annotation.MainThread
 import com.datadog.android.Datadog
 import com.datadog.android.DatadogConfig
 import com.datadog.android.log.Logger
-import com.fsryan.tools.logging.FSDevMetrics
 import kotlin.IllegalStateException
 
 object FSDataDog {
