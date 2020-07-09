@@ -30,6 +30,7 @@ object Deps {
         ),
         "main" to mapOf(
             "androidx" to mapOf(
+                "annotation" to "1.1.0",
                 "core" to "1.0.2",
                 "constraint-layout" to "1.1.3"
             ),
@@ -43,7 +44,8 @@ object Deps {
                 "jsr305" to "3.0.2"
             ),
             "microsoft" to mapOf(
-                "appcenter" to "2.4.0"
+                "appcenter" to "2.4.0",
+                "appcenter3" to "3.2.2"
             )
         )
     )
@@ -65,6 +67,7 @@ object Deps {
         ),
         "main" to mapOf(
             "androidx" to mapOf(
+                "annotation" to "androidx.annotation:annotation:${ver("main", "androidx", "annotation")}",
                 "appcompat" to "androidx.appcompat:appcompat:${ver("main", "androidx", "core")}",
                 "core-ktx" to "androidx.core:core-ktx:${ver("main", "androidx", "core")}",
                 "constraint-layout" to "androidx.constraintlayout:constraintlayout:${ver("main", "androidx", "constraint-layout")}"
@@ -84,7 +87,9 @@ object Deps {
             ),
             "microsoft" to mapOf(
                 "appcenter-analytics" to "com.microsoft.appcenter:appcenter-analytics:${ver("main", "microsoft", "appcenter")}",
-                "appcenter-crashes" to "com.microsoft.appcenter:appcenter-crashes:${ver("main", "microsoft", "appcenter")}"
+                "appcenter-crashes" to "com.microsoft.appcenter:appcenter-crashes:${ver("main", "microsoft", "appcenter")}",
+                "appcenter-analytics3" to "com.microsoft.appcenter:appcenter-analytics:${ver("main", "microsoft", "appcenter3")}",
+                "appcenter-crashes3" to "com.microsoft.appcenter:appcenter-crashes:${ver("main", "microsoft", "appcenter3")}"
             )
         )
     )

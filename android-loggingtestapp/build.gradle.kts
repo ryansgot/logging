@@ -54,6 +54,12 @@ android {
 
             manifestPlaceholders["testapp.acsecret"] = project.findProperty("testapp.acsecret") ?: ""
         }
+        create("appcenter3") {
+            setDimension("integration")
+            applicationIdSuffix = ".appcenter3"
+
+            manifestPlaceholders["testapp.acsecret"] = project.findProperty("testapp.acsecret") ?: ""
+        }
     }
 
     compileOptions {
@@ -87,10 +93,17 @@ dependencies {
     firebaseImplementation(mainDep(producer = "google", name = "firebase-crashlytics-jdk"))
     firebaseImplementation(mainDep(producer = "google", name = "gms-tagmanager"))
 
+    // Probably should be retired, but left for historical purposes
     // appcenter
     appcenterImplementation(project(":logging-android-appcenter"))
     appcenterImplementation(mainDep(producer = "microsoft", name = "appcenter-analytics"))
     appcenterImplementation(mainDep(producer = "microsoft", name = "appcenter-crashes"))
+
+    // This is the most recent of the AppCenter library releases.
+    // appcenter
+    appcenter3Implementation(project(":logging-android-appcenter3"))
+    appcenter3Implementation(mainDep(producer = "microsoft", name = "appcenter-analytics3"))
+    appcenter3Implementation(mainDep(producer = "microsoft", name = "appcenter-crashes3"))
 
     // datadog
     datadogImplementation(project(":logging-android-datadog"))
@@ -99,6 +112,11 @@ dependencies {
 
 fun DependencyHandlerScope.appcenterImplementation(dependencyNotation: Any) = add(
     configurationName = "appcenterImplementation",
+    dependencyNotation = dependencyNotation
+)
+
+fun DependencyHandlerScope.appcenter3Implementation(dependencyNotation: Any) = add(
+    configurationName = "appcenter3Implementation",
     dependencyNotation = dependencyNotation
 )
 
