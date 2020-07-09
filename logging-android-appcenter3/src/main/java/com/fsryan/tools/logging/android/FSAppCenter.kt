@@ -28,10 +28,20 @@ object FSAppCenter {
      * attached to the context.
      *
      * You can set the following meta-data:
-     * `
+     * ```
+     * <!-- You should not store your app secret in code here, instead, you can
+     *      take it from manifest placeholders as you define in your
+     *      build.gradle file
+     * -->
+     * <meta-data android:name="fsacsec" android:value="Your app secret" />
+     * <!-- Crashes will be enabled by default -->
+     * <meta-data android:name="fsac_crashes_enabled" android:value="true" />
+     * <!-- Analytics will be enabled by default -->
+     * <meta-data android:name="fsac_analytics_enabled" android:value="true" />
+     * ```
      */
     @MainThread
-    fun ensureInitialized(context: Context) {
+    internal fun ensureInitialized(context: Context) {
         val info = context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
         val analyticsEnabled = info.metaData?.getBoolean("fsac_analytics_enabled", false) ?: true
         val crashesEnabled = info.metaData?.getBoolean("fsac_crashes_enabled", false) ?: true
@@ -40,8 +50,18 @@ object FSAppCenter {
         }
     }
 
+    /**
+     * If you want to delay the initiation of AppCenter, then you can use this
+     * function instead. You may want to do this if there are tight regulations
+     * on data you can collect.
+     */
     @MainThread
-    fun ensureInitialized(context: Context, appSecret: String, analyticsEnabled: Boolean, crashesEnabled: Boolean) {
+    fun ensureInitialized(
+        context: Context,
+        appSecret: String,
+        analyticsEnabled: Boolean,
+        crashesEnabled: Boolean
+    ) {
         if (Looper.getMainLooper().thread != Thread.currentThread()) {
             throw IllegalStateException("Can only initialize on Application main thread.")
         }
