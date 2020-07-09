@@ -15,9 +15,9 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.5.1")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.50")
-        classpath("com.google.gms:google-services:4.3.2")
+        classpath("com.android.tools.build:gradle:3.6.3")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.72")
+        classpath("com.google.gms:google-services:4.3.3")
         classpath("io.fabric.tools:gradle:1.31.0")
         classpath("com.fsryan.gradle:fsryan-gradle-publishing:0.0.6")
         classpath("com.github.dcendents:android-maven-gradle-plugin:2.1")
@@ -29,6 +29,7 @@ allprojects {
     repositories {
         jcenter()
         google()
+        maven { url = uri("https://dl.bintray.com/datadog/datadog-maven") }
         maven {
             url = uri("s3://repo.fsryan.com/release")
             credentials(AwsCredentials::class) {

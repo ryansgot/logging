@@ -1,0 +1,2 @@
+-keep public class * implements com.fsryan.tools.logging.FSEventLogger
+-keep public class * implements com.fsryan.tools.logging.FSDevMetricsLogger

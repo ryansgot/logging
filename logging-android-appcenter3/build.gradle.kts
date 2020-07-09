@@ -1,6 +1,6 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import deps.Deps.mainDep
 import deps.Deps.ver
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import tools.GitTools
 import tools.Info
 
@@ -28,7 +28,7 @@ android {
         targetSdkVersion(ver("global", "android", "targetSdk").toInt())
         versionCode = 1
         versionName = "1.0"
-        consumerProguardFile("consumer-proguard-rules.pro")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -60,8 +60,13 @@ dependencies {
     implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
 
     implementation(project(":logging"))
+    implementation(project(":logging-android"))
+
+    implementation(mainDep(producer = "androidx", name = "annotation"))
 
     implementation(mainDep(producer = "jetbrains", name = "kotlin-stdlib"))
+    implementation(mainDep(producer = "microsoft", name = "appcenter-analytics3"))
+    implementation(mainDep(producer = "microsoft", name = "appcenter-crashes3"))
 }
 
 fsPublishingConfig {
@@ -74,13 +79,21 @@ fsPublishingConfig {
     versionName = project.version.toString()
     releaseRepoUrl = "s3://repo.fsryan.com/release"
     snapshotRepoUrl = "s3://repo.fsryan.com/snapshot"
-    description = "Logging for Analytics events and Developer events on Dalvik or ART"
+    description = "Logging for Analytics events and Developer events on Dalvik or ART with appcenter destinations using AppCenter's v3 library"
     awsAccessKeyId = if (project.hasProperty("awsMavenAccessKey")) project.property("awsMavenAccessKey").toString() else System.getenv()["AWS_ACCES_KEY_ID"]!!
     awsSecretKey = if (project.hasProperty("awsMavenSecretKey")) project.property("awsMavenSecretKey").toString() else System.getenv()["AWS_SECRET_KEY"]!!
     extraPomProperties = mapOf(
         "gitrev" to GitTools.gitHash(true)
     )
     additionalPublications.add("bintray")
+    dependencyNameOverrides = mapOf(
+        "logging-android-appcenter3Debug" to mapOf(
+            "logging-android" to "logging-android-debug"
+        ),
+        "logging-android-appcenter3DebugToBintray" to mapOf(
+            "logging-android" to "logging-android-debug"
+        )
+    )
 }
 
 bintray {
@@ -92,13 +105,13 @@ bintray {
     pkg.apply {
         repo = "maven"
         name = project.name
-        desc = "Android library building upon the base logging library. Handles android-specific concerns like Context. debug variant contains some helpful debug-specific loggers."
+        desc = "Android library building upon the android logging library with Microsoft AppCenter specific loggers."
         websiteUrl = "https://github.com/ryansgot/logging/${project.name}"
         issueTrackerUrl = "https://github.com/ryansgot/logging/issues"
         vcsUrl = "https://github.com/ryansgot/logging.git"
         publicDownloadNumbers = true
         setLicenses("Apache-2.0")
-        setLabels("jvm", "logging", "android", "analytics", "analytics events", "telemetry")
+        setLabels("jvm", "logging", "android", "appcenter", "analytics", "analytics events", "telemetry")
         version.apply {
             name = project.version.toString()
             released = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").format(Date())

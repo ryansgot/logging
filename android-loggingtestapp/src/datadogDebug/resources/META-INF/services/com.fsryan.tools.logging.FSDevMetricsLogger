@@ -1,0 +1,4 @@
+com.fsryan.tools.logging.android.DataDogDevMetricsLogger
+com.fsryan.tools.logging.android.LogcatDevMetricsLogger
+com.fsryan.tools.logging.android.InternalFileDevMetricsLogger
+com.fsryan.tools.logging.android.CrashingDevMetricsLogger

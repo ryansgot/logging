@@ -1,3 +1,5 @@
+Note. You should instead use [logging-android-appcenter3](../logging-android-appcenter3)
+
 # Logging Android Appcenter
 
 Builds upon the [logging](../logging/README.md) and [logging-android](../logging-android/README.md) libraries, providing specific loggers for Microsoft AppCenter.

@@ -4,7 +4,7 @@ object Deps {
     private val versions = mapOf(
         "global" to mapOf(
             "jetbrains" to mapOf(
-                "kotlin" to "1.3.50"
+                "kotlin" to "1.3.72"
             ),
             "android" to mapOf(
                 "minSdk" to "16",
@@ -12,7 +12,7 @@ object Deps {
                 "compileSdk" to "29"
             ),
             "fsryan" to mapOf(
-                "publication" to "0.0.8"
+                "publication" to "0.1.0"
             )
         ),
         "plugins" to mapOf(),
@@ -30,8 +30,12 @@ object Deps {
         ),
         "main" to mapOf(
             "androidx" to mapOf(
+                "annotation" to "1.1.0",
                 "core" to "1.0.2",
                 "constraint-layout" to "1.1.3"
+            ),
+            "datadog" to mapOf(
+                "ddsdk" to "1.4.3"
             ),
             "google" to mapOf(
                 "firebase-core" to "17.1.0",
@@ -40,7 +44,8 @@ object Deps {
                 "jsr305" to "3.0.2"
             ),
             "microsoft" to mapOf(
-                "appcenter" to "2.4.0"
+                "appcenter" to "2.4.0",
+                "appcenter3" to "3.2.2"
             )
         )
     )
@@ -62,9 +67,13 @@ object Deps {
         ),
         "main" to mapOf(
             "androidx" to mapOf(
+                "annotation" to "androidx.annotation:annotation:${ver("main", "androidx", "annotation")}",
                 "appcompat" to "androidx.appcompat:appcompat:${ver("main", "androidx", "core")}",
                 "core-ktx" to "androidx.core:core-ktx:${ver("main", "androidx", "core")}",
                 "constraint-layout" to "androidx.constraintlayout:constraintlayout:${ver("main", "androidx", "constraint-layout")}"
+            ),
+            "datadog" to mapOf(
+                "ddsdk" to "com.datadoghq:dd-sdk-android:${ver("main", "datadog", "ddsdk")}"
             ),
             "google" to mapOf(
                 "firebase-analytics" to "com.google.firebase:firebase-analytics:${ver("main", "google", "firebase-core")}",
@@ -78,7 +87,9 @@ object Deps {
             ),
             "microsoft" to mapOf(
                 "appcenter-analytics" to "com.microsoft.appcenter:appcenter-analytics:${ver("main", "microsoft", "appcenter")}",
-                "appcenter-crashes" to "com.microsoft.appcenter:appcenter-crashes:${ver("main", "microsoft", "appcenter")}"
+                "appcenter-crashes" to "com.microsoft.appcenter:appcenter-crashes:${ver("main", "microsoft", "appcenter")}",
+                "appcenter-analytics3" to "com.microsoft.appcenter:appcenter-analytics:${ver("main", "microsoft", "appcenter3")}",
+                "appcenter-crashes3" to "com.microsoft.appcenter:appcenter-crashes:${ver("main", "microsoft", "appcenter3")}"
             )
         )
     )

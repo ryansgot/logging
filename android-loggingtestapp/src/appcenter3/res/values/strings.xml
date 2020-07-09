@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AppCenter3 Logging Test</string>
+    <string name="commit_timed_operation">Commit Timed Operation To AppCenter3</string>
+    <string name="start_timed_operation">Start Timed Operation For AppCenter3</string>
+    <string name="log_analytics">Log Analytic to AppCenter3</string>
+</resources>
