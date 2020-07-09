@@ -2,16 +2,12 @@ package com.fsryan.tools.logging.android
 
 import android.os.SystemClock
 import com.fsryan.tools.logging.FSDevMetricsLogger
-import com.fsryan.tools.logging.android.appcenter.BuildConfig
 import com.microsoft.appcenter.Flags
 import com.microsoft.appcenter.analytics.Analytics
 import java.io.PrintWriter
 import java.io.StringWriter
-import java.util.concurrent.atomic.AtomicBoolean
 
 class NonFatalDevMetricsLogger : FSDevMetricsLogger {
-
-    val enabled = AtomicBoolean(BuildConfig.APPCENTER_ENABLED_BY_DEFAULT)
 
     // This is not 100% accurate, but it should be close enough for our
     // purposes. The idea here is that we want to understand when alarms occur
@@ -21,10 +17,6 @@ class NonFatalDevMetricsLogger : FSDevMetricsLogger {
     override fun id() = "nonfatal"
 
     override fun alarm(t: Throwable, attrs: Map<String, String>) {
-        if (!enabled.get()) {
-            return
-        }
-
         val stacktrace = StringWriter().use { sw ->
             PrintWriter(sw).use { pw ->
                 t.printStackTrace(pw)
