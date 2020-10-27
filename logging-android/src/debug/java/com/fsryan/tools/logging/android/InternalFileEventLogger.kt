@@ -24,15 +24,15 @@ import java.util.concurrent.ConcurrentHashMap
  * necessary directory and file and go ahead and log the current time at app
  * start to it.
  */
-class InternalFileEventLogger : ContextSpecificEventLogger {
+class InternalFileEventLogger : ContextSpecificEventLogger() {
 
     private lateinit var outputFile: File
-    private val countableAttrs: MutableMap<String, Long> = ConcurrentHashMap()
     private val userProperties: MutableMap<String, String> = ConcurrentHashMap()
 
     override fun id(): String = "internalfile"
 
     override fun initialize(context: Context) = context.applicationContext.run {
+        super.initialize(context)
         val info = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
         val path = info.metaData?.getString("internal_event_log", null) ?: throw IllegalStateException("application meta-data named internal_event_log required")
         outputFile = File(context.filesDir, path)
@@ -49,16 +49,13 @@ class InternalFileEventLogger : ContextSpecificEventLogger {
 
     override fun addAttr(attrName: String, attrValue: String) {
         userProperties[attrName] = attrValue
-        try {
-            countableAttrs[attrName] = attrValue.toLong()
-        } catch (nfe: NumberFormatException) {}
+        super.addAttr(attrName, attrValue)
     }
 
     override fun removeAttr(attrName: String) {
         userProperties.remove(attrName)
+        super.removeAttr(attrName)
     }
-
-    override fun incrementAttrValue(attrName: String) = addAttr(attrName, ((countableAttrs[attrName] ?: 0L) + 1).toString())
 
     override fun addEvent(eventName: String, attrs: Map<String, String>) {
         val actualAttrs = userProperties + attrs

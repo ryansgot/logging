@@ -6,7 +6,8 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-android-extensions")
-    id("io.fabric")
+    // UNCOMMENT FOR newrelic
+//    id("newrelic")
 }
 
 android {
@@ -38,27 +39,33 @@ android {
 
     productFlavors {
         create("datadog") {
-            setDimension("integration")
+            dimension("integration")
             applicationIdSuffix = ".datadog"
             setMinSdkVersion(19)
 
-            manifestPlaceholders["testapp.datadogtoken"] = project.findProperty("testapp.datadogtoken") ?: ""
+            manifestPlaceholders(mapOf(
+                "testapp.datadogtoken" to (project.findProperty("testapp.datadogtoken") ?: "")
+            ))
         }
         create("firebase") {
-            setDimension("integration")
+            dimension("integration")
             applicationIdSuffix = ".firebase"
         }
-        create("appcenter") {
-            setDimension("integration")
-            applicationIdSuffix = ".appcenter"
-
-            manifestPlaceholders["testapp.acsecret"] = project.findProperty("testapp.acsecret") ?: ""
-        }
         create("appcenter3") {
-            setDimension("integration")
+            dimension("integration")
             applicationIdSuffix = ".appcenter3"
 
-            manifestPlaceholders["testapp.acsecret"] = project.findProperty("testapp.acsecret") ?: ""
+            manifestPlaceholders(mapOf(
+                "testapp.acsecret" to (project.findProperty("testapp.acsecret") ?: "")
+            ))
+        }
+        create("newrelic") {
+            dimension("integration")
+            applicationIdSuffix = ".newrelic"
+
+            manifestPlaceholders(mapOf(
+                "testapp.newrelictoken" to (project.findProperty("testapp.newrelictoken") ?: "")
+            ))
         }
     }
 
@@ -74,6 +81,13 @@ android {
     }
 }
 
+// UNCOMMENT for newrelic
+//newrelic {
+//    // disable map uploads
+//    uploadMapsForVariant("")
+//}
+
+
 dependencies {
     implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
 
@@ -88,16 +102,8 @@ dependencies {
 
     // Firebase
     firebaseImplementation(project(":logging-android-firebase"))
-    firebaseImplementation(mainDep(producer = "google", name = "firebase-core"))
-    firebaseImplementation(mainDep(producer = "google", name = "firebase-analytics"))
-    firebaseImplementation(mainDep(producer = "google", name = "firebase-crashlytics-jdk"))
-    firebaseImplementation(mainDep(producer = "google", name = "gms-tagmanager"))
-
-    // Probably should be retired, but left for historical purposes
-    // appcenter
-    appcenterImplementation(project(":logging-android-appcenter"))
-    appcenterImplementation(mainDep(producer = "microsoft", name = "appcenter-analytics"))
-    appcenterImplementation(mainDep(producer = "microsoft", name = "appcenter-crashes"))
+    firebaseImplementation(mainDep(producer = "google", name = "firebase-analytics-ktx"))
+    firebaseImplementation(mainDep(producer = "google", name = "firebase-crashlytics-ktx"))
 
     // This is the most recent of the AppCenter library releases.
     // appcenter
@@ -108,12 +114,11 @@ dependencies {
     // datadog
     datadogImplementation(project(":logging-android-datadog"))
     datadogImplementation(mainDep(producer = "datadog", name = "ddsdk"))
-}
 
-fun DependencyHandlerScope.appcenterImplementation(dependencyNotation: Any) = add(
-    configurationName = "appcenterImplementation",
-    dependencyNotation = dependencyNotation
-)
+    // newrelic
+    newrelicImplementation(project(":logging-android-newrelic"))
+    newrelicImplementation(mainDep(producer = "newrelic", name = "android-agent"))
+}
 
 fun DependencyHandlerScope.appcenter3Implementation(dependencyNotation: Any) = add(
     configurationName = "appcenter3Implementation",
@@ -130,5 +135,12 @@ fun DependencyHandlerScope.datadogImplementation(dependencyNotation: Any) = add(
     dependencyNotation = dependencyNotation
 )
 
+fun DependencyHandlerScope.newrelicImplementation(dependencyNotation: Any) = add(
+    configurationName = "newrelicImplementation",
+    dependencyNotation = dependencyNotation
+)
+
 // This forces us to create a google-services.json for all of the flavors.
 apply(plugin = "com.google.gms.google-services")
+
+apply(plugin = "com.google.firebase.crashlytics")

@@ -18,23 +18,26 @@ Logging events facilitates two purposes:
 
 ## Artifact Breakup
 
-There are four artifacts produced by this project:
+There are six artifacts produced by this project:
 1. group: com.fsryan.tools, artifact: logging, packaging: jar
 2. group: com.fsryan.tools, artifact: logging-android, packaging: aar
-3. group: com.fsryan.tools, artifact: logging-android-appcenter, packaging: aar
+3. group: com.fsryan.tools, artifact: logging-android-appcenter3, packaging: aar
 4. group: com.fsryan.tools, artifact: logging-android-firebase, packaging: aar
+5. group: com.fsryan.tools, artifact: logging-android-datadog, packaging: aar
+6. group: com.fsryan.tools, artifact: logging-android-newrelic, packaging: aar
 
 Each artifact has a different purpose, and they build upon one-another. The combination of libraries that you should use depends upon your environment
 
+| Library                    | Analytics Framework | Platform    |
+| -------------------------- | ------------------- | ----------- |
+| logging                    | nonspecific         | JVM/Android |
+| logging-android            | nonspecific         | Android     |
+| logging-android-appcenter3 | Microsoft AppCenter | Android     |
+| logging-android-firebase   | Google Firebase     | Android     |
+| logging-android-datadog    | Datadog             | Android     |
+| logging-android-newrelic   | NewRelic            | Android     |
 
-| Library                   | Analytics Framework | Platform    |
-| ------------------------- | ------------------- | ----------- |
-| logging                   | nonspecific         | JVM/Android |
-| logging-android           | nonspecific         | Android     |
-| logging-android-appcenter | Microsoft AppCenter | Android     |
-| logging-android-firebase  | Google Firebase     | Android     |
-
-So, if you have a JVM project, then you can only use the logging library at this time. However, if you have an Android project, then you can at least get some Android-specific behaviors. The extent to which you can benefit depends upon whether you either use Google Firebase or Microsoft AppCenter analytics libraries.
+So, if you have a JVM project, then you can only use the logging library at this time. However, if you have an Android project, then you can at least get some Android-specific behaviors. The extent to which you can benefit depends upon whether you either use Google Firebase, Microsoft AppCenter, DataDog, or NewRelic.
 
 ### Logging artifact
 

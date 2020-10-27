@@ -11,11 +11,11 @@ class App : Application() {
         super.onCreate()
         FSDevMetrics.info(
             msg = "pre init can log to loggers that do not need to be initialized",
-            destinations = *arrayOf("logcat")
+            destinations = arrayOf("logcat")
         )
         FSEventLog.addEvent(
             eventName = "pre init can log to loggers that do not need to be initialized",
-            destinations = *arrayOf("logcat")
+            destinations = arrayOf("logcat")
         )
         initFSLogging()
     }
