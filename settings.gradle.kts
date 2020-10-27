@@ -2,9 +2,9 @@ include(
     ":logging",
     ":logging-android",
     ":logging-android-firebase",
-    ":logging-android-appcenter",
     ":logging-android-appcenter3",
     ":logging-android-datadog",
+    ":logging-android-newrelic",
     ":kotlin-testapp",
     ":java-testapp",
     ":android-loggingtestapp"

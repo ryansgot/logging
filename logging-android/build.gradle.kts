@@ -62,6 +62,8 @@ dependencies {
     implementation(project(":logging"))
 
     implementation(mainDep(producer = "jetbrains", name = "kotlin-stdlib"))
+
+    implementation(mainDep(producer = "androidx", name = "annotation"))
 }
 
 fsPublishingConfig {

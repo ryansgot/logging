@@ -15,13 +15,14 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.6.3")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.72")
-        classpath("com.google.gms:google-services:4.3.3")
-        classpath("io.fabric.tools:gradle:1.31.0")
+        classpath("com.android.tools.build:gradle:4.1.0")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.10")
+        classpath("com.google.gms:google-services:4.3.4")
+        classpath("com.google.firebase:firebase-crashlytics-gradle:2.3.0")
         classpath("com.fsryan.gradle:fsryan-gradle-publishing:0.0.6")
         classpath("com.github.dcendents:android-maven-gradle-plugin:2.1")
         classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4")
+        classpath("com.newrelic.agent.android:agent-gradle-plugin:5.28.0")
     }
 }
 

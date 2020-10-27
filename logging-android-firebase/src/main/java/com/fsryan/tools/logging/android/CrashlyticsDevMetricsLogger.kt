@@ -1,8 +1,8 @@
 package com.fsryan.tools.logging.android
 
 import android.os.SystemClock
-import com.crashlytics.android.Crashlytics
 import com.fsryan.tools.logging.FSDevMetricsLogger
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 class CrashlyticsDevMetricsLogger : FSDevMetricsLogger {
 
@@ -13,10 +13,10 @@ class CrashlyticsDevMetricsLogger : FSDevMetricsLogger {
 
     override fun id() = "crashlytics"
 
-    override fun alarm(t: Throwable, attrs: Map<String, String>) {
-        Crashlytics.setLong("system_uptime", SystemClock.uptimeMillis())
-        Crashlytics.setLong("app_uptime", System.currentTimeMillis() - appStartTimeMillis)
-        attrs.entries.forEach { Crashlytics.setString(it.key, it.value) }
-        Crashlytics.logException(t)
+    override fun alarm(t: Throwable, attrs: Map<String, String>) = with (FirebaseCrashlytics.getInstance()) {
+        setCustomKey("system_uptime", SystemClock.uptimeMillis())
+        setCustomKey("app_uptime", System.currentTimeMillis() - appStartTimeMillis)
+        attrs.entries.forEach { setCustomKey(it.key, it.value) }
+        recordException(t)
     }
 }

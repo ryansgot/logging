@@ -36,13 +36,11 @@ android {
         getByName("release") {
             isMinifyEnabled = false
             consumerProguardFiles("proguard-rules.pro")
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED_BY_DEFAULT", "false")
         }
 
         getByName("debug") {
             isMinifyEnabled = false
             consumerProguardFiles("proguard-rules.pro")
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED_BY_DEFAULT", "true")
         }
     }
 
@@ -67,8 +65,8 @@ dependencies {
 
     implementation(mainDep(producer = "jetbrains", name = "kotlin-stdlib"))
 
-    implementation(mainDep(producer = "google", name = "firebase-analytics-ktx"))
-    implementation(mainDep(producer = "google", name = "firebase-crashlytics-ktx"))
+    implementation(mainDep(producer = "newrelic", name = "android-agent"))
+    implementation(mainDep(producer = "androidx", name = "annotation"))
 }
 
 fsPublishingConfig {
@@ -81,17 +79,17 @@ fsPublishingConfig {
     versionName = project.version.toString()
     releaseRepoUrl = "s3://repo.fsryan.com/release"
     snapshotRepoUrl = "s3://repo.fsryan.com/snapshot"
-    description = "Logging for Analytics events and Developer events on Dalvik or ART with Firebase destinations"
+    description = "Logging for Analytics events and Developer events on Dalvik or ART with New Relic destinations"
     awsAccessKeyId = if (project.hasProperty("awsMavenAccessKey")) project.property("awsMavenAccessKey").toString() else System.getenv()["AWS_ACCES_KEY_ID"]!!
     awsSecretKey = if (project.hasProperty("awsMavenSecretKey")) project.property("awsMavenSecretKey").toString() else System.getenv()["AWS_SECRET_KEY"]!!
     extraPomProperties = mapOf(
         "gitrev" to GitTools.gitHash(true)
     )
     dependencyNameOverrides = mapOf(
-        "logging-android-firebaseDebug" to mapOf(
+        "logging-android-newrelicDebug" to mapOf(
             "logging-android" to "logging-android-debug"
         ),
-        "logging-android-firebaseDebugToBintray" to mapOf(
+        "logging-android-newrelicDebugToBintray" to mapOf(
             "logging-android" to "logging-android-debug"
         )
     )
@@ -113,7 +111,7 @@ bintray {
         vcsUrl = "https://github.com/ryansgot/android-testtools.git"
         publicDownloadNumbers = true
         setLicenses("Apache-2.0")
-        setLabels("jvm", "logging", "android", "crashlytics", "firebase", "analytics", "analytics events", "telemetry")
+        setLabels("jvm", "logging", "android", "newrelic", "analytics", "analytics events", "telemetry")
         version.apply {
             name = project.version.toString()
             released = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").format(Date())

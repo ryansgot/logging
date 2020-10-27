@@ -2,17 +2,21 @@ package com.fsryan.tools.logging.android
 
 import android.content.Context
 import android.os.Bundle
+import com.fsryan.tools.logging.FSDevMetricsLogger
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 
 class FirebaseAnalyticsMetricsLogger: ContextSpecificDevMetricsLogger {
 
-    @Volatile private lateinit var fbAnalytics: FirebaseAnalytics
-
-    override fun initialize(context: Context) {
-        fbAnalytics = FirebaseAnalytics.getInstance(context.applicationContext)
-    }
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     override fun id() = "firebase"
+
+    override fun initialize(context: Context) {
+        firebaseAnalytics = Firebase.analytics
+    }
+
     override fun watch(
         msg: String,
         info: String?,
@@ -27,7 +31,7 @@ class FirebaseAnalyticsMetricsLogger: ContextSpecificDevMetricsLogger {
         attrs: Map<String, String>
     ) = send("info", msg, info, extraInfo, attrs)
 
-    override fun metric(operationName: String, durationNanos: Long) = fbAnalytics.logEvent("devMetric", Bundle().apply {
+    override fun metric(operationName: String, durationNanos: Long) = firebaseAnalytics.logEvent("devMetric", Bundle().apply {
         putString("operation", operationName)
         putLong("duration", durationNanos)
     })
@@ -38,7 +42,7 @@ class FirebaseAnalyticsMetricsLogger: ContextSpecificDevMetricsLogger {
         info: String?,
         extra: String?,
         attrs: Map<String, String>
-    ) = fbAnalytics.logEvent("devLog", Bundle().apply {
+    ) = firebaseAnalytics.logEvent("devLog", Bundle().apply {
         putString("devLogType", type)
         putString("devMessage", msg)
         putString("devInfo", info)

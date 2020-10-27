@@ -1,0 +1,5 @@
+com.fsryan.tools.logging.android.newrelic.NewRelicHandledExceptionLogger
+com.fsryan.tools.logging.android.newrelic.NewRelicDevMetricsLogger
+com.fsryan.tools.logging.android.LogcatDevMetricsLogger
+com.fsryan.tools.logging.android.InternalFileDevMetricsLogger
+com.fsryan.tools.logging.android.CrashingDevMetricsLogger

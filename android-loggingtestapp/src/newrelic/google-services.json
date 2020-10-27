@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1000260405887",
+    "firebase_url": "https://logging-test-newrelic.firebaseio.com",
+    "project_id": "logging-test-newrelic",
+    "storage_bucket": "logging-test-newrelic.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000260405887:android:a1a1ebb970f780e21ccd4a",
+        "android_client_info": {
+          "package_name": "com.fsryan.tools.loggingtestapp.newrelic"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1000260405887-9u092h3nep5pussjh7p1jfrigqf6igfj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtYVmMfVYdyM-tLrdpcZm8iukkOnS_Hb0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1000260405887-9u092h3nep5pussjh7p1jfrigqf6igfj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

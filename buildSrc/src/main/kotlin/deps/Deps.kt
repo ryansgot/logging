@@ -4,15 +4,15 @@ object Deps {
     private val versions = mapOf(
         "global" to mapOf(
             "jetbrains" to mapOf(
-                "kotlin" to "1.3.72"
+                "kotlin" to "1.4.10"
             ),
             "android" to mapOf(
                 "minSdk" to "16",
-                "targetSdk" to "29",
-                "compileSdk" to "29"
+                "targetSdk" to "30",
+                "compileSdk" to "30"
             ),
             "fsryan" to mapOf(
-                "publication" to "0.1.0"
+                "publication" to "0.2.0"
             )
         ),
         "plugins" to mapOf(),
@@ -38,14 +38,16 @@ object Deps {
                 "ddsdk" to "1.4.3"
             ),
             "google" to mapOf(
-                "firebase-core" to "17.1.0",
-                "firebase-crashlytics-jdk" to "2.10.1",
-                "gms-base" to "17.0.0",
+                "firebase-crashlytics-ktx" to "17.2.2",
+                "firebase-analytics-ktx" to "17.6.0",
                 "jsr305" to "3.0.2"
             ),
             "microsoft" to mapOf(
                 "appcenter" to "2.4.0",
                 "appcenter3" to "3.2.2"
+            ),
+            "newrelic" to mapOf(
+                "android-agent" to "5.28.0"
             )
         )
     )
@@ -76,10 +78,8 @@ object Deps {
                 "ddsdk" to "com.datadoghq:dd-sdk-android:${ver("main", "datadog", "ddsdk")}"
             ),
             "google" to mapOf(
-                "firebase-analytics" to "com.google.firebase:firebase-analytics:${ver("main", "google", "firebase-core")}",
-                "firebase-core" to "com.google.firebase:firebase-core:${ver("main", "google", "firebase-core")}",
-                "firebase-crashlytics-jdk" to "com.crashlytics.sdk.android:crashlytics:${ver("main", "google", "firebase-crashlytics-jdk")}",
-                "gms-tagmanager" to "com.google.android.gms:play-services-tagmanager:${ver("main", "google", "gms-base")}",
+                "firebase-analytics-ktx" to "com.google.firebase:firebase-analytics-ktx:${ver("main", "google", "firebase-analytics-ktx")}",
+                "firebase-crashlytics-ktx" to "com.google.firebase:firebase-crashlytics-ktx:${ver("main", "google", "firebase-crashlytics-ktx")}",
                 "jsr305" to "com.google.code.findbugs:jsr305:${ver("main", "google", "jsr305")}"
             ),
             "jetbrains" to mapOf(
@@ -90,6 +90,9 @@ object Deps {
                 "appcenter-crashes" to "com.microsoft.appcenter:appcenter-crashes:${ver("main", "microsoft", "appcenter")}",
                 "appcenter-analytics3" to "com.microsoft.appcenter:appcenter-analytics:${ver("main", "microsoft", "appcenter3")}",
                 "appcenter-crashes3" to "com.microsoft.appcenter:appcenter-crashes:${ver("main", "microsoft", "appcenter3")}"
+            ),
+            "newrelic" to mapOf(
+                "android-agent" to "com.newrelic.agent.android:android-agent:${ver("main", "newrelic", "android-agent")}"
             )
         )
     )
