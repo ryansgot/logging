@@ -11,6 +11,8 @@ class NewRelicEventLogger: ContextSpecificEventLogger() {
 
     private val eventType = AtomicReference<String>()
 
+    override fun id(): String = "newrelic"
+
     override fun initialize(context: Context) {
         context.startNewRelicIfNecessary()
         val appInfo = context.packageManager
@@ -47,6 +49,4 @@ class NewRelicEventLogger: ContextSpecificEventLogger() {
         }
         NewRelic.recordCustomEvent(eventTypeOverride ?: eventType.get(), eventName, actualAttrs)
     }
-
-    override fun id(): String = "newrelic"
 }

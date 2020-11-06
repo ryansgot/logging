@@ -107,7 +107,7 @@ bintray {
         desc = "Android library building upon the android logging library with DataDog specific loggers."
         websiteUrl = "https://github.com/ryansgot/logging/${project.name}"
         issueTrackerUrl = "https://github.com/ryansgot/logging/issues"
-        vcsUrl = "https://github.com/ryansgot/android-testtools.git"
+        vcsUrl = "https://github.com/ryansgot/logging.git"
         publicDownloadNumbers = true
         setLicenses("Apache-2.0")
         setLabels("jvm", "logging", "android", "datadog", "analytics", "analytics events", "telemetry")

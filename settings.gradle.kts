@@ -5,6 +5,7 @@ include(
     ":logging-android-appcenter3",
     ":logging-android-datadog",
     ":logging-android-newrelic",
+    ":logging-android-urbanairship",
     ":kotlin-testapp",
     ":java-testapp",
     ":android-loggingtestapp"

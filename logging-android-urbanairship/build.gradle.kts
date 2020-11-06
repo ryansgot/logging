@@ -65,7 +65,7 @@ dependencies {
 
     implementation(mainDep(producer = "jetbrains", name = "kotlin-stdlib"))
 
-    implementation(mainDep(producer = "newrelic", name = "android-agent"))
+    implementation(mainDep(producer = "urbanairship", name = "core"))
     implementation(mainDep(producer = "androidx", name = "annotation"))
 }
 
@@ -79,17 +79,17 @@ fsPublishingConfig {
     versionName = project.version.toString()
     releaseRepoUrl = "s3://repo.fsryan.com/release"
     snapshotRepoUrl = "s3://repo.fsryan.com/snapshot"
-    description = "Logging for Analytics events and Developer events on Dalvik or ART with New Relic destinations"
+    description = "Logging for Analytics events and Developer events on Dalvik or ART with Urban Airship destinations"
     awsAccessKeyId = if (project.hasProperty("awsMavenAccessKey")) project.property("awsMavenAccessKey").toString() else System.getenv()["AWS_ACCES_KEY_ID"]!!
     awsSecretKey = if (project.hasProperty("awsMavenSecretKey")) project.property("awsMavenSecretKey").toString() else System.getenv()["AWS_SECRET_KEY"]!!
     extraPomProperties = mapOf(
         "gitrev" to GitTools.gitHash(true)
     )
     dependencyNameOverrides = mapOf(
-        "logging-android-newrelicDebug" to mapOf(
+        "logging-android-urbanairshipDebug" to mapOf(
             "logging-android" to "logging-android-debug"
         ),
-        "logging-android-newrelicDebugToBintray" to mapOf(
+        "logging-android-urbanairshipDebugToBintray" to mapOf(
             "logging-android" to "logging-android-debug"
         )
     )
@@ -105,13 +105,13 @@ bintray {
     pkg.apply {
         repo = "maven"
         name = project.name
-        desc = "Android library building upon the android logging library with New Relic specific loggers."
+        desc = "Android library building upon the android logging library with Urban Airship specific loggers."
         websiteUrl = "https://github.com/ryansgot/logging/${project.name}"
         issueTrackerUrl = "https://github.com/ryansgot/logging/issues"
         vcsUrl = "https://github.com/ryansgot/logging.git"
         publicDownloadNumbers = true
         setLicenses("Apache-2.0")
-        setLabels("jvm", "logging", "android", "newrelic", "analytics", "analytics events", "telemetry")
+        setLabels("jvm", "logging", "android", "urbanairship", "analytics", "analytics events", "telemetry")
         version.apply {
             name = project.version.toString()
             released = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").format(Date())
