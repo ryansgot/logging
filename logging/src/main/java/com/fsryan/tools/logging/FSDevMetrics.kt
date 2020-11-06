@@ -151,7 +151,6 @@ object FSDevMetrics {
         }
     }
 
-
     /**
      * Either sends the info specifically to the [destinations] when supplied,
      * or sends the info to all registered [loggers] when [destinations] not
