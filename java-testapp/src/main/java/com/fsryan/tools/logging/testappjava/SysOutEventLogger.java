@@ -31,4 +31,14 @@ public class SysOutEventLogger implements FSEventLogger {
     public void addEvent(@Nonnull String eventName, @Nonnull Map<String, String> attrs) {
         System.out.println("addEvent " + eventName + "; attrs = " + attrs);
     }
+
+    @Override
+    public void sendTimedOperation(
+            @Nonnull String operationName,
+            long startTimeMillis,
+            long endTimeMillis,
+            @Nonnull Map<String, String> startAttrs,
+            @Nonnull Map<String, String> endAttrs) {
+        System.out.println("timed operation " + operationName + "; startMillis = " + startTimeMillis + "; endMillis = " + endTimeMillis + "; startAttrs = " + startAttrs + "; endAttrs = " + endAttrs);
+    }
 }

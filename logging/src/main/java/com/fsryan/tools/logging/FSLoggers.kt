@@ -112,6 +112,17 @@ interface FSEventLogger : FSLogger {
      * attributes to the event.
      */
     fun addEvent(eventName: String, attrs: Map<String, String> = emptyMap())
+
+    /**
+     * Log a timed operation given the attrs
+     */
+    fun sendTimedOperation(
+        operationName: String,
+        startTimeMillis: Long,
+        endTimeMillis: Long,
+        startAttrs: Map<String, String> = emptyMap(),
+        endAttrs: Map<String, String> = emptyMap()
+    )
 }
 
 /**

@@ -12,7 +12,7 @@ object Deps {
                 "compileSdk" to "30"
             ),
             "fsryan" to mapOf(
-                "publication" to "0.2.0"
+                "publication" to "0.2.1"
             )
         ),
         "plugins" to mapOf(),
@@ -48,6 +48,9 @@ object Deps {
             ),
             "newrelic" to mapOf(
                 "android-agent" to "5.28.0"
+            ),
+            "urbanairship" to mapOf(
+                "core" to "14.0.0"
             )
         )
     )
@@ -93,6 +96,9 @@ object Deps {
             ),
             "newrelic" to mapOf(
                 "android-agent" to "com.newrelic.agent.android:android-agent:${ver("main", "newrelic", "android-agent")}"
+            ),
+            "urbanairship" to mapOf(
+                "core" to "com.urbanairship.android:urbanairship-core:${ver("main", "urbanairship", "core")}"
             )
         )
     )

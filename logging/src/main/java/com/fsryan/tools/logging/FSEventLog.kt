@@ -1,8 +1,10 @@
 package com.fsryan.tools.logging
 
 import java.util.ServiceLoader
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
+import kotlin.random.Random
 
 /**
  * A single place to perform event logging. This will distribute the log event
@@ -44,6 +46,18 @@ object FSEventLog {
      */
     internal val loggers: LinkedHashMap<String, FSEventLogger> = LinkedHashMap()
     private val executor: Executor
+
+    /**
+     * Threading: writes/reads may happen on any thread, but in accordance with
+     * the [ConcurrentHashMap] documentation:
+     * > Retrieval operations (including get) generally do not block, so may
+     * overlap with update operations (including put and remove). Retrievals
+     * reflect the results of the most recently completed update operations
+     * holding upon their onset.
+     *
+     * Visibility: visible for inner access (avoids synthetic accessor)
+     */
+    internal val timedOperationMap: ConcurrentHashMap<String, ConcurrentHashMap<Int, Pair<Long, Map<String, String>>>> = ConcurrentHashMap()
 
     init {
         val loader = ServiceLoader.load(FSEventLogger::class.java)
@@ -161,6 +175,72 @@ object FSEventLog {
     @JvmOverloads
     fun addEvent(eventName: String, attrs: Map<String, String> = emptyMap(), vararg destinations: String = emptyArray()) = executor.execute {
         loggers.onSomeOrAll(destinations) { addEvent(eventName, attrs) }
+    }
+
+    /**
+     * Starts a timer for the operation [operationName] and returns the
+     * [operationId] used along with the [operationName] to either
+     * [cancelTimedOperation] or to [commitTimedOperation]. If you do not
+     * supply the [operationId] yourself, then a randomly generated id will be
+     * returned.
+     *
+     * You can optionally supply some [startAttrs] in order to capture some
+     * context to be referenced when you later [commitTimedOperation]
+     * (supposing) that you need to commit the timed operation at some point
+     * where you may lose access.
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun startTimedOperation(
+        operationName: String,
+        operationId: Int = Random.nextInt(),
+        startAttrs: Map<String, String> = emptyMap()
+    ): Int {
+        val startTime = System.currentTimeMillis()
+        var current = timedOperationMap[operationName]
+        if (current == null) {
+            current = ConcurrentHashMap()
+            timedOperationMap[operationName] = current
+        }
+        current[operationId] = Pair(startTime, startAttrs)
+        return operationId
+    }
+
+    /**
+     * Cancels the timer for the operation.
+     */
+    @JvmStatic
+    fun cancelTimedOperation(operationName: String, operationId: Int) {
+        timedOperationMap[operationName]?.remove(operationId)
+    }
+
+    /**
+     * Commits the timed operation with the name [operationName] and id
+     * [operationId] input to the [destinations] (or all destinations if none
+     * specified).
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun commitTimedOperation(
+        operationName: String,
+        operationId: Int,
+        endAttrs: Map<String, String> = emptyMap(),
+        vararg destinations: String = emptyArray()
+    ) {
+        val endTimeMillis = System.currentTimeMillis()
+        timedOperationMap[operationName]?.remove(operationId)?.let { pair ->
+            val startTimeMillis = pair.first
+            val startAttrs = pair.second
+            loggers.onSomeOrAll(destinations) {
+                sendTimedOperation(
+                    operationName = operationName,
+                    startTimeMillis = startTimeMillis,
+                    endTimeMillis = endTimeMillis,
+                    startAttrs = startAttrs,
+                    endAttrs = endAttrs
+                )
+            }
+        }
     }
 
     /**

@@ -14,7 +14,14 @@ Both variants of the library contain the [ContextSpecificDevMetricsLogger](src/m
 
 ## Typed Event attributes
 Implementations of [ContextSpecificEventLogger](src/main/java/com/fsryan/tools/logging/android/ContextSpecificEventLogger.kt) can get access to information about the type of an attribute that has been attached to an event. The way you communicate this information to the underlying [ContextSpecificEventLogger](src/main/java/com/fsryan/tools/logging/android/ContextSpecificEventLogger.kt) is by overriding these [string-array resources](src/main/res/values/arrays.xml). These allow you to define attr names that correspond to `Double`, `Boolean`, and `Long` data. If you use them, then beware that the app will crash if you do not provide attrs that can be coerced from `String` to the appropriate type. Known examples of `FSEventLogger` implementations that make use of typed attr information are:
-- [AppCenterAnalyticsEventLogger](../logging-android-appcenter/src/main/java/com/fsryan/tools/logging/android/AppCenterAnalyticsEventLogger.kt)
 - [AppCenterAnalyticsEventLogger](../logging-android-appcenter3/src/main/java/com/fsryan/tools/logging/android/AppCenterAnalyticsEventLogger.kt)
-- [AppCenterAnalyticsEventLogger](../logging-android-datadog/src/main/java/com/fsryan/tools/logging/android/DataDogEventLogger.kt)
-- [FirebaseAnalyticsEventLogger](../logging-android-datadog/src/main/java/com/fsryan/tools/logging/android/FirebaseAnalyticsEventLogger.kt)
+- [FirebaseAnalyticsEventLogger](../logging-android-firebase/src/main/java/com/fsryan/tools/logging/android/DataDogEventLogger.kt)
+- [DataDogEventLogger](../logging-android-datadog/src/main/java/com/fsryan/tools/logging/android/FirebaseAnalyticsEventLogger.kt)
+- [NewRelicEventLogger](../logging-android-newrelic/src/main/java/com/fsryan/tools/logging/android/newrelic/NewRelicEventLogger.kt)
+- [UrbainAirshipEventLogger](../logging-android-urbanairship/src/main/java/com/fsryan/tools/logging/android/urbanairship/UrbainAirshipEventLogger.kt)
+
+## duration attribute name for FSEventLog timed operations:
+You can specify the attribute name for any analytics events that are sent via creating timed operations by adding the following to your `AndroidManifest.xml` file:
+```xml
+<meta-data android:name="fsryan.log.elapsed_time_attr_name" android:value="my_timed_operation_event_attr_name" />
+```
