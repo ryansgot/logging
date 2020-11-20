@@ -45,6 +45,6 @@ class NewRelicDevMetricsLogger: ContextSpecificDevMetricsLogger {
         append["msg"] = msg
         info?.let { append["info"] = it }
         extraInfo?.let { append["extraInfo"] = it }
-        return attrs.filterValues { it.isNotEmpty() } + append
+        return (attrs + append).filterValues { it.isNotEmpty() }
     }
 }
