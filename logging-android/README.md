@@ -19,9 +19,3 @@ Implementations of [ContextSpecificEventLogger](src/main/java/com/fsryan/tools/l
 - [DataDogEventLogger](../logging-android-datadog/src/main/java/com/fsryan/tools/logging/android/FirebaseAnalyticsEventLogger.kt)
 - [NewRelicEventLogger](../logging-android-newrelic/src/main/java/com/fsryan/tools/logging/android/newrelic/NewRelicEventLogger.kt)
 - [UrbainAirshipEventLogger](../logging-android-urbanairship/src/main/java/com/fsryan/tools/logging/android/urbanairship/UrbainAirshipEventLogger.kt)
-
-## duration attribute name for FSEventLog timed operations:
-You can specify the attribute name for any analytics events that are sent via creating timed operations by adding the following to your `AndroidManifest.xml` file:
-```xml
-<meta-data android:name="fsryan.log.elapsed_time_attr_name" android:value="my_timed_operation_event_attr_name" />
-```
