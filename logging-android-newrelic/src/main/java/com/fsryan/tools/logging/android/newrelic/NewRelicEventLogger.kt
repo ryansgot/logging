@@ -47,7 +47,7 @@ class NewRelicEventLogger: ContextSpecificEventLogger() {
 
     override fun addEvent(eventName: String, attrs: Map<String, String>) {
         val mutableAttrs = attrs.filterValues { it.isNotEmpty() }.toMutableMap()
-        val eventTypeOverride = mutableAttrs.remove("__event_type")
+        val eventTypeOverride = mutableAttrs.remove(ATTR_EVENT_TYPE_OVERRIDE)
         val actualAttrs = mutableAttrs.mapValues { entry ->
             when {
                 isBooleanProperty(entry.key) -> entry.value.toBoolean()
