@@ -227,6 +227,9 @@ object FSEventLog {
     fun commitTimedOperation(
         operationName: String,
         operationId: Int,
+        durationAttrName: String? = null,
+        startTimeMillisAttrName: String? = null,
+        endTimeMillisAttrName: String? = null,
         endAttrs: Map<String, String> = emptyMap(),
         vararg destinations: String = emptyArray()
     ) {
@@ -239,6 +242,9 @@ object FSEventLog {
                     operationName = operationName,
                     startTimeMillis = startTimeMillis,
                     endTimeMillis = endTimeMillis,
+                    durationAttrName = durationAttrName,
+                    startTimeMillisAttrName = startTimeMillisAttrName,
+                    endTimeMillisAttrName = endTimeMillisAttrName,
                     startAttrs = startAttrs,
                     endAttrs = endAttrs
                 )

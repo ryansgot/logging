@@ -55,7 +55,7 @@ class ExampleTestUsingLoggingTest {
         eventAttrs.forEach { attrs -> FSEventLog.addEvent(eventName, attrs) }
         FSLoggingAssertions.assertAnalyticSequence(
             eventName = eventName,
-            expected = eventAttrs
+            expectedSequence = eventAttrs
         )
     }
 
@@ -91,7 +91,7 @@ class ExampleTestUsingLoggingTest {
             // should not pass because must throw assertion error when not all attrs are present
             FSLoggingAssertions.assertAnalyticSequence(
                 eventName = "event",
-                expected = listOf(mapOf("attr2" to "value2"), mapOf("attr1" to "value1"))
+                expectedSequence = listOf(mapOf("attr2" to "value2"), mapOf("attr1" to "value1"))
             )
         } catch (assertionError: AssertionError) {
             return  // expected

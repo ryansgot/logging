@@ -3,6 +3,8 @@ package com.fsryan.tools.logging.testappjava;
 import com.fsryan.tools.logging.FSEventLogger;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import java.util.Map;
 
 public class SysOutEventLogger implements FSEventLogger {
@@ -33,17 +35,21 @@ public class SysOutEventLogger implements FSEventLogger {
     }
 
     @Override
+    public boolean runInTestEnvironment() {
+        return false;
+    }
+
+    @Override
     public void sendTimedOperation(
             @Nonnull String operationName,
             long startTimeMillis,
             long endTimeMillis,
+            @Nullable String durationAttrName,
+            @Nullable String startTimeMillisAttrName,
+            @Nullable String endTimeMillisAttrName,
             @Nonnull Map<String, String> startAttrs,
-            @Nonnull Map<String, String> endAttrs) {
+            @Nonnull Map<String, String> endAttrs
+    ) {
         System.out.println("timed operation " + operationName + "; startMillis = " + startTimeMillis + "; endMillis = " + endTimeMillis + "; startAttrs = " + startAttrs + "; endAttrs = " + endAttrs);
-    }
-
-    @Override
-    public boolean runInTestEnvironment() {
-        return false;
     }
 }

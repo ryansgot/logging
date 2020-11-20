@@ -126,9 +126,19 @@ interface FSEventLogger : FSLogger {
         operationName: String,
         startTimeMillis: Long,
         endTimeMillis: Long,
+        durationAttrName: String? = null,
+        startTimeMillisAttrName: String? = null,
+        endTimeMillisAttrName: String? = null,
         startAttrs: Map<String, String> = emptyMap(),
         endAttrs: Map<String, String> = emptyMap()
-    )
+    ) {
+        val durationAttrs = mutableMapOf<String, String>()
+        durationAttrName?.let { durationAttrs[it] = (endTimeMillis - startTimeMillis).toString() }
+        startTimeMillisAttrName?.let { durationAttrs[it] = startTimeMillis.toString() }
+        endTimeMillisAttrName?.let { durationAttrs[it] = endTimeMillis.toString() }
+        val attrs = startAttrs + endAttrs + durationAttrs
+        addEvent(operationName, attrs)
+    }
 }
 
 /**

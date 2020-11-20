@@ -41,16 +41,6 @@ class TestFSEventLogger: FSEventLogger {
         }
     }
 
-    override fun sendTimedOperation(
-        operationName: String,
-        startTimeMillis: Long,
-        endTimeMillis: Long,
-        startAttrs: Map<String, String>,
-        endAttrs: Map<String, String>
-    ) {
-        TODO("Not yet implemented")
-    }
-
     internal fun reset() {
         synchronized(this) {
             storedAttrs.clear()

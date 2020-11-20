@@ -62,10 +62,10 @@ object FSLoggingAssertions {
     @JvmStatic
     fun assertAnalyticSequence(
         eventName: String,
-        expected: List<Map<String, String>>
+        expectedSequence: List<Map<String, String>>
     ) {
         val actual = sentEvents(eventName)
-        expected.forEachIndexed { index, expected ->
+        expectedSequence.forEachIndexed { index, expected ->
             if (index == actual.size) {
                 fail("expected event at position $index, but it did not exist; expected size = ${expected.size}; actual size = ${actual.size}")
             }

@@ -12,10 +12,22 @@ abstract class MockKFSEventLogger(var wrappedMock: FSEventLogger = mockk(relaxed
         operationName: String,
         startTimeMillis: Long,
         endTimeMillis: Long,
+        durationAttrName: String?,
+        startTimeMillisAttrName: String?,
+        endTimeMillisAttrName: String?,
         startAttrs: Map<String, String>,
         endAttrs: Map<String, String>
     ) {
-        wrappedMock.sendTimedOperation(operationName, startTimeMillis, endTimeMillis, startAttrs, endAttrs)
+        wrappedMock.sendTimedOperation(
+            operationName,
+            startTimeMillis,
+            endTimeMillis,
+            durationAttrName,
+            startTimeMillisAttrName,
+            endTimeMillisAttrName,
+            startAttrs,
+            endAttrs
+        )
     }
 }
 
