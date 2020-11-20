@@ -1,13 +1,19 @@
-# Logging
+# Logging-Test
 
-Contains the base objects/classes associated with logging. The two main objects you need to know at logging call sites are:
-- [FSDevMetrics](src/main/java/com/fsryan/tools/logging/FSDevMetrics.kt)
-- [FSEventLog](src/main/java/com/fsryan/tools/logging/FSEventLog.kt)
+Contains the base objects/classes associated with testing logging including a test configuration for logging, [FSTestLoggingConfig](src/main/java/com/fsryan/tools/logging/test/FSTestLoggingConfig.kt), and an [FSEventLogger for testing](src/main/java/com/fsryan/tools/logging/test/TestFSEventLogger.kt).
 
-These objects provide the API necessary to perform logging analytics and developer-related events. You plug logging behaviors in by registering loggers via Java SPI. The two interfaces you'll need to implement to actually perform logging are:
-- [FSDevMetricsLogger](src/main/java/com/fsryan/tools/logging/FSLogging.kt)
-- [FSEventLogger](src/main/java/com/fsryan/tools/logging/FSLogging.kt)
+## How To
+Declare a dependency upon logging-test in your build.gradle file's testImplementation configuration:
+```groovy
+testImplementation "com.fsryan.tools:logging-test:$fs_logging_version"
+```
 
-The additional libraries that are a part of this same repository will contain some examples of implementations of the above interface.
+Add a `com.fsryan.tools.logging.FSLoggingConfig` file to your test resources to declare the testing config (usually src/test/resources/META-INF/services/) with the line below:
+```
+com.fsryan.tools.logging.test.FSTestLoggingConfig
+```
 
-The loggers you register via Java SPI will get invoked in the order they are declared in their respective `META-INF/services` file. You can also configure the `Executor` that actually executes logging as well via Java SPI. The interface you'll need to implement for this is [FSLoggingConfig](src/main/java/com/fsryan/tools/logging/FSLogging.kt)
+Add a `com.fsryan.tools.logging.FSEventLogger` file to your test resources to declare the testing config (usually src/test/resources/META-INF/services/) with the line below:
+```
+com.fsryan.tools.logging.test.TestFSEventLogger
+```

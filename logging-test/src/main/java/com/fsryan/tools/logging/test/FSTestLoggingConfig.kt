@@ -1,5 +1,6 @@
-package com.fsryan.tools.logging
+package com.fsryan.tools.logging.test
 
+import com.fsryan.tools.logging.FSLoggingConfig
 import java.util.concurrent.Executor
 
 class FSTestLoggingConfig : FSLoggingConfig {
