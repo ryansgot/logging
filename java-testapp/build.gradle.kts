@@ -18,4 +18,6 @@ dependencies {
     implementation(project(":logging"))
 
     compileOnly(mainDep(producer = "google", name = "jsr305"))
+
+    testImplementation(project(":logging-test"))
 }

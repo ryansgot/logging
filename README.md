@@ -36,6 +36,7 @@ Each artifact has a different purpose, and they build upon one-another. The comb
 | logging-android-firebase   | Google Firebase     | Android     |
 | logging-android-datadog    | Datadog             | Android     |
 | logging-android-newrelic   | NewRelic            | Android     |
+| logging-test               | None                | JVM/Android |
 
 So, if you have a JVM project, then you can only use the logging library at this time. However, if you have an Android project, then you can at least get some Android-specific behaviors. The extent to which you can benefit depends upon whether you either use Google Firebase, Microsoft AppCenter, DataDog, or NewRelic.
 
@@ -71,9 +72,10 @@ The lines of each file should be the fully-qualified names of the classes that i
 
 ## How to configure logging
 
-Currently, you can only configure the thread on which logging occurs. This is especially useful for testing. See [FSTestLoggingConfig](logging/src/test/java/com/fsryan/tools/logging/FSTestLoggingConfig.kt) for an example that performs logging synchronously. However, you can configure a custom configuration by adding the `src/main/resources/META-INF/services/com.fsryan.tools.logging.FSLoggingConfig` file in your resources and providing one line that has your custom implementation of the `FSLoggingConfig` interface. This will allow you to choose the executor that executes the logging work. I recommend using a single-threaded executor. However, if you fail to register your configuration, then a default single threaded `Executor` will be created by this library to handle the work associated with logging. You should be especially mindful of the executor being used to log when you write custom loggers.
+Currently, you can only configure the thread on which logging occurs. This is especially useful for testing. See [FSTestLoggingConfig](logging-test/src/main/java/com/fsryan/tools/logging/test/FSTestLoggingConfig.kt) for an example that performs logging synchronously. However, you can configure a custom configuration by adding the `src/main/resources/META-INF/services/com.fsryan.tools.logging.FSLoggingConfig` file in your resources and providing one line that has your custom implementation of the `FSLoggingConfig` interface. This will allow you to choose the executor that executes the logging work. I recommend using a single-threaded executor. However, if you fail to register your configuration, then a default single threaded `Executor` will be created by this library to handle the work associated with logging. You should be especially mindful of the executor being used to log when you write custom loggers. Additionally, you can declare whether your app is running in test mode or not.
 
 ## Example integrations:
 
-- [Android using Microsoft AppCenter](android-appcenter-testapp/README.md)
-- [Android using Google Firebase](android-firebase-testapp/README.md)
+- [JVM project](java-testapp)
+- [Kotlin Project](kotlin-testapp)
+- [Android Project](android-loggingtestapp)

@@ -21,8 +21,6 @@ abstract class ContextSpecificEventLogger : FSEventLogger {
     protected val longProperties: MutableSet<String> = CopyOnWriteArraySet()
     protected val booleanProperties: MutableSet<String> = CopyOnWriteArraySet()
 
-    @Volatile protected lateinit var elapsedTimeAttrName: String
-
     /**
      * Implementations should assume they will be called at or close to
      * `onCreate()` of the `Application`. In this function, implementations
@@ -42,9 +40,6 @@ abstract class ContextSpecificEventLogger : FSEventLogger {
         storePropertyNamesInto(context, "fs_logging_double_properties", doubleProperties)
         storePropertyNamesInto(context, "fs_logging_long_properties", longProperties)
         storePropertyNamesInto(context, "fs_logging_boolean_properties", booleanProperties)
-        val appInfo = context.packageManager
-            .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-        elapsedTimeAttrName = appInfo.metaData.getString("fsryan.log.elapsed_time_attr_name", "fs_elapsed_time")
     }
 
     @AnyThread
@@ -65,21 +60,8 @@ abstract class ContextSpecificEventLogger : FSEventLogger {
         addAttr(attrName, (current + 1).toString())
     }
 
-    @AnyThread
-    override fun sendTimedOperation(
-        operationName: String,
-        startTimeMillis: Long,
-        endTimeMillis: Long,
-        startAttrs: Map<String, String>,
-        endAttrs: Map<String, String>
-    ) {
-        val elapsedTime = endTimeMillis - startTimeMillis
-        val attrs = startAttrs + endAttrs + mapOf(elapsedTimeAttrName to elapsedTime.toString())
-        addEvent(operationName, attrs)
-    }
-
     protected fun isDoubleProperty(attrName: String) = doubleProperties.contains(attrName)
-    protected fun isLongProperty(attrName: String) = longProperties.contains(attrName) || attrName == elapsedTimeAttrName
+    protected fun isLongProperty(attrName: String) = longProperties.contains(attrName)
     protected fun isBooleanProperty(attrName: String) = booleanProperties.contains(attrName)
 
     private fun storePropertyNamesInto(context: Context, stringArrayName: String, dest: MutableSet<String>) {

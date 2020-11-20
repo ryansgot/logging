@@ -26,14 +26,4 @@ class LogcatEventLogger : FSEventLogger {
     override fun addEvent(eventName: String, attrs: Map<String, String>) {
         Log.i("FSEventLog", "addEvent('$eventName', $attrs)")
     }
-
-    override fun sendTimedOperation(
-        operationName: String,
-        startTimeMillis: Long,
-        endTimeMillis: Long,
-        startAttrs: Map<String, String>,
-        endAttrs: Map<String, String>
-    ) {
-        Log.i("FSEventLog", "sendTimedOperation($operationName, startMillis = $startTimeMillis, endMillis = $endTimeMillis, startAttrs = $startAttrs, endAttrs = $endAttrs)")
-    }
 }

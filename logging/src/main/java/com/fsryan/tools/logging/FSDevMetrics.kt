@@ -38,6 +38,7 @@ object FSDevMetrics {
      */
     internal val loggers: LinkedHashMap<String, FSDevMetricsLogger> = LinkedHashMap()
     private val executor: Executor
+    private val isTestEnvironment: Boolean
 
     /**
      * Threading: writes/reads may happen on any thread, but in accordance with
@@ -59,8 +60,9 @@ object FSDevMetrics {
             println("WARNING: no FSDevMetrics found")
         }
 
-        val config = ServiceLoader.load(FSLoggingConfig::class.java).firstOrNull()
-        executor = (config ?: createDefaultConfig("FSDevMetrics")).createExecutor()
+        val config = ServiceLoader.load(FSLoggingConfig::class.java).firstOrNull() ?: createDefaultConfig("FSDevMetrics")
+        executor = config.createExecutor()
+        isTestEnvironment = config.isTestEnvironment()
     }
 
     /**
@@ -83,7 +85,7 @@ object FSDevMetrics {
     @JvmStatic
     @JvmOverloads
     fun alarm(t: Throwable, attrs: Map<String, String> = emptyMap(), vararg destinations: String = emptyArray()) = executor.execute {
-        loggers.onSomeOrAll(destinations) { alarm(t, attrs) }
+        activeLoggers().onSomeOrAll(destinations) { alarm(t, attrs) }
     }
 
     /**
@@ -101,7 +103,9 @@ object FSDevMetrics {
         attrs: Map<String, String> = emptyMap(),
         vararg destinations: String = emptyArray()
     ) = executor.execute {
-        loggers.onSomeOrAll(destinations) { watch(msg, info, extraInfo, attrs) }
+        activeLoggers().onSomeOrAll(destinations) {
+            watch(msg, info, extraInfo, attrs)
+        }
     }
 
     /**
@@ -147,7 +151,7 @@ object FSDevMetrics {
         val stopTime = System.nanoTime()
         metricMap[operationName]?.remove(operationId)?.let { startTime ->
             val diff = stopTime - startTime
-            loggers.onSomeOrAll(destinations) { metric(operationName, diff) }
+            activeLoggers().onSomeOrAll(destinations) { metric(operationName, diff) }
         }
     }
 
@@ -166,7 +170,7 @@ object FSDevMetrics {
         attrs: Map<String, String> = emptyMap(),
         vararg destinations: String = emptyArray()
     ) = executor.execute {
-        loggers.onSomeOrAll(destinations) { info(msg, info, extraInfo, attrs) }
+        activeLoggers().onSomeOrAll(destinations) { info(msg, info, extraInfo, attrs) }
     }
 
     /**
@@ -180,5 +184,10 @@ object FSDevMetrics {
         if (executor is ExecutorService) {
             executor.shutdown()
         }
+    }
+
+    private fun activeLoggers() = when (isTestEnvironment) {
+        true -> loggers.supportingTestEnvironment()
+        false -> loggers
     }
 }

@@ -42,4 +42,9 @@ public class SysOutDevMetricsLogger implements FSDevMetricsLogger {
         ret.put("extraInfo", extraInfo == null ? "" : extraInfo);
         return ret.toString();
     }
+
+    @Override
+    public boolean runInTestEnvironment() {
+        return false;
+    }
 }

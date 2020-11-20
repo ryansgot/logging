@@ -15,6 +15,7 @@ import java.util.concurrent.Executors
  */
 interface FSLoggingConfig {
     fun createExecutor(): Executor
+    fun isTestEnvironment(): Boolean
 }
 
 /**
@@ -33,6 +34,11 @@ interface FSLogger {
      * previous loggers.
      */
     fun id(): String
+
+    /**
+     * Whether or not this logger runs in a test environment.
+     */
+    fun runInTestEnvironment(): Boolean = false
 }
 
 /**
@@ -120,9 +126,19 @@ interface FSEventLogger : FSLogger {
         operationName: String,
         startTimeMillis: Long,
         endTimeMillis: Long,
+        durationAttrName: String? = null,
+        startTimeMillisAttrName: String? = null,
+        endTimeMillisAttrName: String? = null,
         startAttrs: Map<String, String> = emptyMap(),
         endAttrs: Map<String, String> = emptyMap()
-    )
+    ) {
+        val durationAttrs = mutableMapOf<String, String>()
+        durationAttrName?.let { durationAttrs[it] = (endTimeMillis - startTimeMillis).toString() }
+        startTimeMillisAttrName?.let { durationAttrs[it] = startTimeMillis.toString() }
+        endTimeMillisAttrName?.let { durationAttrs[it] = endTimeMillis.toString() }
+        val attrs = startAttrs + endAttrs + durationAttrs
+        addEvent(operationName, attrs)
+    }
 }
 
 /**
@@ -146,6 +162,8 @@ internal fun <T> Map<String, T>.onSomeOrAll(keys: Array<out String>, block: T.()
     else -> keys.forEach { key -> get(key)?.block() }
 }
 
+internal fun <T:FSLogger> Map<String, T>.supportingTestEnvironment() = filterValues { it.runInTestEnvironment() }
+
 internal fun createDefaultConfig(threadNamePrefix: String) = object: FSLoggingConfig {
     override fun createExecutor(): Executor = Executors.newSingleThreadExecutor { r ->
         Executors.defaultThreadFactory().newThread(r).apply {
@@ -153,4 +171,6 @@ internal fun createDefaultConfig(threadNamePrefix: String) = object: FSLoggingCo
             priority = Thread.MIN_PRIORITY
         }
     }
+
+    override fun isTestEnvironment(): Boolean = false
 }

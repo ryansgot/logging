@@ -1,5 +1,6 @@
 include(
     ":logging",
+    ":logging-test",
     ":logging-android",
     ":logging-android-firebase",
     ":logging-android-appcenter3",

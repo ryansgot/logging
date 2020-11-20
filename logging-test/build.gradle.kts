@@ -1,5 +1,4 @@
 import deps.Deps.mainDep
-import deps.Deps.testDep
 import deps.Deps.ver
 import org.jetbrains.dokka.gradle.DokkaTask
 import tools.GitTools
@@ -28,12 +27,9 @@ dependencies {
 
     implementation(mainDep(producer = "jetbrains", name = "kotlin-stdlib"))
 
-    testImplementation(testDep(producer = "mockk", name = "core"))
-    testImplementation(testDep(producer = "junit5", name = "api"))
-    testImplementation(testDep(producer = "junit5", name = "params"))
-    testRuntimeOnly(testDep(producer = "junit5", name = "engine"))
+    implementation(deps.Deps.testDep(producer = "junit5", name = "api"))
 
-    testImplementation(project(":logging-test"))
+    implementation(project(":logging"))
 }
 
 fsPublishingConfig {
@@ -46,7 +42,7 @@ fsPublishingConfig {
     versionName = project.version.toString()
     releaseRepoUrl = "s3://repo.fsryan.com/release"
     snapshotRepoUrl = "s3://repo.fsryan.com/snapshot"
-    description = "Plugin-based Logging Facade for analytics events and developer metrics"
+    description = "Test library for capturing analytics and dev metrics logging requests"
     awsAccessKeyId = if (project.hasProperty("awsMavenAccessKey")) project.property("awsMavenAccessKey").toString() else System.getenv()["AWS_ACCES_KEY_ID"]!!
     awsSecretKey = if (project.hasProperty("awsMavenSecretKey")) project.property("awsMavenSecretKey").toString() else System.getenv()["AWS_SECRET_KEY"]!!
     extraPomProperties = mapOf(
@@ -64,7 +60,7 @@ bintray {
     pkg.apply {
         repo = "maven"
         name = project.name
-        desc = "Base library for logging analytics and developer-centric events. See libraries that depend upon this for advanced usage."
+        desc = "Library including classes for capturing analytics and dev metrics logging requests for test purposes"
         websiteUrl = "https://github.com/ryansgot/logging/${project.name}"
         issueTrackerUrl = "https://github.com/ryansgot/logging/issues"
         vcsUrl = "https://github.com/ryansgot/logging.git"

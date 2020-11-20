@@ -19,4 +19,26 @@ dependencies {
     implementation(project(":logging"))
 
     implementation(mainDep(producer = "jetbrains", name = "kotlin-stdlib"))
+
+    testImplementation(deps.Deps.testDep(producer = "junit5", name = "api"))
+    testImplementation(deps.Deps.testDep(producer = "junit5", name = "params"))
+    testRuntimeOnly(deps.Deps.testDep(producer = "junit5", name = "engine"))
+
+    testImplementation(project(":logging-test"))
+}
+
+tasks.test {
+    useJUnitPlatform {}
+}
+
+tasks.compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.6"
+    }
+}
+
+tasks.compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
