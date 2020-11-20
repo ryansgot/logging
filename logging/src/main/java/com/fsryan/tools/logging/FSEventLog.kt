@@ -46,6 +46,7 @@ object FSEventLog {
      */
     internal val loggers: LinkedHashMap<String, FSEventLogger> = LinkedHashMap()
     private val executor: Executor
+    private val isTestEnvironment: Boolean
 
     /**
      * Threading: writes/reads may happen on any thread, but in accordance with
@@ -67,8 +68,10 @@ object FSEventLog {
             println("WARNING: no FSEventLoggers found")
         }
 
+
         val config = ServiceLoader.load(FSLoggingConfig::class.java).firstOrNull() ?: createDefaultConfig("FSEventLog")
         executor = config.createExecutor()
+        isTestEnvironment = config.isTestEnvironment()
     }
 
     /**
@@ -98,7 +101,7 @@ object FSEventLog {
     @JvmStatic
     @JvmOverloads
     fun addAttr(attrName: String, attrValue: String, vararg destinations: String = emptyArray()) = executor.execute {
-        loggers.onSomeOrAll(destinations) { addAttr(attrName, attrValue)}
+        activeLoggers().onSomeOrAll(destinations) { addAttr(attrName, attrValue)}
     }
 
     /**
@@ -112,7 +115,7 @@ object FSEventLog {
     @JvmStatic
     @JvmOverloads
     fun removeAttr(attrName: String, vararg destinations: String = emptyArray()) = executor.execute {
-        loggers.onSomeOrAll(destinations) { removeAttr(attrName) }
+        activeLoggers().onSomeOrAll(destinations) { removeAttr(attrName) }
     }
 
     /**
@@ -125,7 +128,7 @@ object FSEventLog {
     @JvmStatic
     @JvmOverloads
     fun removeAttrs(attrNames: Iterable<String>, vararg destinations: String = emptyArray()) = executor.execute {
-        loggers.onSomeOrAll(destinations) { removeAttrs(attrNames) }
+        activeLoggers().onSomeOrAll(destinations) { removeAttrs(attrNames) }
     }
 
     /**
@@ -141,7 +144,7 @@ object FSEventLog {
     @JvmStatic
     @JvmOverloads
     fun addAttrs(attrs: Map<String, String>, vararg destinations: String = emptyArray()) = executor.execute {
-        loggers.onSomeOrAll(destinations) { addAttrs(attrs) }
+        activeLoggers().onSomeOrAll(destinations) { addAttrs(attrs) }
     }
 
     /**
@@ -157,7 +160,7 @@ object FSEventLog {
     @JvmStatic
     @JvmOverloads
     fun incrementCountableAttr(attrName: String, vararg destinations: String = emptyArray()) = executor.execute {
-        loggers.onSomeOrAll(destinations) { incrementAttrValue(attrName) }
+        activeLoggers().onSomeOrAll(destinations) { incrementAttrValue(attrName) }
     }
 
     /**
@@ -174,7 +177,7 @@ object FSEventLog {
     @JvmStatic
     @JvmOverloads
     fun addEvent(eventName: String, attrs: Map<String, String> = emptyMap(), vararg destinations: String = emptyArray()) = executor.execute {
-        loggers.onSomeOrAll(destinations) { addEvent(eventName, attrs) }
+        activeLoggers().onSomeOrAll(destinations) { addEvent(eventName, attrs) }
     }
 
     /**
@@ -231,7 +234,7 @@ object FSEventLog {
         timedOperationMap[operationName]?.remove(operationId)?.let { pair ->
             val startTimeMillis = pair.first
             val startAttrs = pair.second
-            loggers.onSomeOrAll(destinations) {
+            activeLoggers().onSomeOrAll(destinations) {
                 sendTimedOperation(
                     operationName = operationName,
                     startTimeMillis = startTimeMillis,
@@ -254,6 +257,11 @@ object FSEventLog {
         if (executor is ExecutorService) {
             executor.shutdown()
         }
+    }
+
+    private fun activeLoggers() = when (isTestEnvironment) {
+        true -> loggers.supportingTestEnvironment()
+        false ->loggers
     }
 }
 

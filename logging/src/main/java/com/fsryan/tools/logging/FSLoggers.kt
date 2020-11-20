@@ -15,6 +15,7 @@ import java.util.concurrent.Executors
  */
 interface FSLoggingConfig {
     fun createExecutor(): Executor
+    fun isTestEnvironment(): Boolean
 }
 
 /**
@@ -33,6 +34,11 @@ interface FSLogger {
      * previous loggers.
      */
     fun id(): String
+
+    /**
+     * Whether or not this logger runs in a test environment.
+     */
+    fun runInTestEnvironment(): Boolean = false
 }
 
 /**
@@ -146,6 +152,8 @@ internal fun <T> Map<String, T>.onSomeOrAll(keys: Array<out String>, block: T.()
     else -> keys.forEach { key -> get(key)?.block() }
 }
 
+internal fun <T:FSLogger> Map<String, T>.supportingTestEnvironment() = filterValues { it.runInTestEnvironment() }
+
 internal fun createDefaultConfig(threadNamePrefix: String) = object: FSLoggingConfig {
     override fun createExecutor(): Executor = Executors.newSingleThreadExecutor { r ->
         Executors.defaultThreadFactory().newThread(r).apply {
@@ -153,4 +161,6 @@ internal fun createDefaultConfig(threadNamePrefix: String) = object: FSLoggingCo
             priority = Thread.MIN_PRIORITY
         }
     }
+
+    override fun isTestEnvironment(): Boolean = false
 }
