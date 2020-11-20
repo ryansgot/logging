@@ -25,11 +25,11 @@ class NewRelicDevMetricsLogger: ContextSpecificDevMetricsLogger {
     }
 
     override fun watch(msg: String, info: String?, extraInfo: String?, attrs: Map<String, String>) {
-        NewRelic.recordCustomEvent(watchType.get(), collapseAttrs(msg, info, extraInfo, attrs))
+        NewRelic.recordCustomEvent(watchType.get(), collapseAndCleanAttrs(msg, info, extraInfo, attrs))
     }
 
     override fun info(msg: String, info: String?, extraInfo: String?, attrs: Map<String, String>) {
-        NewRelic.recordCustomEvent(infoType.get(), collapseAttrs(msg, info, extraInfo, attrs))
+        NewRelic.recordCustomEvent(infoType.get(), collapseAndCleanAttrs(msg, info, extraInfo, attrs))
     }
 
     override fun metric(operationName: String, durationNanos: Long) {
@@ -40,11 +40,11 @@ class NewRelicDevMetricsLogger: ContextSpecificDevMetricsLogger {
         )
     }
 
-    private fun collapseAttrs(msg: String, info: String?, extraInfo: String?, attrs: Map<String, String>): Map<String, String> {
+    private fun collapseAndCleanAttrs(msg: String, info: String?, extraInfo: String?, attrs: Map<String, String>): Map<String, String> {
         val append = mutableMapOf<String, String>()
         append["msg"] = msg
         info?.let { append["info"] = it }
         extraInfo?.let { append["extraInfo"] = it }
-        return attrs + append
+        return (attrs + append).filterValues { it.isNotEmpty() }
     }
 }

@@ -12,28 +12,24 @@ import com.newrelic.agent.android.FeatureFlag
 import com.newrelic.agent.android.NewRelic
 import com.newrelic.agent.android.logging.AgentLog
 
-
+internal const val ATTR_EVENT_TYPE_OVERRIDE = "__event_type_override"
 
 /**
  * Extend the capabilities of [FSEventLog] to allow for logging events of a
  * different event type, which is not made available to [FSEventLog] out of the
- * box.
+ * box. This is logged to only new relic by default, but you can change this by
+ * supplying a [destinations] argument.
  */
 @AnyThread
-fun FSEventLog.logToNewRelicWithEventType(
+@JvmOverloads
+fun FSEventLog.logWithEventType(
     eventType: String,
     eventName: String,
     attrs: MutableMap<String, String> = mutableMapOf(),
-    vararg otherDestinations: String = emptyArray()
+    vararg destinations: String = arrayOf("newrelic")
 ) {
-    val actualDestArray = Array(otherDestinations.size + 1) { idx ->
-        when (idx < otherDestinations.size) {
-            true -> otherDestinations[idx]
-            false -> "newrelic"
-        }
-    }
-    attrs["__event_type"] = eventType
-    addEvent(eventName, attrs, *actualDestArray)
+    attrs[ATTR_EVENT_TYPE_OVERRIDE] = eventType
+    addEvent(eventName, attrs, *destinations)
 }
 
 @MainThread
@@ -79,12 +75,10 @@ internal fun Context.startNewRelicIfNecessary() {
     }
 }
 
-
 private fun Bundle.boolOrNull(key: String) = when (containsKey(key)) {
     true -> getBoolean(key)
     else -> null
 }
-
 
 private fun toggleNewRelicFeatureFlag(enable: Boolean, featureFlag: FeatureFlag) {
     when (enable) {
