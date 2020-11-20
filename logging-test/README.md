@@ -17,3 +17,28 @@ Add a `com.fsryan.tools.logging.FSEventLogger` file to your test resources to de
 ```
 com.fsryan.tools.logging.test.TestFSEventLogger
 ```
+
+## Usage
+All tests use a shared instance of the test logger :(. I'm sorry--this is done for expedience at the moment. Eventually, we'll create a means of attaching new instances of test loggers to the underlying logging mechansims.
+
+Therefore, for JUnit4 you should: put this in your test class:
+
+```
+@Before
+fun clearTestLogger() {
+    FSLoggingAssertions.resetTestFSEventLogger()
+}
+```
+
+This library provides an extension for JUnit5 that handles the lifecycle for you. You can annotate you test this way:
+```
+@ExtendWith(FSLoggingTestExtension::class)
+class MyTest {
+
+    @Test
+    fun someTest() {
+        doSomethingWithLogging()
+        FSLoggingTestAssertions.assertAnalyticSent("event name", expectedAttributes = mapOf())
+    }
+}
+```
