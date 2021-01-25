@@ -18,10 +18,24 @@ class NewRelicDevMetricsLogger: ContextSpecificDevMetricsLogger {
 
     override fun initialize(context: Context) {
         context.startNewRelicIfNecessary()
+        // TODO: do not support the meta-data approach in the 1.x release
         val appInfo = context.packageManager
             .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-        infoType.set(appInfo.metaData.getString("fsryan.nr_dev_metric_info_event_type") ?: "DevMetricInfo")
-        watchType.set(appInfo.metaData.getString("fsryan.nr_dev_metric_info_event_type") ?: "DevMetricWatch")
+
+        setValueOfType(
+            context = context,
+            appInfo = appInfo,
+            refToSet = infoType,
+            legacyMetaDataKey = "fsryan.nr_dev_metric_info_event_type",
+            nameStringRes = R.string.fs_dev_metrics_logger_info_newrelic_event_type
+        )
+        setValueOfType(
+            context = context,
+            appInfo = appInfo,
+            refToSet = watchType,
+            legacyMetaDataKey = "fsryan.nr_dev_metric_watch_event_type",
+            nameStringRes = R.string.fs_dev_metrics_logger_watch_newrelic_event_type
+        )
     }
 
     override fun watch(msg: String, info: String?, extraInfo: String?, attrs: Map<String, String>) {

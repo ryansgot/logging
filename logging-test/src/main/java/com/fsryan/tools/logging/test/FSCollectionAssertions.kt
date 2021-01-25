@@ -3,44 +3,42 @@ package com.fsryan.tools.logging.test
 object FSCollectionAssertions {
 
     @JvmStatic
-    fun <K, V> assertMapEquals(expected: Map<K, V>?, actual: Map<K, V>?) {
-        assertMapEquals(null, expected, actual)
-    }
+    @JvmOverloads
+    fun <K:Any, V:Any> assertMapContents(
+        desc: String? = null,
+        expectedContents: Map<K, V>,
+        actual: Map<K, V>,
+        allowExcess: Boolean = false
+    ) = MapEquivalenceEvaluation(
+        expected = expectedContents,
+        actual = actual
+    ).makeAssertion(desc, allowExcess)
 
     @JvmStatic
-    fun <K, V> assertMapEquals(desc: String?, expected: Map<K, V>?, actual: Map<K, V>?) {
-        if (handledNullPossiblity(desc, expected, actual)) {
+    @JvmOverloads
+    fun <K:Any, V:Any> assertMapEquals(desc: String? = null, expected: Map<K, V>?, actual: Map<K, V>?) {
+        if (handledNullPossibility(desc, expected, actual)) {
             return
         }
-
-        val excess = HashMap(actual)
-        val missing = HashMap<K, V>()
-        val unequal = HashMap<K, V>()
-        for ((key: K, expectedV: V) in expected!!) {
-            val actualV: V? = excess.remove(key)
-            if (actualV == null) {
-                missing[key] = expectedV
-            } else if (expectedV != actualV) {
-                unequal[key] = actualV
-            }
-        }
-
-        if (missing.size == 0 && unequal.size == 0 && excess.size == 0) {
-            return
-        }
-
-        val message = "\nexpected: $expected\nexcess:   $excess\nmissing:  $missing\nunequal:  $unequal"
-        fail(failPrepend(desc) + message)
+        assertMapContents(desc, checkNotNull(expected), checkNotNull(actual))
     }
 
     @JvmStatic
-    fun <T> assertSetEquals(expected: Set<T>?, actual: Set<T>?) {
-        assertSetEquals(null, expected, actual)
-    }
+    @JvmOverloads
+    fun <K:Any, V:Any> assertMapContains(
+        desc: String? = null,
+        expectedKey: K,
+        expectedValue: V,
+        actualValues: Map<K, V>
+    ) = MapEquivalenceEvaluation(
+        expected = mapOf(expectedKey to expectedValue),
+        actual = actualValues
+    ).makeAssertion(desc, allowExcess = true)
 
     @JvmStatic
-    fun <T> assertSetEquals(desc: String?, expected: Set<T>?, actual: Set<T>?) {
-        if (handledNullPossiblity(desc, expected, actual)) {
+    @JvmOverloads
+    fun <T> assertSetEquals(desc: String?= null, expected: Set<T>?, actual: Set<T>?) {
+        if (handledNullPossibility(desc, expected, actual)) {
             return
         }
 
@@ -61,13 +59,9 @@ object FSCollectionAssertions {
     }
 
     @JvmStatic
-    fun <T> assertListEquals(expected: List<T>, actual: List<T>) {
-        assertListEquals(null, expected, actual)
-    }
-
-    @JvmStatic
-    fun <T> assertListEquals(desc: String?, expected: List<T>, actual: List<T>) {
-        if (handledNullPossiblity(desc, expected, actual)) {
+    @JvmOverloads
+    fun <T> assertListEquals(desc: String? = null, expected: List<T>, actual: List<T>) {
+        if (handledNullPossibility(desc, expected, actual)) {
             return
         }
         for (i in expected.indices) {
@@ -89,7 +83,7 @@ object FSCollectionAssertions {
         }
     }
 
-    private fun handledNullPossiblity(desc: String?, expected: Any?, actual: Any?): Boolean {
+    private fun handledNullPossibility(desc: String?, expected: Any?, actual: Any?): Boolean {
         if (expected == null) {
             if (actual != null) {
                 fail("expected was null, but actual was not null: $actual")
@@ -103,4 +97,46 @@ object FSCollectionAssertions {
     }
 
     private fun failPrepend(desc: String?): String = if (desc == null) "" else "$desc\n"
+}
+
+internal data class MapEquivalenceEvaluation<K:Any, V:Any>(
+    val expected: Map<K, V>?,
+    val actual: Map<K, V>?
+) {
+    private val excess: Map<K, V>
+    private val missing: Map<K, V>
+    private val unequal: Map<K, V>
+
+    init {
+        val tmpExpected = mutableMapOf<K, V>()
+        expected?.let { tmpExpected.putAll(it) }
+
+        val tmpExcess = mutableMapOf<K, V>()
+        tmpExcess.putAll(actual ?: emptyMap())
+
+        val tmpMissing = mutableMapOf<K, V>()
+        val tmpUnequal = mutableMapOf<K, V>()
+
+        for ((key: K, expectedV: V) in expected ?: emptyMap()) {
+            val actualV: V? = tmpExcess.remove(key)
+            if (actualV == null) {
+                tmpMissing[key] = expectedV
+            } else if (expectedV != actualV) {
+                tmpUnequal[key] = actualV
+            }
+        }
+
+        excess = tmpExcess.toMap()
+        missing = tmpMissing.toMap()
+        unequal = tmpUnequal.toMap()
+    }
+
+    fun makeAssertion(desc: String? = null, allowExcess: Boolean = false) {
+        if (missing.isEmpty() && unequal.isEmpty() && (allowExcess || excess.isEmpty())) {
+            return
+        }
+
+        val message = "\nexpected: $expected\nexcess:   $excess\nmissing:  $missing\nunequal:  $unequal"
+        fail(desc?.let { "$it\n$message"} ?: message)
+    }
 }

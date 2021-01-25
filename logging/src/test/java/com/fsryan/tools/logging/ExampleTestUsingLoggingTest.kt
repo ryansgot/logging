@@ -33,6 +33,17 @@ class ExampleTestUsingLoggingTest {
     }
 
     @Test
+    fun examplePassingTestOfStoredAttrsSubset() {
+        val expectedAttrs = mapOf("attr1" to "value1", "attr2" to "value2")
+        FSEventLog.addAttrs(expectedAttrs)
+        FSEventLog.addAttr("attr3", "value3")
+        FSLoggingAssertions.assertAllAttrsStored(
+            expectedAttrs = expectedAttrs,
+            allowUnexpectedAttrNames = true
+        )
+    }
+
+    @Test
     fun exampleFailingTestOfMatchingAttr() {
         try {
             FSEventLog.addAttr("attr1", "value1")
@@ -96,6 +107,29 @@ class ExampleTestUsingLoggingTest {
             return  // expected
         }
         fail("should have thrown assertion error")
+    }
+
+    @Test
+    fun exampleFailingTestOfNotSendingAnalytic() {
+        try {
+            FSEventLog.addEvent("event1", mapOf("attr1" to "value1"))
+            FSEventLog.addEvent("event2", mapOf("attr2" to "value2"))
+            FSEventLog.addEvent("event3", mapOf("attr3" to "value3"))
+            FSLoggingAssertions.assertNoAnalyticsSentWithName("event1")
+        } catch (assertionError: AssertionError) {
+            return  // expected
+        }
+        fail("should have thrown assertion error")
+    }
+
+    @Test
+    fun examplePassingTestOfSendingAnalyticWithSubsetOfAttrs() {
+        FSEventLog.addEvent("event1", mapOf("attr1" to "value1", "attr2" to "value2"))
+        FSLoggingAssertions.assertAnalyticSent(
+            eventName = "event1",
+            expectedAttributes = mapOf("attr2" to "value2"),
+            allowUnexpectedAttrNames = true
+        )
     }
 
     companion object {

@@ -3,14 +3,17 @@
 package com.fsryan.tools.logging.android.newrelic
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
+import androidx.annotation.StringRes
 import com.fsryan.tools.logging.FSEventLog
 import com.newrelic.agent.android.FeatureFlag
 import com.newrelic.agent.android.NewRelic
 import com.newrelic.agent.android.logging.AgentLog
+import java.util.concurrent.atomic.AtomicReference
 
 internal const val ATTR_EVENT_TYPE_OVERRIDE = "__event_type_override"
 
@@ -73,6 +76,18 @@ internal fun Context.startNewRelicIfNecessary() {
         metaData.getString("fsryan.nrcca")?.let { newRelic = newRelic.usingCrashCollectorAddress(it) }
         newRelic.start(applicationContext)
     }
+}
+
+internal fun setValueOfType(
+    context: Context,
+    appInfo: ApplicationInfo,
+    refToSet: AtomicReference<String>,
+    legacyMetaDataKey: String,
+    @StringRes nameStringRes: Int
+) {
+    val legacyEventType = appInfo.metaData.getString(legacyMetaDataKey)
+    val resourceEventType = context.getString(nameStringRes)
+    refToSet.set(legacyEventType ?: resourceEventType)
 }
 
 private fun Bundle.boolOrNull(key: String) = when (containsKey(key)) {

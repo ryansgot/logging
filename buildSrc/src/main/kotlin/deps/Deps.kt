@@ -12,7 +12,7 @@ object Deps {
                 "compileSdk" to "30"
             ),
             "fsryan" to mapOf(
-                "publication" to "0.2.2"
+                "publication" to "0.2.3"
             )
         ),
         "plugins" to mapOf(),
@@ -38,8 +38,8 @@ object Deps {
                 "ddsdk" to "1.4.3"
             ),
             "google" to mapOf(
-                "firebase-crashlytics-ktx" to "17.2.2",
-                "firebase-analytics-ktx" to "17.6.0",
+                "firebase-crashlytics-ktx" to "17.3.0",
+                "firebase-analytics-ktx" to "18.0.1",
                 "jsr305" to "3.0.2"
             ),
             "microsoft" to mapOf(

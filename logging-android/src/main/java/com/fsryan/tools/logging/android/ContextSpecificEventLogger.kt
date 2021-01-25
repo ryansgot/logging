@@ -1,7 +1,6 @@
 package com.fsryan.tools.logging.android
 
 import android.content.Context
-import android.content.pm.PackageManager
 import android.content.res.Resources
 import androidx.annotation.AnyThread
 import androidx.annotation.CallSuper
@@ -9,6 +8,8 @@ import androidx.annotation.MainThread
 import com.fsryan.tools.logging.FSEventLogger
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArraySet
+
+internal val sessionStartTimeMillis = System.currentTimeMillis()
 
 /**
  * An interface to enable Android application-specific initialization of
@@ -20,6 +21,9 @@ abstract class ContextSpecificEventLogger : FSEventLogger {
     protected val doubleProperties: MutableSet<String> = CopyOnWriteArraySet()
     protected val longProperties: MutableSet<String> = CopyOnWriteArraySet()
     protected val booleanProperties: MutableSet<String> = CopyOnWriteArraySet()
+
+    protected lateinit var appUptimeAttrName: String
+    protected lateinit var timestampAttrName: String
 
     /**
      * Implementations should assume they will be called at or close to
@@ -40,6 +44,10 @@ abstract class ContextSpecificEventLogger : FSEventLogger {
         storePropertyNamesInto(context, "fs_logging_double_properties", doubleProperties)
         storePropertyNamesInto(context, "fs_logging_long_properties", longProperties)
         storePropertyNamesInto(context, "fs_logging_boolean_properties", booleanProperties)
+        appUptimeAttrName = context.getString(R.string.fs_logging_app_uptime_attr_name)
+        timestampAttrName = context.getString(R.string.fs_logging_timestamp_attr_name)
+        longProperties.add(appUptimeAttrName)
+        longProperties.add(timestampAttrName)
     }
 
     @AnyThread
@@ -63,6 +71,14 @@ abstract class ContextSpecificEventLogger : FSEventLogger {
     protected fun isDoubleProperty(attrName: String) = doubleProperties.contains(attrName)
     protected fun isLongProperty(attrName: String) = longProperties.contains(attrName)
     protected fun isBooleanProperty(attrName: String) = booleanProperties.contains(attrName)
+    protected fun addDefaultAttrsTo(attrs: Map<String, String>): Map<String, String> {
+        val currentTimeMillis = System.currentTimeMillis()
+        val defaultAttrs = mapOf(
+            appUptimeAttrName to (currentTimeMillis - sessionStartTimeMillis).toString(),
+            timestampAttrName to currentTimeMillis.toString()
+        )
+        return attrs + defaultAttrs
+    }
 
     private fun storePropertyNamesInto(context: Context, stringArrayName: String, dest: MutableSet<String>) {
         val arrayRes = context.resources.getIdentifier(stringArrayName, "array", context.packageName)
