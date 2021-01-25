@@ -19,3 +19,16 @@ Implementations of [ContextSpecificEventLogger](src/main/java/com/fsryan/tools/l
 - [DataDogEventLogger](../logging-android-datadog/src/main/java/com/fsryan/tools/logging/android/FirebaseAnalyticsEventLogger.kt)
 - [NewRelicEventLogger](../logging-android-newrelic/src/main/java/com/fsryan/tools/logging/android/newrelic/NewRelicEventLogger.kt)
 - [UrbainAirshipEventLogger](../logging-android-urbanairship/src/main/java/com/fsryan/tools/logging/android/urbanairship/UrbainAirshipEventLogger.kt)
+
+## Automatically Added attributes
+There are two attributes that will get added automatically:
+1. `app_uptime` -> the amount of time your application has been up.
+2. `timestamp` -> the time that the event was logged (a long value representing the device's epoch time)
+
+You can override these attribute names by adding the following string resources:
+```xml
+<resources>
+  <string name="fs_logging_app_uptime_attr_name" translatable="false">MyUptimeAttrName</string>
+  <string name="fs_logging_timestamp_attr_name" translatable="false">MyTimestampAttrName</string>
+</resources>
+```

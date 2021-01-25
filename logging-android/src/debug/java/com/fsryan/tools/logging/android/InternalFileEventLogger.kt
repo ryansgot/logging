@@ -58,7 +58,7 @@ class InternalFileEventLogger : ContextSpecificEventLogger() {
     }
 
     override fun addEvent(eventName: String, attrs: Map<String, String>) {
-        val actualAttrs = userProperties + attrs
+        val actualAttrs = userProperties + addDefaultAttrsTo(attrs)
         outputFile.appendText("\n${Date()} [EVENT] $eventName")
         actualAttrs.entries.forEach { outputFile.appendText("\n\t${it.key}=${it.value}") }
     }

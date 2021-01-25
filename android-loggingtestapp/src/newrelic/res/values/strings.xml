@@ -4,4 +4,8 @@
     <string name="commit_timed_operation">Commit Timed Operation To New Relic</string>
     <string name="start_timed_operation">Start Timed Operation For New Relic</string>
     <string name="log_analytics">Log Analytic to New Relic</string>
+
+    <string name="fs_event_logger_newrelic_event_type" translatable="false">TestAnalyticEventType</string>
+    <string name="fs_dev_metrics_logger_info_newrelic_event_type" translatable="false">TestInfoEventType</string>
+    <string name="fs_dev_metrics_logger_watch_newrelic_event_type" translatable="false">TestWatchEventType</string>
 </resources>
