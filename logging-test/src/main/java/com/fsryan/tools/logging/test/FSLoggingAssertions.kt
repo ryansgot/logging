@@ -45,14 +45,26 @@ object FSLoggingAssertions {
 
     /**
      * Assert the stored attributes (added with [FSEventLog.addAttr] or
-     * [FSEventLog.addAttrs]
+     * [FSEventLog.addAttrs]). All of the [expected] attrs must be present.
      */
     @JvmStatic
-    fun assertAllStoredAttrs(expected: Map<String, String>, errorMessage: String? = null) {
-        FSCollectionAssertions.assertMapEquals(
+    @Deprecated(message = "this is an older, inflexible API", replaceWith = ReplaceWith("assertAllAttrsStored"))
+    fun assertAllStoredAttrs(
+        expected: Map<String, String>,
+        errorMessage: String? = null
+    ) = assertAllAttrsStored(expectedAttrs = expected, errorMessage = errorMessage)
+
+    @JvmStatic
+    fun assertAllAttrsStored(
+        expectedAttrs: Map<String, String>,
+        allowUnexpectedAttrNames: Boolean = false,
+        errorMessage: String? = null
+    ) {
+        FSCollectionAssertions.assertMapContents(
             desc = errorMessage ?: "Stored attrs are not equal",
-            expected = expected,
-            actual = storedAttrs()
+            expectedContents = expectedAttrs,
+            actual = storedAttrs(),
+            allowExcess = allowUnexpectedAttrNames
         )
     }
 
@@ -96,16 +108,19 @@ object FSLoggingAssertions {
     }
 
     @JvmStatic
+    @JvmOverloads
     fun assertAnalyticSent(
         eventName: String,
         expectedAttributes: Map<String, String>,
-        errorMessage: String? = null
+        errorMessage: String? = null,
+        allowUnexpectedAttrNames: Boolean = false
     ) {
         sentEvents(eventName).forEach { actual ->
             try {
-                FSCollectionAssertions.assertMapEquals(
-                    expected = expectedAttributes,
-                    actual = actual
+                FSCollectionAssertions.assertMapContents(
+                    expectedContents = expectedAttributes,
+                    actual = actual,
+                    allowExcess = allowUnexpectedAttrNames
                 )
                 return
             } catch (assertionError: AssertionError) {
