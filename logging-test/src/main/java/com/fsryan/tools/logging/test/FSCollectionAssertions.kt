@@ -61,12 +61,8 @@ object FSCollectionAssertions {
     }
 
     @JvmStatic
-    fun <T> assertListEquals(expected: List<T>, actual: List<T>) {
-        assertListEquals(null, expected, actual)
-    }
-
-    @JvmStatic
-    fun <T> assertListEquals(desc: String?, expected: List<T>, actual: List<T>) {
+    @JvmOverloads
+    fun <T> assertListEquals(desc: String? = null, expected: List<T>, actual: List<T>) {
         if (handledNullPossiblity(desc, expected, actual)) {
             return
         }
@@ -86,6 +82,14 @@ object FSCollectionAssertions {
         val actualSize = actual.size
         if (expectedSize != actualSize) {
             fail("${failPrepend(desc)} longer than expected; expected $expectedSize, but was $actualSize")
+        }
+    }
+
+    @JvmStatic
+    fun <K, V> assertMapContains(desc: String?, expectedKey: K, expectedValue: V, actualValues: Map<K, V>) {
+        val actualValue = actualValues[expectedKey]
+        if (actualValue != expectedValue) {
+            fail(failPrepend(desc) + "expected $expectedKey=$expectedValue, but was null; actual: $actualValue")
         }
     }
 

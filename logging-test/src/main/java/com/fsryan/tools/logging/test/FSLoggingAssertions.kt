@@ -1,6 +1,7 @@
 package com.fsryan.tools.logging.test
 
 import com.fsryan.tools.logging.FSEventLog
+import com.fsryan.tools.logging.test.junit5.FSLoggingTestExtension
 
 /**
  * A means of making assertions that an event was logged.
@@ -10,6 +11,11 @@ object FSLoggingAssertions {
     private val testEventLogger: TestFSEventLogger?
         get() = FSEventLog.loggersOfType(TestFSEventLogger::class.java).firstOrNull()
 
+    /**
+     * Check whether the test logger has been added. Note that this _DOES NOT_
+     * force you to make logging synchronous in your tests because, ostensibly,
+     * you could have a good reason for multi-threading your tests.
+     */
     @JvmStatic
     fun ensureEnvironment() {
         if (testEventLogger == null) {
@@ -17,6 +23,11 @@ object FSLoggingAssertions {
         }
     }
 
+    /**
+     * Wipe out the data stored in the test event logger. You should do this
+     * between each test invocation or apply the [FSLoggingTestExtension]
+     * extension.
+     */
     @JvmStatic
     fun resetTestFSEventLogger() = testEventLogger?.reset()
 
@@ -32,31 +43,27 @@ object FSLoggingAssertions {
         }
     }
 
+    /**
+     * Assert the stored attributes (added with [FSEventLog.addAttr] or
+     * [FSEventLog.addAttrs]
+     */
     @JvmStatic
-    fun assertAllStoredAttrs(
-        expected: Map<String, String>,
-        errorMessage: String? = null
-    ) = FSCollectionAssertions.assertMapEquals(
-        desc = errorMessage ?: "Stored attrs are not equal",
-        expected = expected,
-        actual = storedAttrs()
-    )
+    fun assertAllStoredAttrs(expected: Map<String, String>, errorMessage: String? = null) {
+        FSCollectionAssertions.assertMapEquals(
+            desc = errorMessage ?: "Stored attrs are not equal",
+            expected = expected,
+            actual = storedAttrs()
+        )
+    }
 
     @JvmStatic
-    fun assertAttrStored(
-        attrName: String,
-        expectedValue: String,
-        errorMessage: String? = null
-    ) {
-        storedAttrs().forEach { entry ->
-            if (entry.key == attrName) {
-                if (entry.value != expectedValue) {
-                    fail(errorMessage ?: "found attr ($attrName); expected value '$expectedValue', but was '${entry.value}")
-                }
-                return
-            }
-        }
-        fail(errorMessage ?: "attr not stored; expected attrName '$attrName', expected value = $expectedValue")
+    fun assertAttrStored(attrName: String, expectedValue: String, errorMessage: String? = null) {
+        FSCollectionAssertions.assertMapContains(
+            desc = errorMessage,
+            expectedKey = attrName,
+            expectedValue = expectedValue,
+            actualValues = storedAttrs()
+        )
     }
 
     @JvmStatic
@@ -75,6 +82,17 @@ object FSLoggingAssertions {
                 actual = actual[index]
             )
         }
+    }
+
+    /**
+     * Asserts that no analytics were sent matching an event name
+     */
+    @JvmStatic
+    fun assertNoAnalyticsSentWithName(eventName: String) {
+        FSCollectionAssertions.assertListEquals(
+            expected = emptyList(),
+            actual = sentEvents(eventName)
+        )
     }
 
     @JvmStatic

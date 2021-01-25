@@ -98,6 +98,19 @@ class ExampleTestUsingLoggingTest {
         fail("should have thrown assertion error")
     }
 
+    @Test
+    fun exampleFailingTestOfNotSendingAnalytic() {
+        try {
+            FSEventLog.addEvent("event1", mapOf("attr1" to "value1"))
+            FSEventLog.addEvent("event2", mapOf("attr2" to "value2"))
+            FSEventLog.addEvent("event3", mapOf("attr3" to "value3"))
+            FSLoggingAssertions.assertNoAnalyticsSentWithName("event1")
+        } catch (assertionError: AssertionError) {
+            return  // expected
+        }
+        fail("should have thrown assertion error")
+    }
+
     companion object {
         @JvmStatic
         fun addAttrsInput() = listOf(
