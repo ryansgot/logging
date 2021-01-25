@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fs_logging_app_uptime_attr_name" translatable="false">app_uptime</string>
+    <string name="fs_logging_timestamp_attr_name" translatable="false">timestamp</string>
+</resources>

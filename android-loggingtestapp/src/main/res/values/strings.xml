@@ -9,4 +9,7 @@
     <string name="add_attribute">Add Attr</string>
     <string name="remove_attribute">Remove Attr</string>
     <string name="crash">Crash</string>
+
+    <string name="fs_logging_app_uptime_attr_name" translatable="false">TestAppUptime</string>
+    <string name="fs_logging_timestamp_attr_name" translatable="false">TestAppTimestamp</string>
 </resources>

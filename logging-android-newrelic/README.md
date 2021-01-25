@@ -29,18 +29,18 @@ You MUST then add the following meta-data to your AndroidManifest.xml:
 You can, of course, set your newrelic token as a a plaintext string in your project's repository. You shouldn't do this, though.
 
 ### New Relic Event Types
-You can configure the event type of the [NewRelicEventLogger](src/main/java/com/fsryan/tools/logging/android/newrelic/NewRelicEventLogger.kt) with the following meta data:
+You can configure the event type of the [NewRelicEventLogger](src/main/java/com/fsryan/tools/logging/android/newrelic/NewRelicEventLogger.kt) by defining the following string resource
 ```xml
-<application>
-  <meta-data android:name="fsryan.nr_event_type" android:value="AnlayticsEventType" />
-</application>
+<resources>
+  <string name="fs_event_logger_newrelic_event_type" translatable="false">AnlayticsEventType</string>
+</resources>
 ```
 You can configure the event type(s) of the [NewRelicDevMetricsLogger](src/main/java/com/fsryan/tools/logging/android/newrelic/NewRelicDevMetricsLogger.kt) with the following meta data:
 ```xml
-<application>
-  <meta-data android:name="fsryan.nr_dev_metric_info_event_type" android:value="InfoEventType" />
-  <meta-data android:name="fsryan.nr_dev_metric_watch_event_type" android:value="WatchEventType" />
-</application>
+<resources>
+  <string name="fs_dev_metrics_logger_info_newrelic_event_type" translatable="false">InfoEventType</string>
+  <string name="fs_dev_metrics_logger_watch_newrelic_event_type" translatable="false">WatchEventType</string>
+</resources>
 ```
 
 ### Other configurable options (none are required, and if you do not supply an option, the new relic default will be applied):

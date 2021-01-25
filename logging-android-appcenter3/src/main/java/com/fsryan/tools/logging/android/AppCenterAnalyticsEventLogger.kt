@@ -31,7 +31,7 @@ class AppCenterAnalyticsEventLogger : ContextSpecificEventLogger() {
             Analytics.trackEvent(
                 eventName,
                 EventProperties().apply {
-                    (userProperties + attrs).forEach { (key, value) ->
+                    (userProperties + addDefaultAttrsTo(attrs)).forEach { (key, value) ->
                         when {
                             isDoubleProperty(key) -> set(key, value.toDouble())
                             isLongProperty(key) -> set(key, value.toLong())

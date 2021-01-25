@@ -44,7 +44,7 @@ class UrbanAirshipEventLogger: ContextSpecificEventLogger() {
     }
 
     override fun addEvent(eventName: String, attrs: Map<String, String>) {
-        val actualAttrs = attrs + storedAttrs
+        val actualAttrs = addDefaultAttrsTo(attrs) + storedAttrs
         val builder = CustomEvent.newBuilder(eventName)
         actualAttrs.entries.forEach { entry ->
             with(entry) {

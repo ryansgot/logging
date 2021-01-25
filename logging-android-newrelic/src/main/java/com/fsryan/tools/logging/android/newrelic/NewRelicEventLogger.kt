@@ -2,6 +2,7 @@ package com.fsryan.tools.logging.android.newrelic
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.SystemClock
 import com.fsryan.tools.logging.android.ContextSpecificEventLogger
 import com.newrelic.agent.android.NewRelic
 import java.util.concurrent.atomic.AtomicReference
@@ -14,9 +15,18 @@ class NewRelicEventLogger: ContextSpecificEventLogger() {
 
     override fun initialize(context: Context) {
         context.startNewRelicIfNecessary()
+        // TODO: do not support the meta-data approach in the 1.x release
+
         val appInfo = context.packageManager
             .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-        eventType.set(appInfo.metaData.getString("fsryan.nr_event_type") ?: "event")
+
+        setValueOfType(
+            context = context,
+            appInfo = appInfo,
+            refToSet = eventType,
+            legacyMetaDataKey = "fsryan.nr_event_type",
+            nameStringRes = R.string.fs_event_logger_newrelic_event_type
+        )
         super.initialize(context)
     }
 
@@ -46,7 +56,8 @@ class NewRelicEventLogger: ContextSpecificEventLogger() {
     }
 
     override fun addEvent(eventName: String, attrs: Map<String, String>) {
-        val mutableAttrs = attrs.filterValues { it.isNotEmpty() }.toMutableMap()
+        val filteredAttrs = attrs.filter { it.key.isNotEmpty() && it.value.isNotEmpty() }
+        val mutableAttrs = addDefaultAttrsTo(filteredAttrs).toMutableMap()
         val eventTypeOverride = mutableAttrs.remove(ATTR_EVENT_TYPE_OVERRIDE)
         val actualAttrs = mutableAttrs.mapValues { entry ->
             when {

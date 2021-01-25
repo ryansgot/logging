@@ -29,7 +29,7 @@ class FirebaseAnalyticsEventLogger : ContextSpecificEventLogger() {
 
     override fun addEvent(eventName: String, attrs: Map<String, String>) {
         firebaseAnalytics.logEvent(eventName, Bundle().apply {
-            attrs.entries.forEach {
+            addDefaultAttrsTo(attrs).entries.forEach {
                 when {
                     isDoubleProperty(it.key) -> putDouble(it.key, it.value.toDouble())
                     isLongProperty(it.key) -> putLong(it.key, it.value.toLong())

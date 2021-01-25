@@ -28,7 +28,7 @@ class DataDogEventLogger: ContextSpecificEventLogger() {
 
     override fun addEvent(eventName: String, attrs: Map<String, String>) = FSDataDog.logger().i(
         message = eventName,
-        attributes = attrs.mapValues<String, String, Any> { entry ->
+        attributes = addDefaultAttrsTo(attrs).mapValues<String, String, Any> { entry ->
             when {
                 isDoubleProperty(entry.key) -> entry.value.toDouble()
                 isLongProperty(entry.key) -> entry.value.toLong()

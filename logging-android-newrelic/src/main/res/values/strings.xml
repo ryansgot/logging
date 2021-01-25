@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fs_event_logger_newrelic_event_type" translatable="false">event</string>
+    <string name="fs_dev_metrics_logger_info_newrelic_event_type" translatable="false">InfoEventType</string>
+    <string name="fs_dev_metrics_logger_watch_newrelic_event_type" translatable="false">WatchEventType</string>
+</resources>
