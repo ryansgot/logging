@@ -28,15 +28,16 @@ There are six artifacts produced by this project:
 
 Each artifact has a different purpose, and they build upon one-another. The combination of libraries that you should use depends upon your environment
 
-| Library                    | Analytics Framework | Platform    |
-| -------------------------- | ------------------- | ----------- |
-| logging                    | nonspecific         | JVM/Android |
-| logging-android            | nonspecific         | Android     |
-| logging-android-appcenter3 | Microsoft AppCenter | Android     |
-| logging-android-firebase   | Google Firebase     | Android     |
-| logging-android-datadog    | Datadog             | Android     |
-| logging-android-newrelic   | NewRelic            | Android     |
-| logging-test               | None                | JVM/Android |
+| Library                      | Analytics Framework | Platform    |
+| ---------------------------- | ------------------- | ----------- |
+| logging                      | nonspecific         | JVM/Android |
+| logging-android              | nonspecific         | Android     |
+| logging-android-appcenter3   | Microsoft AppCenter | Android     |
+| logging-android-firebase     | Google Firebase     | Android     |
+| logging-android-datadog      | Datadog             | Android     |
+| logging-android-newrelic     | NewRelic            | Android     |
+| logging-android-urbanairship | Urban Airship       | Android     |
+| logging-test                 | None                | JVM/Android |
 
 So, if you have a JVM project, then you can only use the logging library at this time. However, if you have an Android project, then you can at least get some Android-specific behaviors. The extent to which you can benefit depends upon whether you either use Google Firebase, Microsoft AppCenter, DataDog, or NewRelic.
 
