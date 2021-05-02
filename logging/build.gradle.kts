@@ -5,14 +5,11 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import tools.GitTools
 import tools.Info
 
-import java.text.SimpleDateFormat
-import java.util.Date
-
 plugins {
     java
     id("org.jetbrains.kotlin.jvm")
-    id("com.jfrog.bintray")
     id("maven-publish")
+    id("signing")
     id("fsryan-gradle-publishing")
     id("org.jetbrains.dokka") version "0.10.0"
 }
@@ -20,8 +17,10 @@ plugins {
 group = "com.fsryan.tools"
 version = "${ver(domain = "global", producer = "fsryan", name = "publication")}${if (project.hasProperty("postfixDate")) ".${Info.timestamp}" else ""}"
 
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-java.targetCompatibility = JavaVersion.VERSION_1_8
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 dependencies {
     implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
@@ -44,41 +43,44 @@ fsPublishingConfig {
     baseArtifactId = project.name
     groupId = project.group.toString()
     versionName = project.version.toString()
-    releaseRepoUrl = "s3://repo.fsryan.com/release"
-    snapshotRepoUrl = "s3://repo.fsryan.com/snapshot"
+
+    licenseName = "Apache License, Version 2.0"
+    licenseUrl = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    licenseDistribution = "repo"
+
+//    releaseRepoUrl = "s3://repo.fsryan.com/release"
+//    snapshotRepoUrl = "s3://repo.fsryan.com/snapshot"
+//    awsAccessKeyId = if (project.hasProperty("awsMavenAccessKey")) project.property("awsMavenAccessKey").toString() else System.getenv()["AWS_ACCES_KEY_ID"]!!
+//    awsSecretKey = if (project.hasProperty("awsMavenSecretKey")) project.property("awsMavenSecretKey").toString() else System.getenv()["AWS_SECRET_KEY"]!!
+
+    releaseRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+    releaseBasicUser = project.findProperty("com.fsryan.ossrh.release.username")?.toString().orEmpty()
+    releaseBasicPassword = project.findProperty("com.fsryan.ossrh.release.password")?.toString().orEmpty()
+    snapshotRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+    snapshotBasicUser = project.findProperty("com.fsryan.ossrh.snapshot.username")?.toString().orEmpty()
+    snapshotBasicPassword = project.findProperty("com.fsryan.ossrh.snapshot.password")?.toString().orEmpty()
+    useBasicCredentials = true
     description = "Plugin-based Logging Facade for analytics events and developer metrics"
-    awsAccessKeyId = if (project.hasProperty("awsMavenAccessKey")) project.property("awsMavenAccessKey").toString() else System.getenv()["AWS_ACCES_KEY_ID"]!!
-    awsSecretKey = if (project.hasProperty("awsMavenSecretKey")) project.property("awsMavenSecretKey").toString() else System.getenv()["AWS_SECRET_KEY"]!!
     extraPomProperties = mapOf(
         "gitrev" to GitTools.gitHash(true)
     )
-    additionalPublications.add("bintray")
 }
 
-bintray {
-    user = if (project.hasProperty("bintrayUser")) project.property("bintrayUser").toString() else ""
-    key = if (project.hasProperty("bintrayApiKey")) project.property("bintrayApiKey").toString() else ""
-    setPublications("mavenToBintray")
-    publish = false
-
-    pkg.apply {
-        repo = "maven"
-        name = project.name
-        desc = "Base library for logging analytics and developer-centric events. See libraries that depend upon this for advanced usage."
-        websiteUrl = "https://github.com/ryansgot/logging/${project.name}"
-        issueTrackerUrl = "https://github.com/ryansgot/logging/issues"
-        vcsUrl = "https://github.com/ryansgot/logging.git"
-        publicDownloadNumbers = true
-        setLicenses("Apache-2.0")
-        setLabels("jvm", "logging", "analytics", "analytics events", "telemetry")
-        version.apply {
-            name = project.version.toString()
-            released = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").format(Date())
-            vcsTag = "v${project.version}"
+signing {
+    if (project.hasProperty("signing.keyId")) {
+        if (project.hasProperty("signing.password")) {
+            if (project.hasProperty("signing.secretKeyRingFile")) {
+                sign(publishing.publications)
+            } else {
+                println("Missing signing.secretKeyRingFile: cannot sign ${project.name}")
+            }
+        } else {
+            println("Missing signing.password: cannot sign ${project.name}")
         }
+    } else {
+        println("Missing signing.keyId: cannot sign ${project.name}")
     }
 }
-
 
 tasks.test {
     useJUnitPlatform {}
@@ -86,7 +88,7 @@ tasks.test {
 
 tasks.compileKotlin {
     kotlinOptions {
-        jvmTarget = "1.6"
+        jvmTarget = "1.8"
     }
 }
 
@@ -100,8 +102,4 @@ tasks {
     val dokka by getting(DokkaTask::class) {
         outputFormat = "javadoc"
     }
-}
-
-project.afterEvaluate {
-    checkNotNull(project.tasks.findByName("release")).dependsOn(checkNotNull(project.tasks.findByName("bintrayUpload")))
 }
