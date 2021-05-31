@@ -1,0 +1,3 @@
+com.fsryan.tools.logging.android.AppCenterAnalyticsEventLogger
+com.fsryan.tools.logging.android.LogcatEventLogger
+com.fsryan.tools.logging.android.InternalFileEventLogger

@@ -16,13 +16,13 @@ buildscript {
         }
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.1.0")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.10")
-        classpath("com.google.gms:google-services:4.3.4")
-        classpath("com.google.firebase:firebase-crashlytics-gradle:2.3.0")
-        classpath("com.fsryan.gradle:fsryan-gradle-publishing:0.1.3")
-        classpath("com.github.dcendents:android-maven-gradle-plugin:2.1")
-        classpath("com.newrelic.agent.android:agent-gradle-plugin:5.28.0")
+        classpath(deps.Deps.Plugin.Android.gradle)
+        classpath(deps.Deps.Plugin.JetBrains.gradle)
+        classpath(deps.Deps.Plugin.Google.gms)
+        classpath(deps.Deps.Plugin.Google.crashltyics)
+        classpath(deps.Deps.Plugin.FSRyan.gradlePublishing)
+        classpath(deps.Deps.Plugin.Dcendents.androidMavenGradle)
+        classpath(deps.Deps.Plugin.NewRelic.gradle)
     }
 }
 
@@ -39,6 +39,55 @@ allprojects {
             credentials(AwsCredentials::class) {
                 setAccessKey(if (project.hasProperty("awsMavenAccessKey")) project.property("awsMavenAccessKey").toString() else System.getenv()["AWS_ACCES_KEY_ID"]!!)
                 setSecretKey(if (project.hasProperty("awsMavenSecretKey")) project.property("awsMavenSecretKey").toString() else System.getenv()["AWS_SECRET_KEY"]!!)
+            }
+        }
+    }
+
+    fun com.android.build.gradle.LibraryExtension.applyConfig() {
+        buildFeatures.buildConfig = false
+    }
+
+    plugins.findPlugin(com.android.build.gradle.LibraryPlugin::class)?.let {
+        extensions.getByType(com.android.build.gradle.LibraryExtension::class).applyConfig()
+    } ?: plugins.whenPluginAdded {
+        if (this is com.android.build.gradle.LibraryPlugin) {
+            extensions.getByType(com.android.build.gradle.LibraryExtension::class).applyConfig()
+        }
+    }
+
+    fun configureSigningIfPossible() {
+        extensions.findByType(PublishingExtension::class)?.let { publishingExtension ->
+            extensions.findByType(SigningExtension::class)?.let { signingExtension ->
+                if (project.hasProperty("signing.keyId")) {
+                    if (project.hasProperty("signing.password")) {
+                        if (project.hasProperty("signing.secretKeyRingFile")) {
+                            signingExtension.sign(publishingExtension.publications)
+                        } else {
+                            println("Missing signing.secretKeyRingFile: cannot sign ${project.name}")
+                        }
+                    } else {
+                        println("Missing signing.password: cannot sign ${project.name}")
+                    }
+                } else {
+                    println("Missing signing.keyId: cannot sign ${project.name}")
+                }
+            }
+        }
+    }
+
+    plugins.findPlugin(SigningPlugin::class)?.let {
+        plugins.findPlugin(PublishingPlugin::class)?.let {
+            configureSigningIfPossible()
+        }
+    } ?: plugins.whenPluginAdded {
+        if (this is SigningPlugin) {
+            plugins.findPlugin(PublishingPlugin::class)?.let {
+                configureSigningIfPossible()
+            }
+        }
+        if (this is PublishingPlugin) {
+            plugins.findPlugin(SigningPlugin::class)?.let {
+                configureSigningIfPossible()
             }
         }
     }

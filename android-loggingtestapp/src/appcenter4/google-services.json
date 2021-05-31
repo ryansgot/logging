@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "264025305770",
+    "firebase_url": "https://logging-test-appcenter3.firebaseio.com",
+    "project_id": "logging-test-appcenter3",
+    "storage_bucket": "logging-test-appcenter3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:264025305770:android:717b00d12eed34262a56d3",
+        "android_client_info": {
+          "package_name": "com.fsryan.tools.loggingtestapp.appcenter3"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "264025305770-en7eofrkh605e49fu4cfddnto94iitnp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9KA0oqgPR_oSqSgjFZERYg6tmXJY7YBU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "264025305770-en7eofrkh605e49fu4cfddnto94iitnp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

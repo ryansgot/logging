@@ -1,27 +1,26 @@
-import deps.Deps.mainDep
-import deps.Deps.ver
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import deps.Deps
+import deps.Deps.Versions
 
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("kotlin-android-extensions")
     // UNCOMMENT FOR newrelic
 //    id("newrelic")
 }
 
 android {
 
-    compileSdkVersion(ver("global", "android", "compileSdk").toInt())
+    Versions.Global.Android.let { version ->
+        compileSdkVersion(version.compileSdk)
 
-    defaultConfig {
-        applicationId = "com.fsryan.tools.loggingtestapp"
-        minSdkVersion(ver("global", "android", "minSdk").toInt())
-        targetSdkVersion(ver("global", "android", "targetSdk").toInt())
-        versionCode = 1
-        versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        defaultConfig {
+            minSdkVersion(version.minSdk)
+            targetSdkVersion(version.targetSdk)
+            versionCode = 1
+            versionName = "1.0"
+            consumerProguardFile("consumer-proguard-rules.pro")
+            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
     }
 
     buildTypes {
@@ -38,15 +37,6 @@ android {
     flavorDimensions("integration")
 
     productFlavors {
-        create("datadog") {
-            dimension("integration")
-            applicationIdSuffix = ".datadog"
-            setMinSdkVersion(19)
-
-            manifestPlaceholders(mapOf(
-                "testapp.datadogtoken" to (project.findProperty("testapp.datadogtoken") ?: "")
-            ))
-        }
         create("firebase") {
             dimension("integration")
             applicationIdSuffix = ".firebase"
@@ -56,7 +46,19 @@ android {
             applicationIdSuffix = ".appcenter3"
 
             manifestPlaceholders(mapOf(
-                "testapp.acsecret" to (project.findProperty("testapp.acsecret") ?: "")
+                "testapp.acsecret" to (project.findProperty("testapp.acsecret") ?: ""),
+                "fsac_analytics_enabled" to "true",
+                "fsac_crashes_enabled" to "true"
+            ))
+        }
+        create("appcenter4") {
+            dimension("integration")
+            applicationIdSuffix = ".appcenter4"
+
+            manifestPlaceholders(mapOf(
+                "testapp.acsecret" to (project.findProperty("testapp.acsecret") ?: ""),
+                "fsac_analytics_enabled" to "true",
+                "fsac_crashes_enabled" to "true"
             ))
         }
         create("newrelic") {
@@ -75,9 +77,11 @@ android {
     }
 
     kotlinOptions {
-        // Works around an issue in the kotlin-android plugin where the
-        // type became Any
-        (this as KotlinJvmOptions).jvmTarget = "1.8"
+        jvmTarget = "1.8"
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 }
 
@@ -94,30 +98,38 @@ dependencies {
     implementation(project(":logging"))
     implementation(project(":logging-android"))
 
-    implementation(mainDep(producer = "jetbrains", name = "kotlin-stdlib"))
+    with(Deps.Main.AndroidX) {
+        implementation(appCompat)
+        implementation(coreKtx)
+        implementation(constraintLayout)
+    }
 
-    implementation(mainDep(producer = "androidx", name = "appcompat"))
-    implementation(mainDep(producer = "androidx", name = "core-ktx"))
-    implementation(mainDep(producer = "androidx", name = "constraint-layout"))
+    implementation(Deps.Main.JetBrains.kotlinSTDLib)
 
     // Firebase
     firebaseImplementation(project(":logging-android-firebase"))
-    firebaseImplementation(mainDep(producer = "google", name = "firebase-analytics-ktx"))
-    firebaseImplementation(mainDep(producer = "google", name = "firebase-crashlytics-ktx"))
+    with(Deps.Main.Google) {
+        firebaseImplementation(analytics)
+        firebaseImplementation(crashlytics)
+    }
 
-    // This is the most recent of the AppCenter library releases.
     // appcenter
     appcenter3Implementation(project(":logging-android-appcenter3"))
-    appcenter3Implementation(mainDep(producer = "microsoft", name = "appcenter-analytics3"))
-    appcenter3Implementation(mainDep(producer = "microsoft", name = "appcenter-crashes3"))
+    with(Deps.Main.Microsoft) {
+        appcenter3Implementation(analytics3)
+        appcenter3Implementation(crashes3)
+    }
 
-    // datadog
-    datadogImplementation(project(":logging-android-datadog"))
-    datadogImplementation(mainDep(producer = "datadog", name = "ddsdk"))
+    // appcenter
+    appcenter4Implementation(project(":logging-android-appcenter4"))
+    with(Deps.Main.Microsoft) {
+        appcenter4Implementation(analytics4)
+        appcenter4Implementation(crashes4)
+    }
 
     // newrelic
     newrelicImplementation(project(":logging-android-newrelic"))
-    newrelicImplementation(mainDep(producer = "newrelic", name = "android-agent"))
+    newrelicImplementation(Deps.Main.NewRelic.agent)
 }
 
 fun DependencyHandlerScope.appcenter3Implementation(dependencyNotation: Any) = add(
@@ -125,13 +137,13 @@ fun DependencyHandlerScope.appcenter3Implementation(dependencyNotation: Any) = a
     dependencyNotation = dependencyNotation
 )
 
-fun DependencyHandlerScope.firebaseImplementation(dependencyNotation: Any) = add(
-    configurationName = "firebaseImplementation",
+fun DependencyHandlerScope.appcenter4Implementation(dependencyNotation: Any) = add(
+    configurationName = "appcenter4Implementation",
     dependencyNotation = dependencyNotation
 )
 
-fun DependencyHandlerScope.datadogImplementation(dependencyNotation: Any) = add(
-    configurationName = "datadogImplementation",
+fun DependencyHandlerScope.firebaseImplementation(dependencyNotation: Any) = add(
+    configurationName = "firebaseImplementation",
     dependencyNotation = dependencyNotation
 )
 

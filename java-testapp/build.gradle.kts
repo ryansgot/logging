@@ -1,4 +1,4 @@
-import deps.Deps.mainDep
+import deps.Deps
 
 plugins {
     java
@@ -17,7 +17,7 @@ dependencies {
 
     implementation(project(":logging"))
 
-    compileOnly(mainDep(producer = "google", name = "jsr305"))
+    compileOnly(Deps.Main.Google.jsr305)
 
     testImplementation(project(":logging-test"))
 }

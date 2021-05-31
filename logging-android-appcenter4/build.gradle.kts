@@ -55,15 +55,17 @@ android {
 dependencies {
     implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
 
-    implementation(project(":logging"))
-    implementation(project(":logging-android"))
+    api(project(":logging"))
+    api(project(":logging-android"))
 
-    with(Deps.Main.Google) {
-        implementation(analytics)
-        implementation(crashlytics)
-    }
+    implementation(Deps.Main.AndroidX.annotation)
 
     implementation(Deps.Main.JetBrains.kotlinSTDLib)
+
+    with(Deps.Main.Microsoft) {
+        api(analytics4)
+        api(crashes4)
+    }
 }
 
 fsPublishingConfig {
@@ -92,15 +94,15 @@ fsPublishingConfig {
     snapshotBasicPassword = project.findProperty("com.fsryan.ossrh.snapshot.password")?.toString().orEmpty()
     useBasicCredentials = true
     useBasicCredentials = true
-    description = "Logging for Analytics events and Developer events on Dalvik or ART with Firebase destinations"
+    description = "Logging for Analytics events and Developer events on Dalvik or ART with appcenter destinations using AppCenter's v3 library"
     extraPomProperties = mapOf(
         "gitrev" to GitTools.gitHash(true)
     )
     dependencyNameOverrides = mapOf(
-        "logging-android-firebaseDebug" to mapOf(
+        "logging-android-appcenter4Debug" to mapOf(
             "logging-android" to "logging-android-debug"
         ),
-        "logging-android-firebaseDebugToBintray" to mapOf(
+        "logging-android-appcenter4DebugToBintray" to mapOf(
             "logging-android" to "logging-android-debug"
         )
     )
