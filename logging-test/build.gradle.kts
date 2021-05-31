@@ -1,5 +1,5 @@
-import deps.Deps.mainDep
-import deps.Deps.ver
+import deps.Deps
+import deps.Deps.Versions
 import org.jetbrains.dokka.gradle.DokkaTask
 import tools.GitTools
 import tools.Info
@@ -14,7 +14,7 @@ plugins {
 }
 
 group = "com.fsryan.tools"
-version = "${ver(domain = "global", producer = "fsryan", name = "publication")}${if (project.hasProperty("postfixDate")) ".${Info.timestamp}" else ""}"
+version = "${Versions.Global.FSRyan.publication}${if (project.hasProperty("postfixDate")) ".${Info.timestamp}" else ""}"
 
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_1_8
@@ -22,11 +22,13 @@ java.targetCompatibility = JavaVersion.VERSION_1_8
 dependencies {
     implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
 
-    implementation(mainDep(producer = "jetbrains", name = "kotlin-stdlib"))
+    api(project(":logging"))
 
-    implementation(deps.Deps.testDep(producer = "junit5", name = "api"))
+    implementation(Deps.Main.JetBrains.kotlinSTDLib)
 
-    implementation(project(":logging"))
+    with(Deps.Test.JUnit5) {
+        api(jupiterApi)
+    }
 }
 
 fsPublishingConfig {
@@ -79,21 +81,5 @@ tasks.compileTestKotlin {
 tasks {
     val dokka by getting(DokkaTask::class) {
         outputFormat = "javadoc"
-    }
-}
-
-signing {
-    if (project.hasProperty("signing.keyId")) {
-        if (project.hasProperty("signing.password")) {
-            if (project.hasProperty("signing.secretKeyRingFile")) {
-                sign(publishing.publications)
-            } else {
-                println("Missing signing.secretKeyRingFile: cannot sign ${project.name}")
-            }
-        } else {
-            println("Missing signing.password: cannot sign ${project.name}")
-        }
-    } else {
-        println("Missing signing.keyId: cannot sign ${project.name}")
     }
 }

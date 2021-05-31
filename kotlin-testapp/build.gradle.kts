@@ -1,4 +1,4 @@
-import deps.Deps.mainDep
+import deps.Deps
 
 plugins {
     java
@@ -18,11 +18,13 @@ dependencies {
 
     implementation(project(":logging"))
 
-    implementation(mainDep(producer = "jetbrains", name = "kotlin-stdlib"))
+    implementation(Deps.Main.JetBrains.kotlinSTDLib)
 
-    testImplementation(deps.Deps.testDep(producer = "junit5", name = "api"))
-    testImplementation(deps.Deps.testDep(producer = "junit5", name = "params"))
-    testRuntimeOnly(deps.Deps.testDep(producer = "junit5", name = "engine"))
+    with(Deps.Test.JUnit5) {
+        testImplementation(jupiterApi)
+        testImplementation(params)
+        testRuntimeOnly(engine)
+    }
 
     testImplementation(project(":logging-test"))
 }

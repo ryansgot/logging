@@ -1,113 +1,150 @@
 package deps
 
 object Deps {
-    private val versions = mapOf(
-        "global" to mapOf(
-            "jetbrains" to mapOf(
-                "kotlin" to "1.4.10"
-            ),
-            "android" to mapOf(
-                "minSdk" to "16",
-                "targetSdk" to "30",
-                "compileSdk" to "30"
-            ),
-            "fsryan" to mapOf(
-                "publication" to "0.2.3"
-            )
-        ),
-        "plugins" to mapOf(),
-        "test" to mapOf(
-            "junit" to mapOf(
-                "legacy" to "4.12"
-            ),
-            "junit5" to mapOf(
-                "jupiter" to "5.3.1",
-                "platform" to "1.3.1"
-            ),
-            "mockk" to mapOf(
-                "core" to "1.9.3"
-            )
-        ),
-        "main" to mapOf(
-            "androidx" to mapOf(
-                "annotation" to "1.1.0",
-                "core" to "1.0.2",
-                "constraint-layout" to "1.1.3"
-            ),
-            "datadog" to mapOf(
-                "ddsdk" to "1.4.3"
-            ),
-            "google" to mapOf(
-                "firebase-crashlytics-ktx" to "17.3.0",
-                "firebase-analytics-ktx" to "18.0.1",
-                "jsr305" to "3.0.2"
-            ),
-            "microsoft" to mapOf(
-                "appcenter" to "2.4.0",
-                "appcenter3" to "3.2.2"
-            ),
-            "newrelic" to mapOf(
-                "android-agent" to "5.28.0"
-            ),
-            "urbanairship" to mapOf(
-                "core" to "14.0.0"
-            )
-        )
-    )
-    private val deps = mapOf(
-        "plugins" to mapOf(),
-        "test" to mapOf(
-            "junit" to mapOf(
-                "legacy" to "junit:junit:${ver("test", "junit", "legacy")}"
-            ),
-            "junit5" to mapOf(
-                "api" to "org.junit.jupiter:junit-jupiter-api:${ver("test", "junit5", "jupiter")}",
-                "engine" to "org.junit.jupiter:junit-jupiter-engine:${ver("test", "junit5", "jupiter")}",
-                "params" to "org.junit.jupiter:junit-jupiter-params:${ver("test", "junit5", "jupiter")}"
-            ),
-            "mockk" to mapOf(
-                "core" to "io.mockk:mockk:${ver("test", "mockk", "core")}",
-                "android" to "io.mockk:mockk-android:${ver("test", "mockk", "core")}"
-            )
-        ),
-        "main" to mapOf(
-            "androidx" to mapOf(
-                "annotation" to "androidx.annotation:annotation:${ver("main", "androidx", "annotation")}",
-                "appcompat" to "androidx.appcompat:appcompat:${ver("main", "androidx", "core")}",
-                "core-ktx" to "androidx.core:core-ktx:${ver("main", "androidx", "core")}",
-                "constraint-layout" to "androidx.constraintlayout:constraintlayout:${ver("main", "androidx", "constraint-layout")}"
-            ),
-            "datadog" to mapOf(
-                "ddsdk" to "com.datadoghq:dd-sdk-android:${ver("main", "datadog", "ddsdk")}"
-            ),
-            "google" to mapOf(
-                "firebase-analytics-ktx" to "com.google.firebase:firebase-analytics-ktx:${ver("main", "google", "firebase-analytics-ktx")}",
-                "firebase-crashlytics-ktx" to "com.google.firebase:firebase-crashlytics-ktx:${ver("main", "google", "firebase-crashlytics-ktx")}",
-                "jsr305" to "com.google.code.findbugs:jsr305:${ver("main", "google", "jsr305")}"
-            ),
-            "jetbrains" to mapOf(
-                "kotlin-stdlib" to "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${ver("global", "jetbrains", "kotlin")}"
-            ),
-            "microsoft" to mapOf(
-                "appcenter-analytics" to "com.microsoft.appcenter:appcenter-analytics:${ver("main", "microsoft", "appcenter")}",
-                "appcenter-crashes" to "com.microsoft.appcenter:appcenter-crashes:${ver("main", "microsoft", "appcenter")}",
-                "appcenter-analytics3" to "com.microsoft.appcenter:appcenter-analytics:${ver("main", "microsoft", "appcenter3")}",
-                "appcenter-crashes3" to "com.microsoft.appcenter:appcenter-crashes:${ver("main", "microsoft", "appcenter3")}"
-            ),
-            "newrelic" to mapOf(
-                "android-agent" to "com.newrelic.agent.android:android-agent:${ver("main", "newrelic", "android-agent")}"
-            ),
-            "urbanairship" to mapOf(
-                "core" to "com.urbanairship.android:urbanairship-core:${ver("main", "urbanairship", "core")}"
-            )
-        )
-    )
 
-    fun ver(domain: String, producer: String, name: String): String = findObj(versions, "versions", domain, producer, name)
-    fun dep(domain: String, producer: String, name: String): String  = findObj(deps, "deps", domain, producer, name)
-    fun pluginDep(producer: String, name: String) = dep("plugin", producer, name)
-    fun testDep(producer: String, name: String) = dep("test", producer, name)
-    fun mainDep(producer: String, name: String) = dep("main", producer, name)
-    fun findObj(src: Map<String, Map<String, Map<String, String>>>, srcName: String, domain: String, producer: String, name: String): String = src[domain]?.get(producer)?.get(name)
-        ?: throw IllegalArgumentException("did not find $srcName.$domain.$producer.$name")
+    object Versions {
+        object Global {
+            object Android {
+                const val compileSdk = 30
+                const val minSdk = 16
+                const val targetSdk = 30
+            }
+            object FSRyan {
+                const val publication = "0.3.0"
+            }
+            object JetBrains {
+                const val kotlin = "1.5.10"
+            }
+            object NewRelic {
+                const val agent = "5.28.1"
+            }
+        }
+        object Main {
+            object Airship {
+                const val core = "14.4.4"
+            }
+            object AndroidX {
+                const val annotation = "1.2.0"
+                const val appCompat = "1.3.0"
+                const val core = "1.5.0"
+                const val constraintLayout = "2.0.4"
+            }
+            object Google {
+                const val analytics = "19.0.0"
+                const val crashlytics = "18.0.0"
+                const val jsr305 = "3.0.2"
+            }
+            object Microsoft {
+                const val appCenter3 = "3.3.1"
+                const val appCenter4 = "4.1.1"
+            }
+        }
+        object Plugin {
+            object Android {
+                const val gradle = "4.2.1"
+            }
+            object Dcendents {
+                const val androidMavenGradle = "2.1"
+            }
+            object FSRyan {
+                const val gradlePublishing = "0.1.3"
+            }
+            object Google {
+                const val crashlytics = "2.6.1"
+                const val gms = "4.3.4"
+            }
+        }
+        object Test {
+
+            object JUnit {
+                const val lib = "4.12"
+            }
+            object JUnit5 {
+                const val jupiter = "5.7.1"
+                const val platform = "1.7.1"
+            }
+            object MockK {
+                const val core = "1.10.6"
+            }
+        }
+    }
+
+    object Main {
+        object Airship {
+            private val version = Versions.Main.Airship
+            const val core = "com.urbanairship.android:urbanairship-core:${version.core}"
+        }
+        object AndroidX {
+            private val version = Versions.Main.AndroidX
+            const val annotation = "androidx.annotation:annotation:${version.annotation}"
+            const val appCompat = "androidx.appcompat:appcompat:${version.appCompat}"
+            const val coreKtx = "androidx.core:core-ktx:${version.core}"
+            const val constraintLayout = "androidx.constraintlayout:constraintlayout:${version.constraintLayout}"
+        }
+        object Google {
+            private val version = Versions.Main.Google
+            const val analytics = "com.google.firebase:firebase-analytics-ktx:${version.analytics}"
+            const val crashlytics = "com.google.firebase:firebase-crashlytics-ktx:${version.crashlytics}"
+            const val jsr305 = "com.google.code.findbugs:jsr305:${version.jsr305}"
+        }
+        object JetBrains {
+            private val globalVersion = Versions.Global.JetBrains
+            const val kotlinSTDLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${globalVersion.kotlin}"
+        }
+        object Microsoft {
+            private val version = Versions.Main.Microsoft
+            const val analytics3 = "com.microsoft.appcenter:appcenter-analytics:${version.appCenter3}"
+            const val analytics4 = "com.microsoft.appcenter:appcenter-analytics:${version.appCenter4}"
+            const val crashes3 = "com.microsoft.appcenter:appcenter-crashes:${version.appCenter3}"
+            const val crashes4 = "com.microsoft.appcenter:appcenter-crashes:${version.appCenter4}"
+        }
+        object NewRelic {
+            private val globalVersion = Versions.Global.NewRelic
+            const val agent = "com.newrelic.agent.android:android-agent:${globalVersion.agent}"
+        }
+    }
+    object Plugin {
+        object Android {
+            private val version = Versions.Plugin.Android
+            const val gradle = "com.android.tools.build:gradle:${version.gradle}"
+        }
+        object Dcendents {
+            private val version = Versions.Plugin.Dcendents
+            const val androidMavenGradle = "com.github.dcendents:android-maven-gradle-plugin:${version.androidMavenGradle}"
+        }
+        object FSRyan {
+            private val version = Versions.Plugin.FSRyan
+            const val gradlePublishing = "com.fsryan.gradle:fsryan-gradle-publishing:${version.gradlePublishing}"
+        }
+        object Google {
+            private val version = Versions.Plugin.Google
+            const val crashltyics = "com.google.firebase:firebase-crashlytics-gradle:${version.crashlytics}"
+            const val gms = "com.google.gms:google-services:${version.gms}"
+        }
+        object JetBrains {
+            private val globalVersion = Versions.Global.JetBrains
+            const val gradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${globalVersion.kotlin}"
+        }
+        object NewRelic {
+            private val globalVersion = Versions.Global.NewRelic
+            const val gradle = "com.newrelic.agent.android:agent-gradle-plugin:${globalVersion.agent}"
+        }
+    }
+    object Test {
+        object JUnit {
+            private val version = Versions.Test.JUnit
+            const val lib = "junit:junit:${version.lib}"
+        }
+        object JUnit5 {
+            private val version = Versions.Test.JUnit5
+            const val jupiterApi = "org.junit.jupiter:junit-jupiter-api:${version.jupiter}"
+            const val engine = "org.junit.jupiter:junit-jupiter-engine:${version.jupiter}"
+            const val params = "org.junit.jupiter:junit-jupiter-params:${version.jupiter}"
+        }
+        object MockK {
+            private val version = Versions.Test.MockK
+            const val android = "io.mockk:mockk-android:${version.core}"
+            const val jvm = "io.mockk:mockk:${version.core}"
+        }
+    }
 }

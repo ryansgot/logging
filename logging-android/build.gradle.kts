@@ -1,6 +1,5 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
-import deps.Deps.mainDep
-import deps.Deps.ver
+import deps.Deps
+import deps.Deps.Versions
 import tools.GitTools
 import tools.Info
 
@@ -14,19 +13,21 @@ plugins {
 }
 
 group = "com.fsryan.tools"
-version = "${ver(domain = "global", producer = "fsryan", name = "publication")}${if (project.hasProperty("postfixDate")) ".${Info.timestamp}" else ""}"
+version = "${Versions.Global.FSRyan.publication}${if (project.hasProperty("postfixDate")) ".${Info.timestamp}" else ""}"
 
 android {
 
-    compileSdkVersion(ver("global", "android", "compileSdk").toInt())
+    Versions.Global.Android.let { version ->
+        compileSdkVersion(version.compileSdk)
 
-    defaultConfig {
-        minSdkVersion(ver("global", "android", "minSdk").toInt())
-        targetSdkVersion(ver("global", "android", "targetSdk").toInt())
-        versionCode = 1
-        versionName = "1.0"
-        consumerProguardFile("consumer-proguard-rules.pro")
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        defaultConfig {
+            minSdkVersion(version.minSdk)
+            targetSdkVersion(version.targetSdk)
+            versionCode = 1
+            versionName = "1.0"
+            consumerProguardFile("consumer-proguard-rules.pro")
+            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
     }
 
     buildTypes {
@@ -47,20 +48,17 @@ android {
     }
 
     kotlinOptions {
-        // Works around an issue in the kotlin-android plugin where the
-        // type became Any
-        (this as KotlinJvmOptions).jvmTarget = "1.8"
+        jvmTarget = "1.8"
     }
 }
 
 dependencies {
     implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
 
-    implementation(project(":logging"))
+    api(project(":logging"))
 
-    implementation(mainDep(producer = "jetbrains", name = "kotlin-stdlib"))
-
-    implementation(mainDep(producer = "androidx", name = "annotation"))
+    implementation(Deps.Main.AndroidX.annotation)
+    implementation(Deps.Main.JetBrains.kotlinSTDLib)
 }
 
 fsPublishingConfig {
@@ -93,20 +91,4 @@ fsPublishingConfig {
     extraPomProperties = mapOf(
         "gitrev" to GitTools.gitHash(true)
     )
-}
-
-signing {
-    if (project.hasProperty("signing.keyId")) {
-        if (project.hasProperty("signing.password")) {
-            if (project.hasProperty("signing.secretKeyRingFile")) {
-                sign(publishing.publications)
-            } else {
-                println("Missing signing.secretKeyRingFile: cannot sign ${project.name}")
-            }
-        } else {
-            println("Missing signing.password: cannot sign ${project.name}")
-        }
-    } else {
-        println("Missing signing.keyId: cannot sign ${project.name}")
-    }
 }
