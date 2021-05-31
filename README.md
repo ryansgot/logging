@@ -22,8 +22,8 @@ There are six artifacts produced by this project:
 1. group: com.fsryan.tools, artifact: logging, packaging: jar
 2. group: com.fsryan.tools, artifact: logging-android, packaging: aar
 3. group: com.fsryan.tools, artifact: logging-android-appcenter3, packaging: aar
-4. group: com.fsryan.tools, artifact: logging-android-firebase, packaging: aar
-5. group: com.fsryan.tools, artifact: logging-android-datadog, packaging: aar
+4. group: com.fsryan.tools, artifact: logging-android-appcenter4, packaging: aar
+5. group: com.fsryan.tools, artifact: logging-android-firebase, packaging: aar
 6. group: com.fsryan.tools, artifact: logging-android-newrelic, packaging: aar
 
 Each artifact has a different purpose, and they build upon one-another. The combination of libraries that you should use depends upon your environment
