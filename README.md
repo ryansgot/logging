@@ -34,7 +34,7 @@ Each artifact has a different purpose, and they build upon one-another. The comb
 | logging-android              | nonspecific         | Android     |
 | logging-android-appcenter3   | Microsoft AppCenter | Android     |
 | logging-android-firebase     | Google Firebase     | Android     |
-| logging-android-datadog      | Datadog             | Android     |
+| logging-android-appcenter4   | Microsoft AppCenter | Android     |
 | logging-android-newrelic     | NewRelic            | Android     |
 | logging-android-urbanairship | Urban Airship       | Android     |
 | logging-test                 | None                | JVM/Android |
