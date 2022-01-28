@@ -65,6 +65,7 @@ kotlin {
             dependsOn(commonMain)
             dependsOn(commonTest)
             dependencies {
+                implementation(project(":logging-test"))
                 with(Deps.Test.JUnit5) {
                     implementation(jupiterApi)
                     implementation(params)

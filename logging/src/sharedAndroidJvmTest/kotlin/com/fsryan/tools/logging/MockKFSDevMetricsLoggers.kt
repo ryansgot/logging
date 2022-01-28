@@ -5,8 +5,8 @@ import io.mockk.mockk
 abstract class MockKFSDevMetricsLogger(var wrappedMock: FSDevMetricsLogger = mockk(relaxed = true)) :
     FSDevMetricsLogger {
     override fun alarm(t: Throwable, attrs: Map<String, String>) = wrappedMock.alarm(t, attrs)
-    override fun watch(msg: String, info: String?, extraInfo: String?, attrs: Map<String, String>) = wrappedMock.watch(msg, info, extraInfo, attrs)
-    override fun info(msg: String, info: String?, extraInfo: String?, attrs: Map<String, String>) = wrappedMock.info(msg, info, extraInfo, attrs)
+    override fun watch(msg: String, attrs: Map<String, String>) = wrappedMock.watch(msg, attrs)
+    override fun info(msg: String, attrs: Map<String, String>) = wrappedMock.info(msg, attrs)
 }
 
 class MockKFSDevMetricsLogger1 : MockKFSDevMetricsLogger() {

@@ -29,6 +29,7 @@ allprojects {
         }
         mavenCentral()
         google()
+        jcenter()
     }
 
     group = "com.fsryan.tools"
