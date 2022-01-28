@@ -1,79 +1,203 @@
 import deps.Deps
 import deps.Deps.Versions
-import org.jetbrains.dokka.gradle.DokkaTask
-import tools.GitTools
 import tools.Info
 
 plugins {
-    java
-    id("org.jetbrains.kotlin.jvm")
-    id("maven-publish")
-    id("signing")
-    id("fsryan-gradle-publishing")
+    kotlin("multiplatform")
+    id("com.android.library")
+    jacoco
+    `maven-publish`
     id("org.jetbrains.dokka")
 }
 
-group = "com.fsryan.tools"
 version = "${Versions.Global.FSRyan.publication}${if (project.hasProperty("postfixDate")) ".${Info.timestamp}" else ""}"
 
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-java.targetCompatibility = JavaVersion.VERSION_1_8
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
-dependencies {
-    implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
+val canBuildMacOSX64 = System.getProperty("os.name") == "Mac OS X"
 
-    api(project(":logging"))
+kotlin {
+    android {
+        publishLibraryVariants("release")
+    }
+    jvm("jvm") {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "1.8"
+            }
+        }
+    }
+    js {
+        browser()
+    }
+    linuxX64()
+//    mingwX64()
+    if (canBuildMacOSX64) {
+        macosX64()
+    }
 
-    implementation(Deps.Main.JetBrains.kotlinSTDLib)
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                with(Deps.Test.JetBrains) {
+                    implementation(project(":logging"))
+                    implementation(test)
+                    implementation(testAnnotations)
+                }
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+            }
+        }
+        val sharedAndroidJvmMain by creating {
+            dependsOn(commonMain)
+            dependencies {
+            }
+        }
+        val androidMain by getting {
+            kotlin.srcDir("src/sharedAndroidJvmMain/kotlin")
+            dependsOn(sharedAndroidJvmMain)
+            dependencies {
+                with(Deps.Main.AndroidX) {
+                }
+            }
+        }
+        val jvmMain by getting {
+            kotlin.srcDir("src/sharedAndroidJvmMain/kotlin")
+            dependsOn(sharedAndroidJvmMain)
+            dependencies {
+                with(Deps.Test.JUnit5) {
+                    implementation(jupiterApi)
+                    implementation(params)
+                    runtimeOnly(engine)
+                    runtimeOnly(platformLauncher)
+                }
+            }
+        }
+        val nonJvmMain by creating {
+            dependsOn(commonMain)
+            dependencies {
+            }
+        }
+        val jsMain by getting {
+            dependsOn(nonJvmMain)
+            dependencies {
+            }
+        }
+        val nativeMain by creating {
+            dependsOn(commonMain)
+            dependencies {
 
-    with(Deps.Test.JUnit5) {
-        api(jupiterApi)
+            }
+        }
+        val linuxX64Main by getting {
+            dependsOn(nativeMain)
+            dependencies {
+            }
+        }
+        // Cannot build this on Mac
+//        val mingwX64Main by getting {
+//            dependsOn(nonJvmMain)
+//            dependencies {
+//            }
+//        }
+        if (canBuildMacOSX64) {
+            val macosX64Main by getting {
+                dependsOn(nativeMain)
+                dependencies {
+                }
+            }
+        }
     }
 }
 
-fsPublishingConfig {
-    developerName = "Ryan Scott"
-    developerId = "fsryan"
-    developerEmail = "fsryan.developer@gmail.com"
-    siteUrl = "https://github.com/ryansgot/logging"
-    baseArtifactId = project.name
-    groupId = project.group.toString()
-    versionName = project.version.toString()
+android {
+    compileSdk = Versions.Global.Android.compileSdk
 
-    licenseName = "Apache License, Version 2.0"
-    licenseUrl = "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    licenseDistribution = "repo"
+    defaultConfig {
+        minSdk = Versions.Global.Android.minSdk
+        targetSdk = Versions.Global.Android.targetSdk
 
-//    releaseRepoUrl = "s3://repo.fsryan.com/release"
-//    snapshotRepoUrl = "s3://repo.fsryan.com/snapshot"
-//    awsAccessKeyId = if (project.hasProperty("awsMavenAccessKey")) project.property("awsMavenAccessKey").toString() else System.getenv()["AWS_ACCES_KEY_ID"]!!
-//    awsSecretKey = if (project.hasProperty("awsMavenSecretKey")) project.property("awsMavenSecretKey").toString() else System.getenv()["AWS_SECRET_KEY"]!!
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-    releaseRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-    releaseBasicUser = project.findProperty("com.fsryan.ossrh.release.username")?.toString().orEmpty()
-    releaseBasicPassword = project.findProperty("com.fsryan.ossrh.release.password")?.toString().orEmpty()
-    snapshotRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-    snapshotBasicUser = project.findProperty("com.fsryan.ossrh.snapshot.username")?.toString().orEmpty()
-    snapshotBasicPassword = project.findProperty("com.fsryan.ossrh.snapshot.password")?.toString().orEmpty()
-    useBasicCredentials = true
-    description = "Test library for capturing analytics and dev metrics logging requests"
-    extraPomProperties = mapOf(
-        "gitrev" to GitTools.gitHash(true)
+        vectorDrawables.useSupportLibrary = true
+    }
+
+    buildTypes {
+        getByName("debug") {
+            isMinifyEnabled = false
+            isTestCoverageEnabled = true
+
+            consumerProguardFiles("consumer-proguard-rules.pro")
+        }
+
+        getByName("release") {
+            isMinifyEnabled = false
+            consumerProguardFiles("consumer-proguard-rules.pro")
+        }
+    }
+
+    compileOptions {
+        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    sourceSets {
+        named("main") {
+            manifest.srcFile("src/androidMain/AndroidManifest.xml")
+            res.srcDirs("src/androidMain/res")
+        }
+    }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "mavenCentral"
+            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials {
+                username = project.findProperty("com.fsryan.ossrh.release.username")?.toString().orEmpty()
+                password = project.findProperty("com.fsryan.ossrh.release.password")?.toString().orEmpty()
+            }
+        }
+    }
+}
+
+if (!canBuildMacOSX64) {
+    println("SUPPLYING DEFAULT VERSION OF THE MAC OSX PUBLISHING TASK")
+    tasks.create(name = "publishMacosX64PublicationToMavenCentralRepository") {
+        doLast {
+            println("Cannot publish MacosX64Publication because this platform is not Mac")
+        }
+    }
+}
+
+tasks.create(name = "release") {
+    dependsOn(
+        "publishKotlinMultiplatformPublicationToMavenCentralRepository",
+        "publishAndroidReleasePublicationToMavenCentralRepository",
+        "publishJsPublicationToMavenCentralRepository",
+        "publishJvmPublicationToMavenCentralRepository",
+        "publishMacosX64PublicationToMavenCentralRepository",
+        "publishLinuxX64PublicationToMavenCentralRepository"
     )
 }
 
-tasks.test {
-    useJUnitPlatform {}
-}
-
-tasks.compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.6"
+afterEvaluate {
+    tasks.withType(Test::class.java).forEach {
+        it.useJUnitPlatform()
     }
 }
 
-tasks.compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
+val TaskContainer.jvmTest
+    get() = withType(Test::class).firstOrNull {
+        it.name == "jvmTest"
+    } ?: error("cannot find jvmTest task")

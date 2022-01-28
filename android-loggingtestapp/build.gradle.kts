@@ -18,7 +18,6 @@ android {
             targetSdkVersion(version.targetSdk)
             versionCode = 1
             versionName = "1.0"
-            consumerProguardFile("consumer-proguard-rules.pro")
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
     }
@@ -38,36 +37,31 @@ android {
 
     productFlavors {
         create("firebase") {
-            dimension("integration")
+            setDimension("integration")
             applicationIdSuffix = ".firebase"
         }
         create("appcenter3") {
-            dimension("integration")
+            setDimension("integration")
             applicationIdSuffix = ".appcenter3"
-
-            manifestPlaceholders(mapOf(
-                "testapp.acsecret" to (project.findProperty("testapp.acsecret") ?: ""),
+            sequenceOf(
+                "testapp.acsecret" to project.findProperty("testapp.acsecret")?.toString().orEmpty(),
                 "fsac_analytics_enabled" to "true",
                 "fsac_crashes_enabled" to "true"
-            ))
+            ).forEach { (k, v) -> manifestPlaceholders[k] = v }
         }
         create("appcenter4") {
-            dimension("integration")
+            setDimension("integration")
             applicationIdSuffix = ".appcenter4"
-
-            manifestPlaceholders(mapOf(
-                "testapp.acsecret" to (project.findProperty("testapp.acsecret") ?: ""),
+            sequenceOf(
+                "testapp.acsecret" to project.findProperty("testapp.acsecret")?.toString().orEmpty(),
                 "fsac_analytics_enabled" to "true",
                 "fsac_crashes_enabled" to "true"
-            ))
+            ).forEach { (k, v) -> manifestPlaceholders[k] = v }
         }
         create("newrelic") {
-            dimension("integration")
+            setDimension("integration")
             applicationIdSuffix = ".newrelic"
-
-            manifestPlaceholders(mapOf(
-                "testapp.newrelictoken" to (project.findProperty("testapp.newrelictoken") ?: "")
-            ))
+            manifestPlaceholders["testapp.newrelictoken"] = project.findProperty("testapp.newrelictoken") ?: ""
         }
     }
 
@@ -96,7 +90,6 @@ dependencies {
     implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
 
     implementation(project(":logging"))
-    implementation(project(":logging-android"))
 
     with(Deps.Main.AndroidX) {
         implementation(appCompat)

@@ -1,6 +1,6 @@
 # Logging-Test
 
-Contains the base objects/classes associated with testing logging including a test configuration for logging, [FSTestLoggingConfig](src/main/java/com/fsryan/tools/logging/test/FSTestLoggingConfig.kt), and an [FSEventLogger for testing](src/main/java/com/fsryan/tools/logging/test/TestFSEventLogger.kt).
+Contains the base objects/classes associated with testing logging including a test configuration for logging, [FSTestLoggingConfig](src/commonMain/kotlin/com/fsryan/tools/logging/test/FSTestLoggingConfig.kt), and an [FSEventLogger for testing](src/commonMain/kotlin/com/fsryan/tools/logging/test/TestFSEventLogger.kt).
 
 ## How To
 Declare a dependency upon logging-test in your build.gradle file's testImplementation configuration:

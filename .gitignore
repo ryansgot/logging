@@ -9,6 +9,7 @@
 /buildSrc/build
 /captures
 .externalNativeBuild
+kotlin-js-store/*
 
 # Mac
 .DS_Store
