@@ -10,7 +10,7 @@ object Deps {
                 const val targetSdk = 30
             }
             object FSRyan {
-                const val publication = "0.3.0"
+                const val publication = "0.3.1"
             }
             object JetBrains {
                 const val kotlin = "1.5.10"
