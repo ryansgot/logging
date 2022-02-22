@@ -22,8 +22,8 @@ abstract class ContextSpecificEventLogger : FSEventLogger {
     protected val longProperties: MutableSet<String> = CopyOnWriteArraySet()
     protected val booleanProperties: MutableSet<String> = CopyOnWriteArraySet()
 
-    protected lateinit var appUptimeAttrName: String
-    protected lateinit var timestampAttrName: String
+    @Volatile protected lateinit var appUptimeAttrName: String
+    @Volatile protected lateinit var timestampAttrName: String
 
     /**
      * Implementations should assume they will be called at or close to
