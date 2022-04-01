@@ -2,7 +2,7 @@ package com.fsryan.tools.logging.android
 
 import android.content.Context
 import android.os.Bundle
-import com.fsryan.tools.logging.FSDevMetricsLogger
+import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
@@ -14,6 +14,7 @@ class FirebaseAnalyticsMetricsLogger: ContextSpecificDevMetricsLogger {
     override fun id() = "firebase"
 
     override fun initialize(context: Context) {
+        FirebaseApp.initializeApp(context)
         firebaseAnalytics = Firebase.analytics
     }
 

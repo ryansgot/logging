@@ -10,6 +10,7 @@ plugins {
     id("signing")
     id("android-maven")
     id("fsryan-gradle-publishing")
+    id("org.jetbrains.dokka")
 }
 
 group = "com.fsryan.tools"

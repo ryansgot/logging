@@ -10,13 +10,13 @@ object Deps {
                 const val targetSdk = 30
             }
             object FSRyan {
-                const val publication = "0.3.1"
+                const val publication = "0.3.2"
             }
             object JetBrains {
-                const val kotlin = "1.5.10"
+                const val kotlin = "1.5.31"
             }
             object NewRelic {
-                const val agent = "5.28.1"
+                const val agent = "6.3.1"
             }
         }
         object Main {
@@ -30,8 +30,8 @@ object Deps {
                 const val constraintLayout = "2.0.4"
             }
             object Google {
-                const val analytics = "19.0.0"
-                const val crashlytics = "18.0.0"
+                const val analytics = "20.1.2"
+                const val crashlytics = "18.2.9"
                 const val jsr305 = "3.0.2"
             }
             object Microsoft {
@@ -47,11 +47,14 @@ object Deps {
                 const val androidMavenGradle = "2.1"
             }
             object FSRyan {
-                const val gradlePublishing = "0.1.3"
+                const val gradlePublishing = "0.2.0"
             }
             object Google {
                 const val crashlytics = "2.6.1"
                 const val gms = "4.3.4"
+            }
+            object JetBrains {
+                const val dokka = "1.5.31"
             }
         }
         object Test {
@@ -123,7 +126,9 @@ object Deps {
         }
         object JetBrains {
             private val globalVersion = Versions.Global.JetBrains
-            const val gradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${globalVersion.kotlin}"
+            private val version = Versions.Plugin.JetBrains
+            const val kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${globalVersion.kotlin}"
+            const val dokka = "org.jetbrains.dokka:org.jetbrains.dokka.gradle.plugin:${version.dokka}"
         }
         object NewRelic {
             private val globalVersion = Versions.Global.NewRelic
