@@ -1,6 +1,0 @@
-com.fsryan.tools.logging.android
-array fs_logging_boolean_properties
-array fs_logging_double_properties
-array fs_logging_long_properties
-string fs_logging_app_uptime_attr_name
-string fs_logging_timestamp_attr_name

@@ -1,5 +1,0 @@
-int array fs_logging_boolean_properties 0x0
-int array fs_logging_double_properties 0x0
-int array fs_logging_long_properties 0x0
-int string fs_logging_app_uptime_attr_name 0x0
-int string fs_logging_timestamp_attr_name 0x0
