@@ -17,7 +17,8 @@ buildscript {
     }
     dependencies {
         classpath(deps.Deps.Plugin.Android.gradle)
-        classpath(deps.Deps.Plugin.JetBrains.gradle)
+        classpath(deps.Deps.Plugin.JetBrains.dokka)
+        classpath(deps.Deps.Plugin.JetBrains.kotlin)
         classpath(deps.Deps.Plugin.Google.gms)
         classpath(deps.Deps.Plugin.Google.crashltyics)
         classpath(deps.Deps.Plugin.FSRyan.gradlePublishing)

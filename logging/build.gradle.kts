@@ -10,7 +10,7 @@ plugins {
     id("maven-publish")
     id("signing")
     id("fsryan-gradle-publishing")
-    id("org.jetbrains.dokka") version "0.10.0"
+    id("org.jetbrains.dokka")
 }
 
 group = "com.fsryan.tools"
@@ -80,11 +80,5 @@ tasks.compileKotlin {
 tasks.compileTestKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
-    }
-}
-
-tasks {
-    val dokka by getting(DokkaTask::class) {
-        outputFormat = "javadoc"
     }
 }

@@ -4,7 +4,7 @@ import android.os.SystemClock
 import com.fsryan.tools.logging.FSDevMetricsLogger
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 
-class CrashlyticsDevMetricsLogger : FSDevMetricsLogger {
+class CrashlyticsDevMetricsLogger: FSDevMetricsLogger {
 
     // This is not 100% accurate, but it should be close enough for our
     // purposes. The idea here is that we want to understand when alarms occur
