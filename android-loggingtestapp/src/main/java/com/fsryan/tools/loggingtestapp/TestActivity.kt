@@ -7,41 +7,41 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.fsryan.tools.logging.FSDevMetrics
 import com.fsryan.tools.logging.FSEventLog
-import kotlinx.android.synthetic.main.activity_test.*
-import kotlinx.android.synthetic.main.add_attr_dialog.*
-import kotlinx.android.synthetic.main.remove_attr_dialog.*
+import com.fsryan.tools.loggingtestapp.databinding.ActivityTestBinding
+import com.fsryan.tools.loggingtestapp.databinding.AddAttrDialogBinding
+import com.fsryan.tools.loggingtestapp.databinding.RemoveAttrDialogBinding
 import kotlin.random.Random
 
 class TestActivity : AppCompatActivity() {
 
     var addAttrDialog: AlertDialog? = null
     var removeAttrDialog: AlertDialog? = null
+    private lateinit var binding: ActivityTestBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_test)
+        binding = ActivityTestBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        crashButton.setOnClickListener {
+        binding.crashButton.setOnClickListener {
             throw RuntimeException("TEST CRASH")
         }
-        alarmButton.setOnClickListener {
+        binding.alarmButton.setOnClickListener {
             FSDevMetrics.alarm(Exception("This is an exception"))
         }
-        watchButton.setOnClickListener {
+        binding.watchButton.setOnClickListener {
             FSDevMetrics.watch(
                 msg = "watch message",
-                info = "watch info",
-                extraInfo = "watch extra info"
+                attrs = mapOf("info" to "watch info", "extraInfo" to "watch extra info")
             )
         }
-        infoButton.setOnClickListener {
+        binding.infoButton.setOnClickListener {
             FSDevMetrics.info(
                 msg = "info message",
-                info = "info info",
-                extraInfo = "info extra info"
+                attrs = mapOf("info" to "info info", "extraInfo" to "info extra info")
             )
         }
-        addAttrButton.setOnClickListener {
+        binding.addAttrButton.setOnClickListener {
             getOrCreateRemveAttrDialog().run {
                 if (isShowing) {
                     dismiss()
@@ -54,7 +54,7 @@ class TestActivity : AppCompatActivity() {
                 show()
             }
         }
-        removeAttrButton.setOnClickListener {
+        binding.removeAttrButton.setOnClickListener {
             getOrCreateAddAttrDialog().run {
                 if (isShowing) {
                     dismiss()
@@ -67,7 +67,7 @@ class TestActivity : AppCompatActivity() {
                 show()
             }
         }
-        logAnalyticsButton.setOnClickListener {
+        binding.logAnalyticsButton.setOnClickListener {
             FSEventLog.addEvent(
                 eventName = "example_add_event",
                 attrs = mapOf(
@@ -78,43 +78,48 @@ class TestActivity : AppCompatActivity() {
                 )
             )
         }
-        timedOperationButton.setOnClickListener(object: View.OnClickListener {
+        binding.timedOperationButton.setOnClickListener(object: View.OnClickListener {
 
             private var opId = -1
 
             override fun onClick(v: View?) {
-                if (timedOperationButton.text.toString() == getString(R.string.start_timed_operation)) {
-                    timedOperationButton.setText(R.string.commit_timed_operation)
+                if (binding.timedOperationButton.text.toString() == getString(R.string.start_timed_operation)) {
+                    binding.timedOperationButton.setText(R.string.commit_timed_operation)
                     opId = FSDevMetrics.startTimedOperation("example timed operation")
                 } else {
                     FSDevMetrics.commitTimedOperation(operationName = "example timed operation", operationId = opId)
-                    timedOperationButton.setText(R.string.start_timed_operation)
+                    binding.timedOperationButton.setText(R.string.start_timed_operation)
                 }
             }
 
         })
     }
 
-    private fun getOrCreateAddAttrDialog() = addAttrDialog ?: AlertDialog.Builder(this)
-        .setTitle("ADD ATTR")
-        .setView(R.layout.add_attr_dialog)
+    private fun getOrCreateAddAttrDialog() = addAttrDialog ?: AlertDialog.Builder(this).let { builder ->
+        val addAttrBinding = AddAttrDialogBinding.inflate(layoutInflater)
+        builder.setTitle("ADD ATTR")
+        .setView(addAttrBinding.root)
         .setPositiveButton("SET") { dialog, _ ->
-            val attrName = (dialog as AlertDialog).addAttrNameEntry.text.toString()
-            val attrValue = dialog.addAttrValueEntry.text.toString()
+            val attrName = addAttrBinding.addAttrNameEntry.text.toString()
+            val attrValue = addAttrBinding.addAttrValueEntry.text.toString()
             FSEventLog.addAttr(attrName, attrValue)
         }.setNegativeButton("CANCEL") { dialog, _ -> dialog.dismiss() }
         .create()
         .also { addAttrDialog = it }
+    }
 
-    private fun getOrCreateRemveAttrDialog() = removeAttrDialog ?: AlertDialog.Builder(this)
-        .setTitle("REMOVE ATTR")
-        .setView(R.layout.remove_attr_dialog)
+
+    private fun getOrCreateRemveAttrDialog() = removeAttrDialog ?: AlertDialog.Builder(this).let { builder ->
+        val removeAttrBinding = RemoveAttrDialogBinding.inflate(layoutInflater)
+        builder.setTitle("REMOVE ATTR")
+        .setView(removeAttrBinding.root)
         .setPositiveButton("REMOVE") { dialog, _ ->
-            val attrName = (dialog as AlertDialog).removeAttrNameEntry.text.toString()
+            val attrName = removeAttrBinding.removeAttrNameEntry.text.toString()
             FSEventLog.removeAttr(attrName)
         }.setNegativeButton("CANCEL") { dialog, _ -> dialog.dismiss() }
         .create()
         .also { removeAttrDialog = it }
+    }
 
     private fun randomStringArrayValue(@ArrayRes id: Int): String = resources.getStringArray(id).random()
 }

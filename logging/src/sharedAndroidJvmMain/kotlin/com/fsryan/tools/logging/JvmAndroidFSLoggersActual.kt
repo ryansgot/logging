@@ -1,12 +1,10 @@
 package com.fsryan.tools.logging
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.newSingleThreadContext
-import java.util.*
+import java.util.ServiceLoader
 import kotlin.collections.LinkedHashMap
 
-@OptIn(ObsoleteCoroutinesApi::class)
 internal actual fun createLoggingConfig(defaultLoggingThreadName: String): FSLoggingConfig {
     val loader = ServiceLoader.load(FSLoggingConfig::class.java)
     val configs = loader?.filterNotNull()?.toList() ?: emptyList()

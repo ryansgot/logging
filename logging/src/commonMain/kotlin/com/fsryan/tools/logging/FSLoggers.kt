@@ -9,14 +9,12 @@ internal val loggingConfig: FSLoggingConfig = createLoggingConfig("fslogging")
 internal fun launch(block: CoroutineScope.() -> Unit) = loggingConfig.coroutineScope.launch(block = block)
 
 /**
- * Register this via [Java SPI](https://www.baeldung.com/java-spi). This exists
- * mainly to provide a means of configuring tests, however, you should consider
- * using it if the thread on which logging occurs is particularly important to
- * you.
- *
- * If you do not supply your own [FSLoggingConfig] via SPI, then you will get a
- * unique [Executors.newSingleThreadExecutor] for each of [FSDevMetrics] and
- * [FSEventLog] to use.
+ * On Android/JVM, register this via
+ * [Java SPI](https://www.baeldung.com/java-spi). This exists mainly to provide
+ * a means of configuring tests, however, you should consider using it if the
+ * thread on which logging occurs is particularly important to you. If you do
+ * not supply your own [FSLoggingConfig] via SPI, then there will be a single
+ * thread spawned for logging.
  */
 interface FSLoggingConfig {
     val coroutineScope: CoroutineScope

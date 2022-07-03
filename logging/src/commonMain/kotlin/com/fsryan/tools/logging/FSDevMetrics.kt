@@ -1,6 +1,5 @@
 package com.fsryan.tools.logging
 
-import kotlinx.coroutines.cancel
 import kotlinx.datetime.Clock
 import kotlin.collections.LinkedHashMap
 import kotlin.jvm.JvmOverloads

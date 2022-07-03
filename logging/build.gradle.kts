@@ -1,5 +1,7 @@
+import com.fsryan.gradle.coverage.ClassFilter
 import deps.Deps
 import deps.Deps.Versions
+import tools.Info
 
 plugins {
     kotlin("multiplatform")
@@ -10,21 +12,27 @@ plugins {
     id("android-java-coverage-merger")
     id("org.jetbrains.dokka")
 }
-version = "${Versions.Global.FSRyan.publication}${if (project.hasProperty("postfixDate")) ".${tools.Info.timestamp}" else ""}"
-val canBuildMacOSX64 = System.getProperty("os.name") == "Mac OS X"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-
-
 kotlin {
     android {
-        publishLibraryVariants("release", "debug")
+        publishLibraryVariants("release")
+    }
+    if (Info.canBuildMacIos) {
+        iosArm32()
+        iosArm64()
+        iosSimulatorArm64()
+        iosX64()
+        macosX64()
     }
     jvm("jvm") {
+        attributes {
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
+        }
         compilations.all {
             kotlinOptions {
                 jvmTarget = "1.8"
@@ -35,10 +43,6 @@ kotlin {
         browser()
     }
     linuxX64()
-//    mingwX64()
-    if (canBuildMacOSX64) {
-        macosX64()
-    }
 
     sourceSets {
         val commonMain by getting {
@@ -59,6 +63,7 @@ kotlin {
         val sharedAndroidJvmMain by creating {
             dependsOn(commonMain)
             dependencies {
+                compileOnly(Deps.Main.JetBrains.coroutinesJvm)
             }
         }
         val sharedAndroidJvmTest by creating {
@@ -77,7 +82,6 @@ kotlin {
             }
         }
         val androidMain by getting {
-            kotlin.srcDir("src/sharedAndroidJvmMain/kotlin")
             dependsOn(sharedAndroidJvmMain)
             dependencies {
                 with(Deps.Main.AndroidX) {
@@ -90,9 +94,6 @@ kotlin {
             }
         }
         val androidTest by getting {
-            kotlin.srcDir("src/sharedAndroidJvmTest/kotlin")
-            dependsOn(commonTest)
-            dependsOn(androidMain)
             dependsOn(sharedAndroidJvmTest)
             dependencies {
             }
@@ -107,7 +108,6 @@ kotlin {
 
                 implementation(Deps.Test.Objenesis.lib)
 
-
                 with(Deps.Test.AndroidX) {
                     implementation(coreKtx)
                     implementation(junitKtx)
@@ -117,14 +117,12 @@ kotlin {
             }
         }
         val jvmMain by getting {
-            kotlin.srcDir("src/sharedAndroidJvmMain/kotlin")
             dependsOn(sharedAndroidJvmMain)
             dependencies {
 
             }
         }
         val jvmTest by getting {
-            kotlin.srcDir("src/sharedAndroidJvmTest/kotlin")
             dependsOn(jvmMain)
             dependsOn(sharedAndroidJvmTest)
             dependencies {
@@ -142,7 +140,7 @@ kotlin {
             }
         }
         val nativeMain by creating {
-            dependsOn(commonMain)
+            dependsOn(nonJvmMain)
             dependencies {
 
             }
@@ -152,17 +150,26 @@ kotlin {
             dependencies {
             }
         }
-        // Cannot build this on Mac
-//        val mingwX64Main by getting {
-//            dependsOn(nonJvmMain)
-//            dependencies {
-//            }
-//        }
-        if (canBuildMacOSX64) {
+        if (Info.canBuildMacIos) {
             val macosX64Main by getting {
                 dependsOn(nativeMain)
                 dependencies {
                 }
+            }
+            val iosMain by creating {
+                dependsOn(nonJvmMain)
+            }
+            val iosArm32Main by getting {
+                dependsOn(iosMain)
+            }
+            val iosArm64Main by getting {
+                dependsOn(iosMain)
+            }
+            val iosX64Main by getting {
+                dependsOn(iosMain)
+            }
+            val iosSimulatorArm64Main by getting {
+                dependsOn(iosMain)
             }
         }
     }
@@ -176,8 +183,6 @@ android {
         targetSdk = Versions.Global.Android.targetSdk
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -211,40 +216,6 @@ android {
     }
 }
 
-publishing {
-    repositories {
-        maven {
-            name = "mavenCentral"
-            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            credentials {
-                username = project.findProperty("com.fsryan.ossrh.release.username")?.toString().orEmpty()
-                password = project.findProperty("com.fsryan.ossrh.release.password")?.toString().orEmpty()
-            }
-        }
-    }
-}
-
-if (!canBuildMacOSX64) {
-    println("SUPPLYING DEFAULT VERSION OF THE MAC OSX PUBLISHING TASK")
-    tasks.create(name = "publishMacosX64PublicationToMavenCentralRepository") {
-        doLast {
-            println("Cannot publish MacosX64Publication because this platform is not Mac")
-        }
-    }
-}
-
-tasks.create(name = "release") {
-    dependsOn(
-        "publishKotlinMultiplatformPublicationToMavenCentralRepository",
-        "publishAndroidDebugPublicationToMavenCentralRepository",
-        "publishAndroidReleasePublicationToMavenCentralRepository",
-        "publishJsPublicationToMavenCentralRepository",
-        "publishJvmPublicationToMavenCentralRepository",
-        "publishMacosX64PublicationToMavenCentralRepository",
-        "publishLinuxX64PublicationToMavenCentralRepository"
-    )
-}
-
 afterEvaluate {
     tasks.withType(Test::class.java).forEach {
         it.useJUnitPlatform()
@@ -262,7 +233,7 @@ jacoco {
 
 mergedReportConfig {
     classFilters {
-        add(com.fsryan.gradle.coverage.ClassFilter("debug").apply {
+        add(ClassFilter("debug").apply {
             includes.add("**/com/fsryan/tools/logging/android/**")
             excludes.addAll(
                 listOf(

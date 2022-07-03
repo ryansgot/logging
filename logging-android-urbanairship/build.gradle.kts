@@ -54,7 +54,8 @@ android {
 dependencies {
     implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
 
-    api(project(":logging"))
+    releaseApi(project(":logging"))
+    debugApi(project(":logging-android-debug"))
 
     implementation(Deps.Main.AndroidX.annotation)
     implementation(Deps.Main.JetBrains.kotlinSTDLib)
@@ -91,9 +92,6 @@ fsPublishingConfig {
         "gitrev" to GitTools.gitHash(true)
     )
     dependencyNameOverrides = mapOf(
-        "logging-android-urbanairshipDebug" to mapOf(
-            "logging" to "logging-android-debug"
-        ),
         "logging-android-urbanairshipRelease" to mapOf(
             "logging" to "logging-android"
         )

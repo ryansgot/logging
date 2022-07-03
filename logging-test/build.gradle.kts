@@ -23,7 +23,16 @@ kotlin {
     android {
         publishLibraryVariants("release")
     }
+    if (canBuildMacOSX64) {
+        iosArm32()
+        iosArm64()
+        iosSimulatorArm64()
+        iosX64()
+    }
     jvm("jvm") {
+        attributes {
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
+        }
         compilations.all {
             kotlinOptions {
                 jvmTarget = "1.8"
@@ -34,7 +43,6 @@ kotlin {
         browser()
     }
     linuxX64()
-//    mingwX64()
     if (canBuildMacOSX64) {
         macosX64()
     }
@@ -43,39 +51,29 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 with(Deps.Test.JetBrains) {
-                    implementation(project(":logging"))
-                    implementation(test)
-                    implementation(testAnnotations)
+                    api(project(":logging"))
+                    api(test)
+                    api(testAnnotations)
                 }
-            }
-        }
-        val commonTest by getting {
-            dependencies {
             }
         }
         val sharedAndroidJvmMain by creating {
             dependsOn(commonMain)
             dependencies {
+                with(Deps.Test.JUnit5) {
+                    api(jupiterApi)
+                }
             }
         }
         val androidMain by getting {
-            kotlin.srcDir("src/sharedAndroidJvmMain/kotlin")
             dependsOn(sharedAndroidJvmMain)
             dependencies {
-                with(Deps.Main.AndroidX) {
-                }
             }
         }
         val jvmMain by getting {
-            kotlin.srcDir("src/sharedAndroidJvmMain/kotlin")
             dependsOn(sharedAndroidJvmMain)
             dependencies {
-                with(Deps.Test.JUnit5) {
-                    implementation(jupiterApi)
-                    implementation(params)
-                    runtimeOnly(engine)
-                    runtimeOnly(platformLauncher)
-                }
+
             }
         }
         val nonJvmMain by creating {
@@ -89,7 +87,7 @@ kotlin {
             }
         }
         val nativeMain by creating {
-            dependsOn(commonMain)
+            dependsOn(nonJvmMain)
             dependencies {
 
             }
@@ -99,17 +97,26 @@ kotlin {
             dependencies {
             }
         }
-        // Cannot build this on Mac
-//        val mingwX64Main by getting {
-//            dependsOn(nonJvmMain)
-//            dependencies {
-//            }
-//        }
         if (canBuildMacOSX64) {
             val macosX64Main by getting {
                 dependsOn(nativeMain)
                 dependencies {
                 }
+            }
+            val iosMain by creating {
+                dependsOn(nonJvmMain)
+            }
+            val iosArm32Main by getting {
+                dependsOn(iosMain)
+            }
+            val iosArm64Main by getting {
+                dependsOn(iosMain)
+            }
+            val iosX64Main by getting {
+                dependsOn(iosMain)
+            }
+            val iosSimulatorArm64Main by getting {
+                dependsOn(iosMain)
             }
         }
     }
@@ -158,46 +165,15 @@ android {
     }
 }
 
-publishing {
-    repositories {
-        maven {
-            name = "mavenCentral"
-            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            credentials {
-                username = project.findProperty("com.fsryan.ossrh.release.username")?.toString().orEmpty()
-                password = project.findProperty("com.fsryan.ossrh.release.password")?.toString().orEmpty()
-            }
-        }
-    }
-}
-
-if (!canBuildMacOSX64) {
-    println("SUPPLYING DEFAULT VERSION OF THE MAC OSX PUBLISHING TASK")
-    tasks.create(name = "publishMacosX64PublicationToMavenCentralRepository") {
-        doLast {
-            println("Cannot publish MacosX64Publication because this platform is not Mac")
-        }
-    }
-}
-
-tasks.create(name = "release") {
-    dependsOn(
-        "publishKotlinMultiplatformPublicationToMavenCentralRepository",
-        "publishAndroidReleasePublicationToMavenCentralRepository",
-        "publishJsPublicationToMavenCentralRepository",
-        "publishJvmPublicationToMavenCentralRepository",
-        "publishMacosX64PublicationToMavenCentralRepository",
-        "publishLinuxX64PublicationToMavenCentralRepository"
-    )
-}
-
-afterEvaluate {
-    tasks.withType(Test::class.java).forEach {
-        it.useJUnitPlatform()
-    }
-}
-
-val TaskContainer.jvmTest
-    get() = withType(Test::class).firstOrNull {
-        it.name == "jvmTest"
-    } ?: error("cannot find jvmTest task")
+//publishing {
+//    repositories {
+//        maven {
+//            name = "mavenCentral"
+//            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+//            credentials {
+//                username = project.findProperty("com.fsryan.ossrh.release.username")?.toString().orEmpty()
+//                password = project.findProperty("com.fsryan.ossrh.release.password")?.toString().orEmpty()
+//            }
+//        }
+//    }
+//}

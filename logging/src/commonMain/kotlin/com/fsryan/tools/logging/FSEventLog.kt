@@ -184,10 +184,8 @@ object FSEventLog {
         startAttrs: Map<String, String> = emptyMap()
     ): Int {
         val now = Clock.System.now()
-        val seconds = now.epochSeconds
-        val nanos = now.nanosecondsOfSecond
         launch {
-            val startTime = seconds * 1_000_000_000 + nanos
+            val startTime = now.toEpochMilliseconds()
             var current = timedOperationMap[operationName]
             if (current == null) {
                 current = mutableMapOf()
@@ -224,16 +222,14 @@ object FSEventLog {
         endAttrs: Map<String, String> = emptyMap(),
         vararg destinations: String = emptyArray()
     ) {
-        val endTimeMillis = Clock.System.now().toEpochMilliseconds()
+        val endTimeMillis = Clock.System.now()
         launch {
-            timedOperationMap[operationName]?.remove(operationId)?.let { pair ->
-                val startTimeMillis = pair.first
-                val startAttrs = pair.second
+            timedOperationMap[operationName]?.remove(operationId)?.let { (startTimeMillis, startAttrs) ->
                 activeLoggers().onSomeOrAll(destinations) {
                     sendTimedOperation(
                         operationName = operationName,
                         startTimeMillis = startTimeMillis,
-                        endTimeMillis = endTimeMillis,
+                        endTimeMillis = endTimeMillis.toEpochMilliseconds(),
                         durationAttrName = durationAttrName,
                         startTimeMillisAttrName = startTimeMillisAttrName,
                         endTimeMillisAttrName = endTimeMillisAttrName,

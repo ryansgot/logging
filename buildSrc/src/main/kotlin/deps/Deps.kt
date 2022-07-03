@@ -6,14 +6,14 @@ object Deps {
         object Global {
             object Android {
                 const val compileSdk = 31
-                const val minSdk = 16
+                const val minSdk = 21
                 const val targetSdk = 31
             }
             object FSRyan {
                 const val publication = "0.4.0"
             }
             object JetBrains {
-                const val kotlin = "1.6.10"
+                const val kotlin = "1.6.21"
             }
             object NewRelic {
                 const val agent = "6.4.1"
@@ -35,12 +35,12 @@ object Deps {
                 const val jsr305 = "3.0.2"
             }
             object JetBrains {
-                const val coroutines = "1.6.0"
+                const val coroutines = "1.6.3"
                 const val datetime = "0.3.2"
             }
             object Microsoft {
                 const val appCenter3 = "3.3.1"
-                const val appCenter4 = "4.4.2"
+                const val appCenter4 = "4.4.5"
             }
         }
         object Plugin {
@@ -48,18 +48,18 @@ object Deps {
                 const val gradle = "7.0.4"
             }
             object Eclemma {
-                const val jacoco = "0.8.7"
+                const val jacoco = "0.8.8"
             }
             object FSRyan {
                 const val androidJavaCoverageMerger = "0.2.0"
-                const val gradlePublishing = "0.2.0"
+                const val gradlePublishing = "0.3.0"
             }
             object Google {
                 const val crashlytics = "2.8.1"
                 const val gms = "4.3.10"
             }
             object JetBrains {
-                const val dokka = "1.5.31"
+                const val dokka = "1.6.21"
             }
         }
         object Test {
@@ -72,8 +72,8 @@ object Deps {
                 const val lib = "4.12"
             }
             object JUnit5 {
-                const val jupiter = "5.7.1"
-                const val platform = "1.7.1"
+                const val jupiter = "5.8.1"
+                const val platform = "1.8.1"
             }
             object MockK {
                 const val core = "1.10.6"
@@ -106,6 +106,7 @@ object Deps {
             private val globalVersion = Versions.Global.JetBrains
             private val version = Versions.Main.JetBrains
             const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${version.coroutines}"
+            const val coroutinesJvm = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${version.coroutines}"
             const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${version.coroutines}"
             const val dateTime = "org.jetbrains.kotlinx:kotlinx-datetime:${version.datetime}"
             const val kotlinSTDLibCommon = "org.jetbrains.kotlin:kotlin-stdlib-common:${globalVersion.kotlin}"
