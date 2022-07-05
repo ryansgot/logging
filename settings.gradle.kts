@@ -1,6 +1,7 @@
 rootProject.name = "fsryan-logging"
 include(
     ":android-loggingtestapp",
+    ":java-testapp",
     ":kotlin-testapp",
     ":logging",
     ":logging-android-debug",

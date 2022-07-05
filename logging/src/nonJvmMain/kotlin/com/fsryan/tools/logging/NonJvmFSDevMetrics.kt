@@ -61,11 +61,18 @@ actual object FSDevMetrics {
      * supplied
      * @see [FSDevMetricsLogger.watch]
      */
-    actual fun watch(msg: String, attrs: Map<String, String>, vararg destinations: String) {
+    actual fun watch(
+        msg: String,
+        info: String?,
+        extraInfo: String?,
+        attrs: Map<String, String>,
+        vararg destinations: String
+    ) {
         launch {
             state.access { mutableValues ->
+                val actualAttrs = combineLegacyInfosWithAttrs(attrs = attrs, info = info, extraInfo = extraInfo)
                 mutableValues.loggers.onSomeOrAll(destinations) {
-                    watch(msg, attrs)
+                    watch(msg, actualAttrs)
                 }
             }
         }
@@ -140,13 +147,16 @@ actual object FSDevMetrics {
      */
     actual fun info(
         msg: String,
+        info: String?,
+        extraInfo: String?,
         attrs: Map<String, String>,
         vararg destinations: String
     ) {
         launch {
             state.access { mutableValues ->
+                val actualAttrs = combineLegacyInfosWithAttrs(attrs, info = info, extraInfo = extraInfo)
                 mutableValues.loggers.onSomeOrAll(destinations) {
-                    info(msg, attrs)
+                    info(msg, actualAttrs)
                 }
             }
         }

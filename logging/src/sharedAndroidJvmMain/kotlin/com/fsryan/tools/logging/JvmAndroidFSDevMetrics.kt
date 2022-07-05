@@ -1,6 +1,7 @@
 package com.fsryan.tools.logging
 
 import kotlinx.datetime.Clock
+import kotlin.random.Random
 import kotlin.reflect.KClass
 
 /**
@@ -28,6 +29,7 @@ actual object FSDevMetrics {
 
     internal val mutableValues = FSLoggerMutableValues(loggers = createInitialDevMetricsLoggers())
 
+    @JvmStatic
     actual fun addLogger(logger: FSDevMetricsLogger) {
         launch {
             mutableValues.loggers[logger.id()] = logger
@@ -40,6 +42,8 @@ actual object FSDevMetrics {
      * supplied. Add supplemental attributes via the [attrs] parameter.
      * @see [FSDevMetricsLogger.alarm]
      */
+    @JvmStatic
+    @JvmOverloads
     actual fun alarm(t: Throwable, attrs: Map<String, String>, vararg destinations: String) {
         launch {
             mutableValues.loggers.onSomeOrAll(destinations) {
@@ -48,16 +52,19 @@ actual object FSDevMetrics {
         }
     }
 
-    /**
-     * Either sends the watch specifically to the [destinations] when supplied,
-     * or sends the watch to all registered [state] when [destinations] not
-     * supplied
-     * @see [FSDevMetricsLogger.watch]
-     */
-    actual fun watch(msg: String, attrs: Map<String, String>, vararg destinations: String) {
+    @JvmStatic
+    @JvmOverloads
+    actual fun watch(
+        msg: String,
+        info: String?,
+        extraInfo: String?,
+        attrs: Map<String, String>,
+        vararg destinations: String
+    ) {
         launch {
+            val actualAttrs = combineLegacyInfosWithAttrs(attrs = attrs, info = info, extraInfo = extraInfo)
             mutableValues.loggers.onSomeOrAll(destinations) {
-                watch(msg, attrs)
+                watch(msg, actualAttrs)
             }
         }
     }
@@ -69,6 +76,8 @@ actual object FSDevMetrics {
      * supply the [operationId] yourself, then a randomly generated id will be
      * returned.
      */
+    @JvmStatic
+    @JvmOverloads
     actual fun startTimedOperation(operationName: String, operationId: Int): Int {
         val now = Clock.System.now()
         val seconds = now.epochSeconds
@@ -83,6 +92,7 @@ actual object FSDevMetrics {
     /**
      * Cancels the timer for the operation.
      */
+    @JvmStatic
     actual fun cancelTimedOperation(operationName: String, operationId: Int) {
         launch {
             mutableValues.metrics.consumeOperationMetric(operationName, operationId)
@@ -94,6 +104,8 @@ actual object FSDevMetrics {
      * [operationId] input to the [destinations] (or all destinations if none
      * specified).
      */
+    @JvmStatic
+    @JvmOverloads
     actual fun commitTimedOperation(
         operationName: String,
         operationId: Int,
@@ -114,15 +126,23 @@ actual object FSDevMetrics {
     }
 
     /**
-     * Either sends the info specifically to the [destinations] when supplied,
-     * or sends the info to all registered [state] when [destinations] not
-     * supplied
-     * @see [FSDevMetricsLogger.info]
+     * Either sends the info log specifically to the [destinations] when
+     * supplied, or sends the info to all registered [FSDevMetricsLogger]s when
+     * [destinations] not supplied
      */
-    actual fun info(msg: String, attrs: Map<String, String>, vararg destinations: String) {
+    @JvmStatic
+    @JvmOverloads
+    actual fun info(
+        msg: String,
+        info: String?,
+        extraInfo: String?,
+        attrs: Map<String, String>,
+        vararg destinations: String
+    ) {
         launch {
+            val actualAttrs = combineLegacyInfosWithAttrs(attrs, info = info, extraInfo = extraInfo)
             mutableValues.loggers.onSomeOrAll(destinations) {
-                info(msg, attrs)
+                info(msg, actualAttrs)
             }
         }
     }
@@ -132,6 +152,7 @@ actual object FSDevMetrics {
      * of a type the class [T]. Ideally, this function is called very early in the
      * application's lifecycle.
      */
+    @JvmStatic
     @Suppress("UNCHECKED_CAST")
     actual fun <T: FSDevMetricsLogger> onLoggersOfType(cls: KClass<T>, perform: T.() -> Unit) {
         launch {

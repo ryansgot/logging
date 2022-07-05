@@ -42,6 +42,7 @@ expect object FSEventLog {
      * > NOTE: If you add a logger that has the same id as another logger
      * instance, this logger will OVERWRITE the previously-configured logger.
      */
+    @JvmStatic
     fun addLogger(logger: FSEventLogger)
 
     /**
@@ -187,6 +188,7 @@ expect object FSEventLog {
      * then compute all values that you will need to capture in the [perform]
      * function ahead of time.
      */
+    @JvmStatic
     fun <T: FSEventLogger> onLoggersOfType(cls: KClass<T>, perform: T.() -> Unit)
 }
 

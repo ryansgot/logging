@@ -11,6 +11,7 @@ actual object FSEventLog {
      */
     internal val mutableValues = FSLoggerMutableValues(loggers = createInitialEventLoggers())
 
+    @JvmStatic
     actual fun addLogger(logger: FSEventLogger) {
         launch {
             mutableValues.loggers[logger.id()] = logger
@@ -30,6 +31,8 @@ actual object FSEventLog {
      * @see addAttrs
      * @see incrementCountableAttr
      */
+    @JvmStatic
+    @JvmOverloads
     actual fun addAttr(attrName: String, attrValue: String, vararg destinations: String) {
         launch {
             mutableValues.loggers.onSomeOrAll(destinations) {
@@ -46,6 +49,8 @@ actual object FSEventLog {
      * @see addAttr
      * @see removeAttrs
      */
+    @JvmStatic
+    @JvmOverloads
     actual fun removeAttr(attrName: String, vararg destinations: String) {
         launch {
             mutableValues.loggers.onSomeOrAll(destinations) {
@@ -61,6 +66,8 @@ actual object FSEventLog {
      *
      * @see addAttr
      */
+    @JvmStatic
+    @JvmOverloads
     actual fun removeAttrs(attrNames: Iterable<String>, vararg destinations: String) {
         launch {
             mutableValues.loggers.onSomeOrAll(destinations) {
@@ -79,6 +86,8 @@ actual object FSEventLog {
      * @see addAttr
      * @see incrementCountableAttr
      */
+    @JvmStatic
+    @JvmOverloads
     actual fun addAttrs(attrs: Map<String, String>, vararg destinations: String) {
         launch {
             mutableValues.loggers.onSomeOrAll(destinations) {
@@ -97,6 +106,8 @@ actual object FSEventLog {
      * @see addAttr
      * @see addAttrs
      */
+    @JvmStatic
+    @JvmOverloads
     actual fun incrementCountableAttr(attrName: String, vararg destinations: String) {
         launch {
             mutableValues.loggers.onSomeOrAll(destinations) {
@@ -116,6 +127,8 @@ actual object FSEventLog {
      * By passing in a specific value for [destinations], you can limit the
      * destination of the event to one or more loggers.
      */
+    @JvmStatic
+    @JvmOverloads
     actual fun addEvent(eventName: String, attrs: Map<String, String>, vararg destinations: String) {
         launch {
             mutableValues.loggers.onSomeOrAll(destinations) {
@@ -136,6 +149,8 @@ actual object FSEventLog {
      * (supposing) that you need to commit the timed operation at some point
      * where you may lose access.
      */
+    @JvmStatic
+    @JvmOverloads
     actual fun startTimedOperation(
         operationName: String,
         operationId: Int,
@@ -160,6 +175,7 @@ actual object FSEventLog {
     /**
      * Cancels the timer for the operation.
      */
+    @JvmStatic
     actual fun cancelTimedOperation(operationName: String, operationId: Int) {
         launch {
             mutableValues.metrics.consumeOperationMetric(operationName, operationId)
@@ -171,6 +187,8 @@ actual object FSEventLog {
      * [operationId] input to the [destinations] (or all destinations if none
      * specified).
      */
+    @JvmStatic
+    @JvmOverloads
     actual fun commitTimedOperation(
         operationName: String,
         operationId: Int,
@@ -204,6 +222,7 @@ actual object FSEventLog {
      * type the class [T]. Ideally, this function is called very early in the
      * application's lifecycle.
      */
+    @JvmStatic
     @Suppress("UNCHECKED_CAST")
     actual fun <T: FSEventLogger> onLoggersOfType(cls: KClass<T>, perform: T.() -> Unit) {
         launch {

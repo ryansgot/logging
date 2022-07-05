@@ -1,7 +1,5 @@
 package com.fsryan.tools.logging
 
-import kotlin.jvm.JvmOverloads
-import kotlin.jvm.JvmStatic
 import kotlin.random.Random
 import kotlin.reflect.KClass
 
@@ -41,19 +39,20 @@ expect object FSDevMetrics {
      * supplied. Add supplemental attributes via the [attrs] parameter.
      * @see [FSDevMetricsLogger.alarm]
      */
-    @JvmStatic
-    @JvmOverloads
     fun alarm(t: Throwable, attrs: Map<String, String> = emptyMap(), vararg destinations: String = emptyArray())
 
     /**
      * Either sends the watch specifically to the [destinations] when supplied,
-     * or sends the watch to all registered [state] when [destinations] not
-     * supplied
-     * @see [FSDevMetricsLogger.watch]
+     * or sends the watch to all registered [FSDevMetricsLogger]s when
+     * [destinations] not supplied
      */
-    @JvmStatic
-    @JvmOverloads
-    fun watch(msg: String, attrs: Map<String, String> = emptyMap(), vararg destinations: String = emptyArray())
+    fun watch(
+        msg: String,
+        info: String? = null,
+        extraInfo: String? = null,
+        attrs: Map<String, String> = emptyMap(),
+        vararg destinations: String = emptyArray()
+    )
 
     /**
      * Starts a timer for the operation [operationName] and returns the
@@ -62,14 +61,11 @@ expect object FSDevMetrics {
      * supply the [operationId] yourself, then a randomly generated id will be
      * returned.
      */
-    @JvmStatic
-    @JvmOverloads
     fun startTimedOperation(operationName: String, operationId: Int = Random.nextInt()): Int
 
     /**
      * Cancels the timer for the operation.
      */
-    @JvmStatic
     fun cancelTimedOperation(operationName: String, operationId: Int)
 
     /**
@@ -77,8 +73,6 @@ expect object FSDevMetrics {
      * [operationId] input to the [destinations] (or all destinations if none
      * specified).
      */
-    @JvmStatic
-    @JvmOverloads
     fun commitTimedOperation(
         operationName: String,
         operationId: Int,
@@ -86,15 +80,14 @@ expect object FSDevMetrics {
     )
 
     /**
-     * Either sends the info specifically to the [destinations] when supplied,
-     * or sends the info to all registered [state] when [destinations] not
-     * supplied
-     * @see [FSDevMetricsLogger.info]
+     * Either sends the info log specifically to the [destinations] when
+     * supplied, or sends the info to all registered [FSDevMetricsLogger]s when
+     * [destinations] not supplied
      */
-    @JvmStatic
-    @JvmOverloads
     fun info(
         msg: String,
+        info: String? = null,
+        extraInfo: String? = null,
         attrs: Map<String, String> = emptyMap(),
         vararg destinations: String = emptyArray()
     )
@@ -116,4 +109,17 @@ expect object FSDevMetrics {
      * function ahead of time.
      */
     fun <T: FSDevMetricsLogger> onLoggersOfType(cls: KClass<T>, perform: T.() -> Unit)
+}
+
+internal fun combineLegacyInfosWithAttrs(attrs: Map<String, String>, info: String?, extraInfo: String?): Map<String, String> {
+    return when (info) {
+        null -> when (extraInfo) {
+            null -> attrs
+            else -> attrs.plus("extraInfo" to extraInfo)
+        }
+        else -> when (extraInfo) {
+            null -> attrs.plus("info" to info)
+            else -> attrs.plus(arrayOf("info" to info, "extraInfo" to extraInfo))
+        }
+    }
 }
