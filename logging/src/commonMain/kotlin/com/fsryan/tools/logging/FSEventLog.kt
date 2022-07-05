@@ -1,9 +1,9 @@
 package com.fsryan.tools.logging
 
-import kotlinx.datetime.Clock
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 import kotlin.random.Random
+import kotlin.reflect.KClass
 
 /**
  * A single place to perform event logging. This will distribute the log event
@@ -35,27 +35,14 @@ import kotlin.random.Random
  * [ExecutorService] created by this library for handling all [FSEventLog]
  * operations.
  */
-object FSEventLog {
+expect object FSEventLog {
 
     /**
-     * Threading: writes only during object initialization. Reads from logging
-     * executor. Therefore the list is effectively immutable wrt readers.
-     *
-     * Visibility: visible for inner access (avoids synthetic accessor)
+     * adds a logger to the configured set of [FSDevMetricsLogger] instances.
+     * > NOTE: If you add a logger that has the same id as another logger
+     * instance, this logger will OVERWRITE the previously-configured logger.
      */
-    internal val loggers: LinkedHashMap<String, FSEventLogger> = createAllEventLoggers()
-
-    /**
-     * Threading: writes/reads may happen on any thread, but in accordance with
-     * the [ConcurrentHashMap] documentation:
-     * > Retrieval operations (including get) generally do not block, so may
-     * overlap with update operations (including put and remove). Retrievals
-     * reflect the results of the most recently completed update operations
-     * holding upon their onset.
-     *
-     * Visibility: visible for inner access (avoids synthetic accessor)
-     */
-    internal val timedOperationMap: MutableMap<String, MutableMap<Int, Pair<Long, Map<String, String>>>> = mutableMapOf()
+    fun addLogger(logger: FSEventLogger)
 
     /**
      * Attributes are named values that are persisted throughout a session.
@@ -72,11 +59,7 @@ object FSEventLog {
      */
     @JvmStatic
     @JvmOverloads
-    fun addAttr(attrName: String, attrValue: String, vararg destinations: String = emptyArray()) {
-        launch {
-            activeLoggers().onSomeOrAll(destinations) { addAttr(attrName, attrValue)}
-        }
-    }
+    fun addAttr(attrName: String, attrValue: String, vararg destinations: String = emptyArray())
 
     /**
      * Because attributes are persisted throughout a session, instead of
@@ -88,11 +71,7 @@ object FSEventLog {
      */
     @JvmStatic
     @JvmOverloads
-    fun removeAttr(attrName: String, vararg destinations: String = emptyArray()) {
-        launch {
-            activeLoggers().onSomeOrAll(destinations) { removeAttr(attrName) }
-        }
-    }
+    fun removeAttr(attrName: String, vararg destinations: String = emptyArray())
 
     /**
      * Because attributes are persisted throughout a session, instead of
@@ -103,11 +82,7 @@ object FSEventLog {
      */
     @JvmStatic
     @JvmOverloads
-    fun removeAttrs(attrNames: Iterable<String>, vararg destinations: String = emptyArray()) {
-        launch {
-            activeLoggers().onSomeOrAll(destinations) { removeAttrs(attrNames) }
-        }
-    }
+    fun removeAttrs(attrNames: Iterable<String>, vararg destinations: String = emptyArray())
 
     /**
      * This is the same as [addAttr], but in bulk. The keys of [attrs] are the
@@ -121,11 +96,7 @@ object FSEventLog {
      */
     @JvmStatic
     @JvmOverloads
-    fun addAttrs(attrs: Map<String, String>, vararg destinations: String = emptyArray()) {
-        launch {
-            activeLoggers().onSomeOrAll(destinations) { addAttrs(attrs) }
-        }
-    }
+    fun addAttrs(attrs: Map<String, String>, vararg destinations: String = emptyArray())
 
     /**
      * If your attr is countable (meaning that it is parsable to a Long), then
@@ -139,11 +110,7 @@ object FSEventLog {
      */
     @JvmStatic
     @JvmOverloads
-    fun incrementCountableAttr(attrName: String, vararg destinations: String = emptyArray()) {
-        launch {
-            activeLoggers().onSomeOrAll(destinations) { incrementAttrValue(attrName) }
-        }
-    }
+    fun incrementCountableAttr(attrName: String, vararg destinations: String = emptyArray())
 
     /**
      * Log an event with the name [eventName]. This log will take the
@@ -158,11 +125,7 @@ object FSEventLog {
      */
     @JvmStatic
     @JvmOverloads
-    fun addEvent(eventName: String, attrs: Map<String, String> = emptyMap(), vararg destinations: String = emptyArray()) {
-        launch {
-            activeLoggers().onSomeOrAll(destinations) { addEvent(eventName, attrs) }
-        }
-    }
+    fun addEvent(eventName: String, attrs: Map<String, String> = emptyMap(), vararg destinations: String = emptyArray())
 
     /**
      * Starts a timer for the operation [operationName] and returns the
@@ -182,29 +145,13 @@ object FSEventLog {
         operationName: String,
         operationId: Int = Random.nextInt(),
         startAttrs: Map<String, String> = emptyMap()
-    ): Int {
-        val now = Clock.System.now()
-        launch {
-            val startTime = now.toEpochMilliseconds()
-            var current = timedOperationMap[operationName]
-            if (current == null) {
-                current = mutableMapOf()
-                timedOperationMap[operationName] = current
-            }
-            current[operationId] = Pair(startTime, startAttrs)
-        }
-        return operationId
-    }
+    ): Int
 
     /**
      * Cancels the timer for the operation.
      */
     @JvmStatic
-    fun cancelTimedOperation(operationName: String, operationId: Int) {
-        launch {
-            timedOperationMap[operationName]?.remove(operationId)
-        }
-    }
+    fun cancelTimedOperation(operationName: String, operationId: Int)
 
     /**
      * Commits the timed operation with the name [operationName] and id
@@ -221,35 +168,25 @@ object FSEventLog {
         endTimeMillisAttrName: String? = null,
         endAttrs: Map<String, String> = emptyMap(),
         vararg destinations: String = emptyArray()
-    ) {
-        val endTimeMillis = Clock.System.now()
-        launch {
-            timedOperationMap[operationName]?.remove(operationId)?.let { (startTimeMillis, startAttrs) ->
-                activeLoggers().onSomeOrAll(destinations) {
-                    sendTimedOperation(
-                        operationName = operationName,
-                        startTimeMillis = startTimeMillis,
-                        endTimeMillis = endTimeMillis.toEpochMilliseconds(),
-                        durationAttrName = durationAttrName,
-                        startTimeMillisAttrName = startTimeMillisAttrName,
-                        endTimeMillisAttrName = endTimeMillisAttrName,
-                        startAttrs = startAttrs,
-                        endAttrs = endAttrs
-                    )
-                }
-            }
-        }
-    }
+    )
 
-    fun testLogger(): FSEventLogger? {
-        return loggers.asIterable()
-            .firstOrNull { it.value.runInTestEnvironment() }
-            ?.value
-    }
 
-    private fun activeLoggers() = when (loggingConfig.testEnv) {
-        true -> loggers.supportingTestEnvironment()
-        false -> loggers
-    }
+    /**
+     * Enables post-instantiation configuration of [FSEventLogger] instances of
+     * a type the class [T]. Ideally, this function is called very early in the
+     * application's lifecycle.
+     *
+     * > NOTE: The [perform] function will be confined to the same thread on
+     * which logging occurs
+     *
+     * > NOTE: On non-JVM platforms, you should be careful to not pass
+     * references to mutable state in the [perform] function, as updates to
+     * that same mutable state elsewhere could cause a crash. If you need to
+     * capture a reference in the [perform] function, your best bet is to
+     * create a deep copy of that reference. If deep copying is not practical,
+     * then compute all values that you will need to capture in the [perform]
+     * function ahead of time.
+     */
+    fun <T: FSEventLogger> onLoggersOfType(cls: KClass<T>, perform: T.() -> Unit)
 }
 

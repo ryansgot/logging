@@ -13,6 +13,7 @@ object Deps {
                 const val publication = "0.4.0"
             }
             object JetBrains {
+                const val coroutines = "1.6.3"
                 const val kotlin = "1.6.21"
             }
             object NewRelic {
@@ -29,18 +30,23 @@ object Deps {
                 const val core = "1.5.0"
                 const val constraintLayout = "2.0.4"
             }
+            object Autodesk {
+                const val coroutineWorker = "0.8.2"
+            }
             object Google {
                 const val analytics = "20.1.2"
                 const val crashlytics = "18.2.9"
                 const val jsr305 = "3.0.2"
             }
             object JetBrains {
-                const val coroutines = "1.6.3"
                 const val datetime = "0.3.2"
             }
             object Microsoft {
                 const val appCenter3 = "3.3.1"
                 const val appCenter4 = "4.4.5"
+            }
+            object Touchlab {
+                const val statelyIsolate = "1.2.3"
             }
         }
         object Plugin {
@@ -96,6 +102,10 @@ object Deps {
             const val coreKtx = "androidx.core:core-ktx:${version.core}"
             const val constraintLayout = "androidx.constraintlayout:constraintlayout:${version.constraintLayout}"
         }
+        object Autodesk {
+            private val version = Versions.Main.Autodesk
+            const val coroutineWorker = "com.autodesk:coroutineworker:${version.coroutineWorker}"
+        }
         object Google {
             private val version = Versions.Main.Google
             const val analytics = "com.google.firebase:firebase-analytics-ktx:${version.analytics}"
@@ -105,9 +115,9 @@ object Deps {
         object JetBrains {
             private val globalVersion = Versions.Global.JetBrains
             private val version = Versions.Main.JetBrains
-            const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${version.coroutines}"
-            const val coroutinesJvm = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${version.coroutines}"
-            const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${version.coroutines}"
+            const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${globalVersion.coroutines}"
+            const val coroutinesJvm = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${globalVersion.coroutines}"
+            const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${globalVersion.coroutines}"
             const val dateTime = "org.jetbrains.kotlinx:kotlinx-datetime:${version.datetime}"
             const val kotlinSTDLibCommon = "org.jetbrains.kotlin:kotlin-stdlib-common:${globalVersion.kotlin}"
             const val kotlinSTDLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${globalVersion.kotlin}"
@@ -122,6 +132,10 @@ object Deps {
         object NewRelic {
             private val globalVersion = Versions.Global.NewRelic
             const val agent = "com.newrelic.agent.android:android-agent:${globalVersion.agent}"
+        }
+        object Touchlab {
+            private val version = Versions.Main.Touchlab
+            const val statelyIsolate = "co.touchlab:stately-isolate:${version.statelyIsolate}"
         }
     }
     object Plugin {
@@ -163,6 +177,7 @@ object Deps {
             const val kotlinReflect = "org.jetbrains.kotlin:kotlin-reflect:${globalVersion.kotlin}"
             const val testAnnotations = "org.jetbrains.kotlin:kotlin-test-annotations-common:${globalVersion.kotlin}"
             const val test = "org.jetbrains.kotlin:kotlin-test-annotations-common:${globalVersion.kotlin}"
+            const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${globalVersion.coroutines}"
         }
         object JUnit {
             private val version = Versions.Test.JUnit

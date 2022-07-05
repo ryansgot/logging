@@ -6,8 +6,8 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
 import androidx.annotation.AnyThread
-import androidx.annotation.MainThread
 import androidx.annotation.StringRes
 import com.fsryan.tools.logging.FSEventLog
 import com.newrelic.agent.android.FeatureFlag
@@ -35,8 +35,19 @@ fun FSEventLog.logWithEventType(
     addEvent(eventName, attrs, *destinations)
 }
 
-@MainThread
 internal fun Context.startNewRelicIfNecessary() {
+    // The main thread is the only safe thread on which to start newrelic, as
+    // the underlying NewRelic.isStarted() function accesses unprotected state.
+    // NewRelic does some of its own analytics gathering and such on the main
+    // thread, so there really is not much other choice than to force the call
+    // onto the main-thread.
+    if (mainLooper.thread  != Thread.currentThread()) {
+        Handler(mainLooper).post {
+            startNewRelicIfNecessary()
+        }
+        return
+    }
+
     if (NewRelic.isStarted()) {
         return
     }

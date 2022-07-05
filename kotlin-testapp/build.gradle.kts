@@ -10,8 +10,8 @@ application {
     mainClassName = "com.fsryan.tools.logging.testappkt.MainKt"
 }
 
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-java.targetCompatibility = JavaVersion.VERSION_1_8
+java.sourceCompatibility = JavaVersion.VERSION_11
+java.targetCompatibility = JavaVersion.VERSION_11
 
 dependencies {
     implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
@@ -25,8 +25,6 @@ dependencies {
         testImplementation(params)
         testRuntimeOnly(engine)
     }
-
-    testImplementation(project(":logging-test"))
 }
 
 tasks.test {
@@ -35,12 +33,12 @@ tasks.test {
 
 tasks.compileKotlin {
     kotlinOptions {
-        jvmTarget = "1.6"
+        jvmTarget = "11"
     }
 }
 
 tasks.compileTestKotlin {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 }

@@ -49,8 +49,7 @@ allprojects {
 
     var configuredPublishing = false
     var configuredSigning = false
-
-
+    
     if (!tools.Info.canBuildMacIos) {
         println("Creating dummy implementation of mac/ios publication task")
         tools.Publications.iosMacPublicationTasks().forEach { taskName ->

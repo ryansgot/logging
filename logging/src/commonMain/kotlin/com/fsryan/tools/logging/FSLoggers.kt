@@ -1,25 +1,6 @@
 package com.fsryan.tools.logging
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import kotlin.jvm.JvmStatic
-
-internal val loggingConfig: FSLoggingConfig = createLoggingConfig("fslogging")
-internal fun launch(block: CoroutineScope.() -> Unit) = loggingConfig.coroutineScope.launch(block = block)
-
-/**
- * On Android/JVM, register this via
- * [Java SPI](https://www.baeldung.com/java-spi). This exists mainly to provide
- * a means of configuring tests, however, you should consider using it if the
- * thread on which logging occurs is particularly important to you. If you do
- * not supply your own [FSLoggingConfig] via SPI, then there will be a single
- * thread spawned for logging.
- */
-interface FSLoggingConfig {
-    val coroutineScope: CoroutineScope
-    val testEnv: Boolean
-}
 
 /**
  * Base interface for loggers. [FSDevMetrics] and [FSEventLog] look up their
@@ -50,11 +31,7 @@ interface FSLogger {
          */
         @JvmStatic
         fun cancelLogging() {
-            try {
-                loggingConfig.coroutineScope.cancel()
-            } catch (_: Exception) {
-
-            }
+            cancelLoggingInternal()
         }
     }
 }
@@ -150,14 +127,12 @@ interface FSEventLogger : FSLogger {
         startAttrs: Map<String, String> = emptyMap(),
         endAttrs: Map<String, String> = emptyMap()
     ) {
-        launch {
-            val durationAttrs = mutableMapOf<String, String>()
-            durationAttrName?.let { durationAttrs[it] = (endTimeMillis - startTimeMillis).toString() }
-            startTimeMillisAttrName?.let { durationAttrs[it] = startTimeMillis.toString() }
-            endTimeMillisAttrName?.let { durationAttrs[it] = endTimeMillis.toString() }
-            val attrs = startAttrs + endAttrs + durationAttrs
-            addEvent(operationName, attrs)
-        }
+        val durationAttrs = mutableMapOf<String, String>()
+        durationAttrName?.let { durationAttrs[it] = (endTimeMillis - startTimeMillis).toString() }
+        startTimeMillisAttrName?.let { durationAttrs[it] = startTimeMillis.toString() }
+        endTimeMillisAttrName?.let { durationAttrs[it] = endTimeMillis.toString() }
+        val attrs = startAttrs + endAttrs + durationAttrs
+        addEvent(operationName, attrs)
     }
 }
 
@@ -178,10 +153,12 @@ fun FSEventLogger.removeAttrs(attrNames: Iterable<String>) {
 /**
  * Run on all when [keys] is empty and run on specific entries when [keys] is
  * nonempty
+ * Threading: NOT thread safe
  *
  * does not crash when a key is not found
+ * @see onSomeOrAll to access via isolate state
  */
-internal inline fun <T> Map<String, T>.onSomeOrAll(keys: Array<out String>, block: T.() -> Unit) {
+internal inline fun <T:Any> Map<String, T>.onSomeOrAll(keys: Array<out String>, block: T.() -> Unit) {
     when {
         keys.isEmpty() -> values.forEach { it.block() }
         else -> keys.forEach { key -> get(key)?.block() }
@@ -190,6 +167,5 @@ internal inline fun <T> Map<String, T>.onSomeOrAll(keys: Array<out String>, bloc
 
 internal fun <T:FSLogger> Map<String, T>.supportingTestEnvironment() = filterValues { it.runInTestEnvironment() }
 
-internal expect fun createLoggingConfig(defaultLoggingThreadName: String): FSLoggingConfig
-internal expect fun createAllDevMetricsLoggers(): LinkedHashMap<String, FSDevMetricsLogger>
-internal expect fun createAllEventLoggers(): LinkedHashMap<String, FSEventLogger>
+internal expect fun createInitialDevMetricsLoggers(): MutableMap<String, FSDevMetricsLogger>
+internal expect fun createInitialEventLoggers(): MutableMap<String, FSEventLogger>

@@ -1,10 +1,9 @@
 package com.fsryan.tools.logging
 
-import kotlinx.datetime.Clock
-import kotlin.collections.LinkedHashMap
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 import kotlin.random.Random
+import kotlin.reflect.KClass
 
 /**
  * The single place you need to use in order to log developer-centric events.
@@ -27,40 +26,34 @@ import kotlin.random.Random
  * [ExecutorService] created by this library for handling all [FSDevMetrics]
  * operations.
  */
-object FSDevMetrics {
+expect object FSDevMetrics {
 
-    internal val loggers: LinkedHashMap<String, FSDevMetricsLogger> = createAllDevMetricsLoggers()
-    internal val metricMap: MutableMap<String, MutableMap<Int, Long>> = mutableMapOf()
+    /**
+     * adds a logger to the configured set of [FSDevMetricsLogger] instances.
+     * > NOTE: If you add a logger that has the same id as another logger
+     * instance, this logger will OVERWRITE the previously-configured logger.
+     */
+    fun addLogger(logger: FSDevMetricsLogger)
 
     /**
      * Either sends the alarm specifically to the [destinations] when supplied,
-     * or sends the info to all registered [loggers] when [destinations] not
+     * or sends the info to all registered [state] when [destinations] not
      * supplied. Add supplemental attributes via the [attrs] parameter.
      * @see [FSDevMetricsLogger.alarm]
      */
     @JvmStatic
     @JvmOverloads
-    fun alarm(t: Throwable, attrs: Map<String, String> = emptyMap(), vararg destinations: String = emptyArray()) {
-        launch {
-            activeLoggers().onSomeOrAll(destinations) { alarm(t, attrs) }
-        }
-    }
+    fun alarm(t: Throwable, attrs: Map<String, String> = emptyMap(), vararg destinations: String = emptyArray())
 
     /**
      * Either sends the watch specifically to the [destinations] when supplied,
-     * or sends the watch to all registered [loggers] when [destinations] not
+     * or sends the watch to all registered [state] when [destinations] not
      * supplied
      * @see [FSDevMetricsLogger.watch]
      */
     @JvmStatic
     @JvmOverloads
-    fun watch(msg: String, attrs: Map<String, String> = emptyMap(), vararg destinations: String = emptyArray()) {
-        launch {
-            activeLoggers().onSomeOrAll(destinations) {
-                watch(msg, attrs)
-            }
-        }
-    }
+    fun watch(msg: String, attrs: Map<String, String> = emptyMap(), vararg destinations: String = emptyArray())
 
     /**
      * Starts a timer for the operation [operationName] and returns the
@@ -71,31 +64,13 @@ object FSDevMetrics {
      */
     @JvmStatic
     @JvmOverloads
-    fun startTimedOperation(operationName: String, operationId: Int = Random.nextInt()): Int {
-        val now = Clock.System.now()
-        val seconds = now.epochSeconds
-        val nanos = now.nanosecondsOfSecond
-        launch {
-            val startTime = seconds * 1_000_000_000 + nanos
-            var current = metricMap[operationName]
-            if (current == null) {
-                current = mutableMapOf()
-                metricMap[operationName] = current
-            }
-            current[operationId] = startTime
-        }
-        return operationId
-    }
+    fun startTimedOperation(operationName: String, operationId: Int = Random.nextInt()): Int
 
     /**
      * Cancels the timer for the operation.
      */
     @JvmStatic
-    fun cancelTimedOperation(operationName: String, operationId: Int) {
-        launch {
-            metricMap[operationName]?.remove(operationId)
-        }
-    }
+    fun cancelTimedOperation(operationName: String, operationId: Int)
 
     /**
      * Commits the timed operation with the name [operationName] and id
@@ -108,22 +83,11 @@ object FSDevMetrics {
         operationName: String,
         operationId: Int,
         vararg destinations: String = emptyArray()
-    ) {
-        val now = Clock.System.now()
-        val seconds = now.epochSeconds
-        val nanos = now.nanosecondsOfSecond
-        launch {
-            val stopTime = seconds * 1_000_000_000 + nanos
-            metricMap[operationName]?.remove(operationId)?.let { startTime ->
-                val diff = stopTime - startTime
-                activeLoggers().onSomeOrAll(destinations) { metric(operationName, diff) }
-            }
-        }
-    }
+    )
 
     /**
      * Either sends the info specifically to the [destinations] when supplied,
-     * or sends the info to all registered [loggers] when [destinations] not
+     * or sends the info to all registered [state] when [destinations] not
      * supplied
      * @see [FSDevMetricsLogger.info]
      */
@@ -133,16 +97,23 @@ object FSDevMetrics {
         msg: String,
         attrs: Map<String, String> = emptyMap(),
         vararg destinations: String = emptyArray()
-    ) {
-        launch {
-            activeLoggers().onSomeOrAll(destinations) {
-                info(msg, attrs)
-            }
-        }
-    }
+    )
 
-    private fun activeLoggers() = when (loggingConfig.testEnv) {
-        true -> loggers.supportingTestEnvironment()
-        false -> loggers
-    }
+    /**
+     * Enables post-instantiation configuration of [FSDevMetricsLogger] instances
+     * of a type the class [T]. Ideally, this function is called very early in the
+     * application's lifecycle.
+     *
+     * > NOTE: The [perform] function will be confined to the same thread on
+     * which logging occurs
+     *
+     * > NOTE: On non-JVM platforms, you should be careful to not pass
+     * references to mutable state in the [perform] function, as updates to
+     * that same mutable state elsewhere could cause a crash. If you need to
+     * capture a reference in the [perform] function, your best bet is to
+     * create a deep copy of that reference. If deep copying is not practical,
+     * then compute all values that you will need to capture in the [perform]
+     * function ahead of time.
+     */
+    fun <T: FSDevMetricsLogger> onLoggersOfType(cls: KClass<T>, perform: T.() -> Unit)
 }

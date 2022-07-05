@@ -22,13 +22,24 @@ android {
         }
     }
 
+    signingConfigs {
+        create("defaultSigning") {
+            storeFile = file("debug.keystore")
+            keyPassword = "android"
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+        }
+    }
+
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("defaultSigning")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
         getByName("debug") {
             isMinifyEnabled = project.hasProperty("minifyEnabled")
+            signingConfig = signingConfigs.getByName("defaultSigning")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }

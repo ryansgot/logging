@@ -23,11 +23,17 @@ kotlin {
         publishLibraryVariants("release")
     }
     if (Info.canBuildMacIos) {
-        iosArm32()
-        iosArm64()
-        iosSimulatorArm64()
-        iosX64()
-        macosX64()
+        listOf(
+            iosArm32(),
+            iosArm64(),
+            iosSimulatorArm64(),
+            iosX64(),
+            macosX64()
+        ).forEach {
+            it.binaries.framework {
+                baseName = "fslogging"
+            }
+        }
     }
     jvm("jvm") {
         attributes {
@@ -58,6 +64,7 @@ kotlin {
             dependencies {
 //                implementation(Deps.Test.JetBrains.testAnnotationsCommon)
 //                implementation(Deps.Test.JetBrains.testCommon)
+                implementation(Deps.Test.JetBrains.coroutinesTest)
             }
         }
         val sharedAndroidJvmMain by creating {
@@ -70,7 +77,6 @@ kotlin {
             dependsOn(commonMain)
             dependsOn(commonTest)
             dependencies {
-                implementation(project(":logging-test"))
                 with(Deps.Test.JUnit5) {
                     implementation(jupiterApi)
                     implementation(params)
@@ -132,6 +138,14 @@ kotlin {
         val nonJvmMain by creating {
             dependsOn(commonMain)
             dependencies {
+                implementation(Deps.Main.Autodesk.coroutineWorker)
+
+                // we use stately-isolate for confining access to mutable state
+                // to a single thread, allowing all other
+                // code to run on any thread. This confines access to our
+                // loggers and metric maps to a single thread, while allowing
+                // any thread to be a caller of the logger functions
+                implementation(Deps.Main.Touchlab.statelyIsolate)
             }
         }
         val jsMain by getting {

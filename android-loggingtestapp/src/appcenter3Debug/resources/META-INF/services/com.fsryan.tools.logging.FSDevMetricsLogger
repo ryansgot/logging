@@ -1,5 +1,5 @@
 com.fsryan.tools.logging.android.NonFatalDevMetricsLogger
 com.fsryan.tools.logging.android.AppCenterDevMetricsLogger
-LogcatDevMetricsLogger
-InternalFileDevMetricsLogger
-CrashingDevMetricsLogger
+com.fsryan.tools.logging.android.LogcatDevMetricsLogger
+com.fsryan.tools.logging.android.InternalFileDevMetricsLogger
+com.fsryan.tools.logging.android.CrashingDevMetricsLogger
