@@ -7,11 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9454CB6E287274670009DCA5 /* commonMain in Resources */ = {isa = PBXBuildFile; fileRef = 9454CB6C287274670009DCA5 /* commonMain */; };
-		9454CB6F287274670009DCA5 /* iosMain in Resources */ = {isa = PBXBuildFile; fileRef = 9454CB6D287274670009DCA5 /* iosMain */; };
 		946D03122873D94000E58930 /* SwiftEvenLoggerExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946D03112873D94000E58930 /* SwiftEvenLoggerExample.swift */; };
 		946D03142873DB3B00E58930 /* IosTestAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946D03132873DB3B00E58930 /* IosTestAppDelegate.swift */; };
-		946D03172873DCD300E58930 /* nonJvmMain in Resources */ = {isa = PBXBuildFile; fileRef = 946D03162873DCD300E58930 /* nonJvmMain */; };
 		946D03192873EF3A00E58930 /* SwiftDevMetricsLoggerExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946D03182873EF3A00E58930 /* SwiftDevMetricsLoggerExample.swift */; };
 		947563332872652900A7C1FE /* iosTestAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947563322872652900A7C1FE /* iosTestAppApp.swift */; };
 		947563352872652900A7C1FE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947563342872652900A7C1FE /* ContentView.swift */; };
@@ -20,6 +17,9 @@
 		947563442872652C00A7C1FE /* iosTestAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947563432872652C00A7C1FE /* iosTestAppTests.swift */; };
 		9475634E2872652C00A7C1FE /* iosTestAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9475634D2872652C00A7C1FE /* iosTestAppUITests.swift */; };
 		947563502872652C00A7C1FE /* iosTestAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9475634F2872652C00A7C1FE /* iosTestAppUITestsLaunchTests.swift */; };
+		947F0CC82874B800009695A7 /* nonJvmMain in Resources */ = {isa = PBXBuildFile; fileRef = 947F0CC52874B800009695A7 /* nonJvmMain */; };
+		947F0CC92874B800009695A7 /* commonMain in Resources */ = {isa = PBXBuildFile; fileRef = 947F0CC62874B800009695A7 /* commonMain */; };
+		947F0CCA2874B800009695A7 /* iosMain in Resources */ = {isa = PBXBuildFile; fileRef = 947F0CC72874B800009695A7 /* iosMain */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,11 +40,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		9454CB6C287274670009DCA5 /* commonMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = commonMain; path = ../../../logging/src/commonMain; sourceTree = "<group>"; };
-		9454CB6D287274670009DCA5 /* iosMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = iosMain; path = ../../../logging/src/iosMain; sourceTree = "<group>"; };
 		946D03112873D94000E58930 /* SwiftEvenLoggerExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftEvenLoggerExample.swift; sourceTree = "<group>"; };
 		946D03132873DB3B00E58930 /* IosTestAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IosTestAppDelegate.swift; sourceTree = "<group>"; };
-		946D03162873DCD300E58930 /* nonJvmMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = nonJvmMain; path = ../../../logging/src/nonJvmMain; sourceTree = "<group>"; };
 		946D03182873EF3A00E58930 /* SwiftDevMetricsLoggerExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "\U0010SwiftDevMetricsLoggerExample.swift"; sourceTree = "<group>"; };
 		9475632F2872652900A7C1FE /* iosTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		947563322872652900A7C1FE /* iosTestAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosTestAppApp.swift; sourceTree = "<group>"; };
@@ -56,6 +53,9 @@
 		947563492872652C00A7C1FE /* iosTestAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iosTestAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9475634D2872652C00A7C1FE /* iosTestAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosTestAppUITests.swift; sourceTree = "<group>"; };
 		9475634F2872652C00A7C1FE /* iosTestAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosTestAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		947F0CC52874B800009695A7 /* nonJvmMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = nonJvmMain; path = ../../../logging/src/nonJvmMain; sourceTree = "<group>"; };
+		947F0CC62874B800009695A7 /* commonMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = commonMain; path = ../../../logging/src/commonMain; sourceTree = "<group>"; };
+		947F0CC72874B800009695A7 /* iosMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = iosMain; path = ../../../logging/src/iosMain; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,16 +83,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		9454CB6B287274190009DCA5 /* KotlinCode */ = {
-			isa = PBXGroup;
-			children = (
-				946D03162873DCD300E58930 /* nonJvmMain */,
-				9454CB6C287274670009DCA5 /* commonMain */,
-				9454CB6D287274670009DCA5 /* iosMain */,
-			);
-			path = KotlinCode;
-			sourceTree = "<group>";
-		};
 		947563262872652900A7C1FE = {
 			isa = PBXGroup;
 			children = (
@@ -121,7 +111,7 @@
 				946D03112873D94000E58930 /* SwiftEvenLoggerExample.swift */,
 				947563322872652900A7C1FE /* iosTestAppApp.swift */,
 				947563342872652900A7C1FE /* ContentView.swift */,
-				9454CB6B287274190009DCA5 /* KotlinCode */,
+				947F0CC42874B7AD009695A7 /* Kotlin Code */,
 				947563362872652B00A7C1FE /* Assets.xcassets */,
 				947563382872652B00A7C1FE /* Preview Content */,
 			);
@@ -151,6 +141,16 @@
 				9475634F2872652C00A7C1FE /* iosTestAppUITestsLaunchTests.swift */,
 			);
 			path = iosTestAppUITests;
+			sourceTree = "<group>";
+		};
+		947F0CC42874B7AD009695A7 /* Kotlin Code */ = {
+			isa = PBXGroup;
+			children = (
+				947F0CC62874B800009695A7 /* commonMain */,
+				947F0CC72874B800009695A7 /* iosMain */,
+				947F0CC52874B800009695A7 /* nonJvmMain */,
+			);
+			path = "Kotlin Code";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -258,11 +258,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				947F0CC92874B800009695A7 /* commonMain in Resources */,
+				947F0CC82874B800009695A7 /* nonJvmMain in Resources */,
 				9475633A2872652B00A7C1FE /* Preview Assets.xcassets in Resources */,
-				946D03172873DCD300E58930 /* nonJvmMain in Resources */,
 				947563372872652B00A7C1FE /* Assets.xcassets in Resources */,
-				9454CB6E287274670009DCA5 /* commonMain in Resources */,
-				9454CB6F287274670009DCA5 /* iosMain in Resources */,
+				947F0CCA2874B800009695A7 /* iosMain in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

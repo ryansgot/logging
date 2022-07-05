@@ -14,7 +14,7 @@ class NSLogDevMetricsLogger: FSDevMetricsLogger {
     }
 
     override fun info(msg: String, attrs: Map<String, String>) {
-        NSLog("[nslogdevmetrics] alarm(msg='$msg'; attrs=$attrs)")
+        NSLog("[nslogdevmetrics] info(msg='$msg'; attrs=$attrs)")
     }
 
     override fun metric(operationName: String, durationNanos: Long) {
