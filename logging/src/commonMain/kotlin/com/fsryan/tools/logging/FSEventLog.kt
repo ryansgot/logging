@@ -1,48 +1,43 @@
 package com.fsryan.tools.logging
 
-import kotlin.jvm.JvmOverloads
-import kotlin.jvm.JvmStatic
 import kotlin.random.Random
 import kotlin.reflect.KClass
 
 /**
  * A single place to perform event logging. This will distribute the log event
  * or attr to the destination of your choice. When you use any of the methods,
- * you must either:
- * # Choose the dest(ination) of the event/attribute or
- * # Allow the event/attribute to go to all known destinations
+ * you must either choose the destinations of the event/attribute or allow the
+ * event/attribute to go to all known destinations.
  * If you choose to specify the destination, then either one or zero
  * [FSEventLogger] instances will be invoked (depending upon whether there is a
- * match. IF you do not specify the destination, then the event will be sent to
+ * match. If you do not specify the destination, then the event will be sent to
  * _all_ registered [FSEventLogger] instances will be invoked.
  *
- * Registration of [FSEventLogger] instances occurs via
- * [Java SPI](https://www.baeldung.com/java-spi).
- * The order that the [JvmAndroidFSEventLogActual] instances are invoked is the order in which
- * they're specified in the
- * `resources/META-INF/services/com.fsryan.tools.logging.FSDevMetricsLogger`
+ * Registration of [FSEventLogger] instances occurs via [addLogger]. On
+ * Android/JVM, you can also register instances via [Java SPI]
+ * [Java SPI](https://docs.oracle.com/javase/tutorial/ext/basics/spi.html).
+ * The order that the [FSEventLogger] instances are invoked is the order
+ * in which they're specified in the
+ * `resources/META-INF/services/com.fsryan.tools.logging.FSEventLogger`
  * file.
  *
- * You are encouraged as an app developer to write your own extension functions
- * on this object that allow you to develop a contract for particular kinds of
- * events. Furthermore, adding extension functions will allow you to add a
- * measure of type safety that the API does not allow.
+ * Threading: this is a thread-safe object. Call this object's functions on any
+ * thread. The logging task will be distributed immediately to the logging
+ * thread and not block the calling thread.
  *
- * Threading: any thread
- * Note that each method call will distribute the work to the executor you have
- * created in your implementation of [FSLoggingConfig]. If you do not supply an
- * [FSLoggingConfig], then the work will be distributed to a single-threaded
- * [ExecutorService] created by this library for handling all [FSEventLog]
- * operations.
+ * Your implementations of [FSEventLogger] will only ever be accessed by these
+ * functions on that logging thread. However, if you want to do any external
+ * configuration, then you must handle threading for your [FSEventLogger]
+ * classes.
  */
 expect object FSEventLog {
 
     /**
-     * adds a logger to the configured set of [FSDevMetricsLogger] instances.
+     * adds a logger to the configured set of [FSEventLogger] instances.
      * > NOTE: If you add a logger that has the same id as another logger
      * instance, this logger will OVERWRITE the previously-configured logger.
+     * @param logger the [FSEventLogger] to register with [FSEventLog]
      */
-    @JvmStatic
     fun addLogger(logger: FSEventLogger)
 
     /**
@@ -55,11 +50,14 @@ expect object FSEventLog {
      * By passing in a specific value for [destinations], you can limit the
      * destination of the attr addition to one or more loggers.
      *
+     * @param attrName the attrName of the attr to remove.
+     * @param attrValue the string value of the attr to add.
+     * @param destinations the ids of the [FSEventLogger]s to which the attr
+     * should be added. If you don't specify, all registered [FSEventLogger]
+     * instances will be invoked.
      * @see addAttrs
      * @see incrementCountableAttr
      */
-    @JvmStatic
-    @JvmOverloads
     fun addAttr(attrName: String, attrValue: String, vararg destinations: String = emptyArray())
 
     /**
@@ -67,11 +65,13 @@ expect object FSEventLog {
      * changing the value of an attr, you may want to remove the attr entirely.
      * Do so by calling this function.
      *
+     * @param attrName the attrName of the attr to remove.
+     * @param destinations the ids of the [FSEventLogger]s from which to
+     * remove the attr. If you don't specify, all registered [FSEventLogger]
+     * instances will be invoked.
      * @see addAttr
      * @see removeAttrs
      */
-    @JvmStatic
-    @JvmOverloads
     fun removeAttr(attrName: String, vararg destinations: String = emptyArray())
 
     /**
@@ -79,10 +79,13 @@ expect object FSEventLog {
      * changing the value of an attr, you may want to remove the attr entirely.
      * Do so by calling this function.
      *
+     * @param attrNames the attrNames of all attrs to remove.
+     * @param destinations the ids of the [FSEventLogger]s from which to
+     * remove the attrs. If you don't specify, all registered [FSEventLogger]
+     * instances will be invoked.
      * @see addAttr
+     * @see removeAttr
      */
-    @JvmStatic
-    @JvmOverloads
     fun removeAttrs(attrNames: Iterable<String>, vararg destinations: String = emptyArray())
 
     /**
@@ -92,11 +95,13 @@ expect object FSEventLog {
      * By passing in a specific value for [destinations], you can limit the
      * destination of the attr additions to one or more loggers.
      *
+     * @param attrs the attrName -> attrValue map of all attrs to add.
+     * @param destinations the ids of the [FSEventLogger]s to which to add the
+     * attrs. If you don't specify, all registered [FSEventLogger] instances
+     * will be invoked.
      * @see addAttr
      * @see incrementCountableAttr
      */
-    @JvmStatic
-    @JvmOverloads
     fun addAttrs(attrs: Map<String, String>, vararg destinations: String = emptyArray())
 
     /**
@@ -105,12 +110,13 @@ expect object FSEventLog {
      *
      * By passing in a specific value for [destinations], you can limit the
      * destination of the attr increment to one or more loggers.
-     *
+     * @param attrName the name of the attr to increment
+     * @param destinations the ids of the [FSEventLogger]s to which to
+     * increment the attr value. If you don't specify, all registered
+     * [FSEventLogger] instances will be invoked.
      * @see addAttr
      * @see addAttrs
      */
-    @JvmStatic
-    @JvmOverloads
     fun incrementCountableAttr(attrName: String, vararg destinations: String = emptyArray())
 
     /**
@@ -123,9 +129,12 @@ expect object FSEventLog {
      *
      * By passing in a specific value for [destinations], you can limit the
      * destination of the event to one or more loggers.
+     * @param eventName the name of the event to log
+     * @param attrs any additional attrs that are specific to this event
+     * @param destinations the ids of the [FSEventLogger]s to which to send
+     * this event. If you don't specify, all registered [FSEventLogger]
+     * instances will be invoked.
      */
-    @JvmStatic
-    @JvmOverloads
     fun addEvent(eventName: String, attrs: Map<String, String> = emptyMap(), vararg destinations: String = emptyArray())
 
     /**
@@ -139,9 +148,17 @@ expect object FSEventLog {
      * context to be referenced when you later [commitTimedOperation]
      * (supposing) that you need to commit the timed operation at some point
      * where you may lose access.
+     * @param operationName The name of the operation you're timing.
+     * @param operationId The id of the specific operation you're timing. This
+     * allows for multiple concurrent operations with the same name to be
+     * timed.
+     * @param startAttrs The attrs that you want to capture for later logging
+     * when [commitTimedOperation] is called.
+     * @return the operationId. Use the operationId as a means of committing or
+     * canceling this timed operation
+     * @see commitTimedOperation
+     * @see cancelTimedOperation
      */
-    @JvmStatic
-    @JvmOverloads
     fun startTimedOperation(
         operationName: String,
         operationId: Int = Random.nextInt(),
@@ -150,17 +167,29 @@ expect object FSEventLog {
 
     /**
      * Cancels the timer for the operation.
+     * @param operationName The name of the operation you're timing.
+     * @param operationId The id of the specific operation you're timing
      */
-    @JvmStatic
     fun cancelTimedOperation(operationName: String, operationId: Int)
+
 
     /**
      * Commits the timed operation with the name [operationName] and id
      * [operationId] input to the [destinations] (or all destinations if none
      * specified).
+     * @param operationName The name of the operation you're timing.
+     * @param operationId The id of the specific operation you're timing
+     * @param durationAttrName the name of the duration attr--ignored if null
+     * @param startTimeMillisAttrName the name of the start time millis attr--
+     * ignored if null
+     * @param endTimeMillisAttrName the name of the end time millis attr--
+     * ignored if null
+     * @param endAttrs the attrs that you want to add when committing the timed
+     * operation.
+     * @param destinations the ids of the [FSEventLogger]s to which to end this
+     * timed operation. If you don't specify, all registered [FSEventLogger]
+     * instances will be invoked.
      */
-    @JvmStatic
-    @JvmOverloads
     fun commitTimedOperation(
         operationName: String,
         operationId: Int,
@@ -175,20 +204,24 @@ expect object FSEventLog {
     /**
      * Enables post-instantiation configuration of [FSEventLogger] instances of
      * a type the class [T]. Ideally, this function is called very early in the
-     * application's lifecycle.
+     * application lifecycle.
      *
      * > NOTE: The [perform] function will be confined to the same thread on
-     * which logging occurs
+     * which logging occurs.
      *
      * > NOTE: On non-JVM platforms, you should be careful to not pass
      * references to mutable state in the [perform] function, as updates to
      * that same mutable state elsewhere could cause a crash. If you need to
      * capture a reference in the [perform] function, your best bet is to
-     * create a deep copy of that reference. If deep copying is not practical,
-     * then compute all values that you will need to capture in the [perform]
-     * function ahead of time.
+     * create a deep copy of that reference that is _LOCAL_ to your current
+     * function. If deep copying is not practical, then compute all values that
+     * you will need to capture in the [perform] function ahead of time and
+     * capture the computed values instead.
+     * @param cls The [KClass] of the loggers on which you want to [perform] an
+     * operation
+     * @param perform the operation you want to perform on all logers of type
+     * [cls]
      */
-    @JvmStatic
     fun <T: FSEventLogger> onLoggersOfType(cls: KClass<T>, perform: T.() -> Unit)
 }
 

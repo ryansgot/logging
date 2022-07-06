@@ -5,15 +5,13 @@ import kotlin.jvm.JvmStatic
 /**
  * Base interface for loggers. [FSDevMetrics] and [FSEventLog] look up their
  * associated loggers by their Ids. These lookups are set when [FSDevMetrics]
- * and [FSEventLog] classes are loaded (respectively). The mechanism for
- * registering a logger is the
- * [Java SPI](https://www.baeldung.com/java-spi).
+ * and [FSEventLog] classes are loaded (respectively).
  * @see FSDevMetricsLogger
  * @see FSEventLogger
  */
 interface FSLogger {
     /**
-     * How this particular [FSLogger] is located. If multiple loggers have
+     * How this particular [FSLogger] is identified. If multiple loggers have
      * duplicate ids, then the last logger specified will overwrite the
      * previous loggers.
      */
@@ -53,9 +51,10 @@ interface FSDevMetricsLogger : FSLogger {
     fun alarm(t: Throwable, attrs: Map<String, String> = emptyMap()) {}
 
     /**
-     * Use to watch to monitor conditions where the severity is low enough that
-     * you would want to specifically query your analytics system for these
-     * kind of events. Add supplemental attributes via the [attrs]
+     * This function is for understanding when something has happened in the
+     * app that may be of concern. Keep in mind that you'll likely want to
+     * query whatever analytics backend you have given [msg] and [attrs]
+     * arguments passed here. Add supplemental attributes via the [attrs]
      * parameter.
      */
     fun watch(msg: String, attrs: Map<String, String> = emptyMap()) {}
@@ -86,36 +85,62 @@ interface FSDevMetricsLogger : FSLogger {
  */
 interface FSEventLogger : FSLogger {
     /**
-     * Add an attribute. The actual effect of adding an attribute is specific
-     * to the implementaion of [FSEventLogger] that is receiving the attr.
-     * However, in general, an attr is intended to be logged for every event,
-     * whereas, an event attr (passed in on the [addEvent] function) is only
-     * relevant for that specific event.
+     * Add an attribute to the analytics event context. The actual effect of
+     * adding an attribute is specific to the implementation of [FSEventLogger]
+     * receiving the attr. However, in general, an attr that is added via this
+     * function is intended to be logged for every event, whereas, an event
+     * attr (passed in on the [addEvent] function) is only relevant for that
+     * specific event.
+     * @param attrName The name of the attr to add
+     * @param attrValue The string value of the attr to add
      */
     fun addAttr(attrName: String, attrValue: String)
 
     /**
      * Attrs are sent for every event. This function allows you to remove an
-     * attr. Implementations are free to do what they wish if the attr does not
-     * exist at the time of removal.
+     * attr from the analytics event context. Implementations are free to do
+     * what they wish if the attr does not exist at the time of removal.
+     * @param attrName The name of the attr to remove
      */
     fun removeAttr(attrName: String)
 
     /**
-     * Increment an attribute value. The attribute should be countable, but
-     * since this is not guaranteed, implementations should gracefully handle
-     * the case in which the attribute is not countable.
+     * Increment an attr value in the analytics event context. The attribute
+     * should be countable, but since this is not guaranteed, implementations
+     * should gracefully handle the case in which the attr is not countable.
+     * @param attrName the name of the attr to increment
      */
     fun incrementAttrValue(attrName: String)
 
     /**
      * Log an event. The optional [attrs] parameter will add specific
-     * attributes to the event.
+     * attributes for this event only.
+     * @param eventName the name of the event to add
+     * @param attrs any extra attributes that should be added to this specific
+     * event
      */
     fun addEvent(eventName: String, attrs: Map<String, String> = emptyMap())
 
     /**
-     * Log a timed operation given the attrs
+     * Log a timed operation given the arguments passed in.
+     * > Note: This is about user behavior--not about application performance.
+     * > A possible use case would be to start a timed operation when the user
+     * > views a screen, and then commit that timed operation when the user
+     * > leaves a screen.
+     * @param operationName The name of the operation--doubles as the event
+     * name.
+     * @param startTimeMillis The time the timed operation was started.
+     * @param endTimeMillis The time the timed operation ended.
+     * @param durationAttrName The name of the duration attr--will be ignored
+     * if null
+     * @param startTimeMillisAttrName The name of the start time millis attr--
+     * will be ignored if null
+     * @param endTimeMillisAttrName The name of the end timem millis attr--will
+     * be ignored if null
+     * @param startAttrs The attrs that were stored when the timed operation
+     * was started
+     * @param endAttrs The attrs that were added when the timed operation was
+     * completed.
      */
     fun sendTimedOperation(
         operationName: String,
@@ -138,13 +163,17 @@ interface FSEventLogger : FSLogger {
 
 /**
  * Add multiple attributes at one time in a map.
+ * > Note: Do not call this on your own. It is NOT threadsafe.
+ * @param attrs a map of attrName -> attrValue for all attributes to add
  */
 fun FSEventLogger.addAttrs(attrs: Map<String, String>) {
     attrs.entries.forEach { addAttr(it.key, it.value) }
 }
 
 /**
- * Remove multiple attributes at one time.
+ * Removes multiple attrs at one time.
+ * > Note: Do not call this on your own. It is NOT threadsafe.
+ * @param attrs an [Iterable] of the attr names to remove
  */
 fun FSEventLogger.removeAttrs(attrNames: Iterable<String>) {
     attrNames.forEach { removeAttr(it) }

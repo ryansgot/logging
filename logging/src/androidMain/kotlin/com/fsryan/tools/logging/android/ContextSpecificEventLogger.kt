@@ -12,8 +12,23 @@ import java.util.concurrent.CopyOnWriteArraySet
 internal val sessionStartTimeMillis = System.currentTimeMillis()
 
 /**
- * An interface to enable Android application-specific initialization of
+ * An abstract to enable Android application-specific initialization of
  * an event logger.
+ *
+ * > Note: There is an [initFSLogging] function that ensures the [initialize]
+ * function is called as early as possible.
+ *
+ * This class also inspects the following string-array resources so that it
+ * knows which attrs whose values should be coerced from String to boolean,
+ * double, or long values when logged:
+ * * `fs_logging_boolean_properties`
+ * * `fs_logging_double_properties`
+ * * `fs_logging_long_properties`
+ *
+ * Additionally, it looks up the following string resource values to get the
+ * app uptime and timestamp attr names:
+ * * `fs_logging_app_uptime_attr_name`
+ * * `fs_logging_timestamp_attr_name`
  */
 abstract class ContextSpecificEventLogger : FSEventLogger {
 

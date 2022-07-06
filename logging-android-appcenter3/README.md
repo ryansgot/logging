@@ -1,6 +1,6 @@
-# Logging Android Appcenter
+# Logging Android AppCenter3
 
-Builds upon the [logging](../logging/README.md) and [logging-android](../logging-android/README.md) libraries, providing specific loggers for Microsoft AppCenter.
+Builds upon the [logging](../logging/README.md), providing specific loggers for Microsoft AppCenter.
 
 ## Features
 

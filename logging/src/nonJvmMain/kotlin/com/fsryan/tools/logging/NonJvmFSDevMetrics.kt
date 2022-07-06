@@ -4,27 +4,6 @@ import co.touchlab.stately.isolate.IsolateState
 import kotlinx.datetime.Clock
 import kotlin.reflect.KClass
 
-/**
- * The single place you need to use in order to log developer-centric events.
- * This object does not do any logging on its own, rather, it either logs to
- * a registered implementation of [FSDevMetricsLogger] (when provided a
- * nonempty the dest parameter) or to all registered implementations of
- * [FSDevMetricsLogger] when the dest parameter is not provided.
- *
- * Registration of [FSDevMetricsLogger] instances occurs via
- * [Java SPI](https://www.baeldung.com/java-spi).
- * The order that the [FSDevMetricsLogger] instances are invoked is the order
- * in which they're specified in the
- * `resources/META-INF/services/com.fsryan.tools.logging.FSDevMetricsLogger`
- * file.
- *
- * Threading: any thread
- * Note that each method call will distribute the work to the executor you have
- * created in your implementation of [FSLoggingConfig]. If you do not supply an
- * [FSLoggingConfig], then the work will be distributed to a single-threaded
- * [ExecutorService] created by this library for handling all [FSDevMetrics]
- * operations.
- */
 actual object FSDevMetrics {
 
     internal val state = IsolateState {
@@ -39,12 +18,6 @@ actual object FSDevMetrics {
         }
     }
 
-    /**
-     * Either sends the alarm specifically to the [destinations] when supplied,
-     * or sends the info to all registered [state] when [destinations] not
-     * supplied. Add supplemental attributes via the [attrs] parameter.
-     * @see [FSDevMetricsLogger.alarm]
-     */
     actual fun alarm(t: Throwable, attrs: Map<String, String>, vararg destinations: String) {
         launch {
             state.access { mutableValues ->
@@ -55,12 +28,6 @@ actual object FSDevMetrics {
         }
     }
 
-    /**
-     * Either sends the watch specifically to the [destinations] when supplied,
-     * or sends the watch to all registered [state] when [destinations] not
-     * supplied
-     * @see [FSDevMetricsLogger.watch]
-     */
     actual fun watch(
         msg: String,
         info: String?,
@@ -78,13 +45,6 @@ actual object FSDevMetrics {
         }
     }
 
-    /**
-     * Starts a timer for the operation [operationName] and returns the
-     * [operationId] used along with the [operationName] to either
-     * [cancelTimedOperation] or to [commitTimedOperation]. If you do not
-     * supply the [operationId] yourself, then a randomly generated id will be
-     * returned.
-     */
     actual fun startTimedOperation(operationName: String, operationId: Int): Int {
         val now = Clock.System.now()
         val seconds = now.epochSeconds
@@ -102,9 +62,6 @@ actual object FSDevMetrics {
         return operationId
     }
 
-    /**
-     * Cancels the timer for the operation.
-     */
     actual fun cancelTimedOperation(operationName: String, operationId: Int) {
         launch {
             state.access { mutableValues ->
@@ -113,11 +70,6 @@ actual object FSDevMetrics {
         }
     }
 
-    /**
-     * Commits the timed operation with the name [operationName] and id
-     * [operationId] input to the [destinations] (or all destinations if none
-     * specified).
-     */
     actual fun commitTimedOperation(
         operationName: String,
         operationId: Int,
@@ -139,12 +91,6 @@ actual object FSDevMetrics {
         }
     }
 
-    /**
-     * Either sends the info specifically to the [destinations] when supplied,
-     * or sends the info to all registered [state] when [destinations] not
-     * supplied
-     * @see [FSDevMetricsLogger.info]
-     */
     actual fun info(
         msg: String,
         info: String?,
@@ -162,11 +108,6 @@ actual object FSDevMetrics {
         }
     }
 
-    /**
-     * Enables post-instantiation configuration of [FSDevMetricsLogger] instances
-     * of a type the class [T]. Ideally, this function is called very early in the
-     * application's lifecycle.
-     */
     @Suppress("UNCHECKED_CAST")
     actual fun <T: FSDevMetricsLogger> onLoggersOfType(cls: KClass<T>, perform: T.() -> Unit) {
         launch {
