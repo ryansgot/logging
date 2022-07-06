@@ -8,7 +8,6 @@ plugins {
     id("kotlin-android")
     id("maven-publish")
     id("signing")
-    id("android-maven")
     id("fsryan-gradle-publishing")
     id("org.jetbrains.dokka")
 }
@@ -24,8 +23,6 @@ android {
         defaultConfig {
             minSdkVersion(version.minSdk)
             targetSdkVersion(version.targetSdk)
-            versionCode = 1
-            versionName = "1.0"
             consumerProguardFile("consumer-proguard-rules.pro")
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
@@ -56,8 +53,8 @@ android {
 dependencies {
     implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
 
-    api(project(":logging"))
-    api(project(":logging-android"))
+    releaseApi(project(":logging"))
+    debugApi(project(":logging-android-debug"))
 
     implementation(Deps.Main.AndroidX.annotation)
 
@@ -100,11 +97,8 @@ fsPublishingConfig {
         "gitrev" to GitTools.gitHash(true)
     )
     dependencyNameOverrides = mapOf(
-        "logging-android-appcenter3Debug" to mapOf(
-            "logging-android" to "logging-android-debug"
-        ),
-        "logging-android-appcenter3DebugToBintray" to mapOf(
-            "logging-android" to "logging-android-debug"
+        "logging-android-appcenter3Release" to mapOf(
+            "logging" to "logging-android"
         )
     )
 }

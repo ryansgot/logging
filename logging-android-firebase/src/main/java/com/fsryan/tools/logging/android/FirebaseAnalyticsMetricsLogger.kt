@@ -18,36 +18,24 @@ class FirebaseAnalyticsMetricsLogger: ContextSpecificDevMetricsLogger {
         firebaseAnalytics = Firebase.analytics
     }
 
-    override fun watch(
-        msg: String,
-        info: String?,
-        extraInfo: String?,
-        attrs: Map<String, String>
-    ) = send("watch", msg, info, extraInfo, attrs)
+    override fun watch(msg: String, attrs: Map<String, String>) = send("watch", msg, attrs)
 
-    override fun info(
-        msg: String,
-        info: String?,
-        extraInfo: String?,
-        attrs: Map<String, String>
-    ) = send("info", msg, info, extraInfo, attrs)
+    override fun info(msg: String, attrs: Map<String, String>) = send("info", msg, attrs)
 
-    override fun metric(operationName: String, durationNanos: Long) = firebaseAnalytics.logEvent("devMetric", Bundle().apply {
-        putString("operation", operationName)
-        putLong("duration", durationNanos)
-    })
+    override fun metric(operationName: String, durationNanos: Long) {
+        firebaseAnalytics.logEvent("devMetric", Bundle().apply {
+            putString("operation", operationName)
+            putLong("duration", durationNanos)
+        })
+    }
 
     private fun send(
         type: String,
         msg: String?,
-        info: String?,
-        extra: String?,
         attrs: Map<String, String>
     ) = firebaseAnalytics.logEvent("devLog", Bundle().apply {
         putString("devLogType", type)
         putString("devMessage", msg)
-        putString("devInfo", info)
-        putString("devExtraInfo", extra)
         attrs.entries.forEach { putString(it.key, it.value) }
     })
 }

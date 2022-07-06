@@ -18,18 +18,28 @@ android {
             targetSdkVersion(version.targetSdk)
             versionCode = 1
             versionName = "1.0"
-            consumerProguardFile("consumer-proguard-rules.pro")
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
+    }
+
+    signingConfigs {
+        create("defaultSigning") {
+            storeFile = file("debug.keystore")
+            keyPassword = "android"
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
         }
     }
 
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("defaultSigning")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
         getByName("debug") {
             isMinifyEnabled = project.hasProperty("minifyEnabled")
+            signingConfig = signingConfigs.getByName("defaultSigning")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -38,36 +48,31 @@ android {
 
     productFlavors {
         create("firebase") {
-            dimension("integration")
+            setDimension("integration")
             applicationIdSuffix = ".firebase"
         }
         create("appcenter3") {
-            dimension("integration")
+            setDimension("integration")
             applicationIdSuffix = ".appcenter3"
-
-            manifestPlaceholders(mapOf(
-                "testapp.acsecret" to (project.findProperty("testapp.acsecret") ?: ""),
+            sequenceOf(
+                "testapp.acsecret" to project.findProperty("testapp.acsecret")?.toString().orEmpty(),
                 "fsac_analytics_enabled" to "true",
                 "fsac_crashes_enabled" to "true"
-            ))
+            ).forEach { (k, v) -> manifestPlaceholders[k] = v }
         }
         create("appcenter4") {
-            dimension("integration")
-            applicationIdSuffix = ".appcenter4"
-
-            manifestPlaceholders(mapOf(
-                "testapp.acsecret" to (project.findProperty("testapp.acsecret") ?: ""),
+            setDimension("integration")
+            applicationIdSuffix = ".appcenter3" // <-- done to reduce number of test packages
+            sequenceOf(
+                "testapp.acsecret" to project.findProperty("testapp.acsecret")?.toString().orEmpty(),
                 "fsac_analytics_enabled" to "true",
                 "fsac_crashes_enabled" to "true"
-            ))
+            ).forEach { (k, v) -> manifestPlaceholders[k] = v }
         }
         create("newrelic") {
-            dimension("integration")
+            setDimension("integration")
             applicationIdSuffix = ".newrelic"
-
-            manifestPlaceholders(mapOf(
-                "testapp.newrelictoken" to (project.findProperty("testapp.newrelictoken") ?: "")
-            ))
+            manifestPlaceholders["testapp.newrelictoken"] = project.findProperty("testapp.newrelictoken") ?: ""
         }
     }
 
@@ -83,6 +88,17 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    configurations {
+        create("appcenter3DebugImplementation")
+        create("appcenter3ReleaseImplementation")
+        create("appcenter4DebugImplementation")
+        create("appcenter4ReleaseImplementation")
+        create("firebaseDebugImplementation")
+        create("firebaseReleaseImplementation")
+        create("newrelicDebugImplementation")
+        create("newrelicReleaseImplementation")
+    }
 }
 
 // UNCOMMENT for newrelic
@@ -96,7 +112,6 @@ dependencies {
     implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
 
     implementation(project(":logging"))
-    implementation(project(":logging-android"))
 
     with(Deps.Main.AndroidX) {
         implementation(appCompat)
@@ -107,21 +122,24 @@ dependencies {
     implementation(Deps.Main.JetBrains.kotlinSTDLib)
 
     // Firebase
-    firebaseImplementation(project(":logging-android-firebase"))
+    firebaseReleaseImplementation(project(":logging-android-firebase", configuration = "releaseRuntimeElements"))
+    firebaseDebugImplementation(project(":logging-android-firebase", configuration = "debugRuntimeElements"))
     with(Deps.Main.Google) {
         firebaseImplementation(analytics)
         firebaseImplementation(crashlytics)
     }
 
-    // appcenter
-    appcenter3Implementation(project(":logging-android-appcenter3"))
+    // appcenter3
+    appcenter3ReleaseImplementation(project(":logging-android-appcenter3", configuration = "releaseRuntimeElements"))
+    appcenter3DebugImplementation(project(":logging-android-appcenter3", configuration = "debugRuntimeElements"))
     with(Deps.Main.Microsoft) {
         appcenter3Implementation(analytics3)
         appcenter3Implementation(crashes3)
     }
 
     // appcenter
-    appcenter4Implementation(project(":logging-android-appcenter4"))
+    appcenter4ReleaseImplementation(project(":logging-android-appcenter4", configuration = "releaseRuntimeElements"))
+    appcenter4DebugImplementation(project(":logging-android-appcenter4", configuration = "debugRuntimeElements"))
     with(Deps.Main.Microsoft) {
         appcenter4Implementation(analytics4)
         appcenter4Implementation(crashes4)
@@ -149,6 +167,46 @@ fun DependencyHandlerScope.firebaseImplementation(dependencyNotation: Any) = add
 
 fun DependencyHandlerScope.newrelicImplementation(dependencyNotation: Any) = add(
     configurationName = "newrelicImplementation",
+    dependencyNotation = dependencyNotation
+)
+
+fun DependencyHandlerScope.appcenter3DebugImplementation(dependencyNotation: Any) = add(
+    configurationName = "appcenter3DebugImplementation",
+    dependencyNotation = dependencyNotation
+)
+
+fun DependencyHandlerScope.appcenter3ReleaseImplementation(dependencyNotation: Any) = add(
+    configurationName = "appcenter3ReleaseImplementation",
+    dependencyNotation = dependencyNotation
+)
+
+fun DependencyHandlerScope.appcenter4DebugImplementation(dependencyNotation: Any) = add(
+    configurationName = "appcenter4DebugImplementation",
+    dependencyNotation = dependencyNotation
+)
+
+fun DependencyHandlerScope.appcenter4ReleaseImplementation(dependencyNotation: Any) = add(
+    configurationName = "appcenter4ReleaseImplementation",
+    dependencyNotation = dependencyNotation
+)
+
+fun DependencyHandlerScope.firebaseDebugImplementation(dependencyNotation: Any) = add(
+    configurationName = "firebaseDebugImplementation",
+    dependencyNotation = dependencyNotation
+)
+
+fun DependencyHandlerScope.firebaseReleaseImplementation(dependencyNotation: Any) = add(
+    configurationName = "firebaseReleaseImplementation",
+    dependencyNotation = dependencyNotation
+)
+
+fun DependencyHandlerScope.newrelicReleaseImplementation(dependencyNotation: Any) = add(
+    configurationName = "newrelicReleaseImplementation",
+    dependencyNotation = dependencyNotation
+)
+
+fun DependencyHandlerScope.newrelicDebugImplementation(dependencyNotation: Any) = add(
+    configurationName = "newrelicDebugImplementation",
     dependencyNotation = dependencyNotation
 )
 

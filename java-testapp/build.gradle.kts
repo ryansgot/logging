@@ -18,6 +18,4 @@ dependencies {
     implementation(project(":logging"))
 
     compileOnly(Deps.Main.Google.jsr305)
-
-    testImplementation(project(":logging-test"))
 }

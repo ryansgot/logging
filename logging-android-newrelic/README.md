@@ -1,6 +1,6 @@
 # Logging Android NewRelic
 
-Builds upon the [logging](../logging/README.md) and [logging-android](../logging-android/README.md) libraries, providing specific loggers for New Relic.
+Builds upon the [logging](../logging/README.md), providing specific loggers for New Relic.
 
 ## Configuring
 

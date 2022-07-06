@@ -3,7 +3,6 @@ package com.fsryan.tools.logging.android
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Looper
 import androidx.annotation.MainThread
 import com.microsoft.appcenter.AppCenter
 import com.microsoft.appcenter.AppCenterService
@@ -55,17 +54,12 @@ object FSAppCenter {
      * function instead. You may want to do this if there are tight regulations
      * on data you can collect.
      */
-    @MainThread
     fun ensureInitialized(
         context: Context,
         appSecret: String,
         analyticsEnabled: Boolean,
         crashesEnabled: Boolean
     ) {
-        if (Looper.getMainLooper().thread != Thread.currentThread()) {
-            throw IllegalStateException("Can only initialize on Application main thread.")
-        }
-
         this.analyticsEnabled.set(analyticsEnabled)
         this.crashesEnabled.set(crashesEnabled)
         if (AppCenter.isConfigured()) {

@@ -1,84 +1,264 @@
+import com.fsryan.gradle.coverage.ClassFilter
 import deps.Deps
 import deps.Deps.Versions
-import org.jetbrains.dokka.gradle.DokkaTask
-import tools.GitTools
 import tools.Info
 
 plugins {
-    java
-    id("org.jetbrains.kotlin.jvm")
-    id("maven-publish")
+    kotlin("multiplatform")
+    id("com.android.library")
     id("signing")
-    id("fsryan-gradle-publishing")
+    jacoco
+    `maven-publish`
+    id("android-java-coverage-merger")
     id("org.jetbrains.dokka")
 }
-
-group = "com.fsryan.tools"
-version = "${Versions.Global.FSRyan.publication}${if (project.hasProperty("postfixDate")) ".${Info.timestamp}" else ""}"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-dependencies {
-    implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
-
-    implementation(Deps.Main.JetBrains.kotlinSTDLib)
-
-    with(Deps.Test.JUnit5) {
-        testImplementation(jupiterApi)
-        testImplementation(params)
-        testRuntimeOnly(engine)
+kotlin {
+    android {
+        publishLibraryVariants("release")
     }
-    testImplementation(Deps.Test.MockK.jvm)
+    if (Info.canBuildMacIos) {
+        listOf(
+            iosArm32(),
+            iosArm64(),
+            iosSimulatorArm64(),
+            iosX64(),
+            macosX64()
+        ).forEach {
+            it.binaries.framework {
+                baseName = "fslogging"
+            }
+        }
+    }
+    jvm("jvm") {
+        attributes {
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
+        }
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "1.8"
+            }
+        }
+    }
+    js {
+        browser()
+    }
+    linuxX64()
 
-    testImplementation(project(":logging-test"))
-}
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                with(Deps.Main.JetBrains) {
+                    implementation(kotlinSTDLibCommon)
+                    implementation(dateTime)
+                    api(coroutines)
+                }
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+//                implementation(Deps.Test.JetBrains.testAnnotationsCommon)
+//                implementation(Deps.Test.JetBrains.testCommon)
+                implementation(Deps.Test.JetBrains.coroutinesTest)
+            }
+        }
+        val sharedAndroidJvmMain by creating {
+            dependsOn(commonMain)
+            dependencies {
+                compileOnly(Deps.Main.JetBrains.coroutinesJvm)
+            }
+        }
+        val sharedAndroidJvmTest by creating {
+            dependsOn(commonMain)
+            dependsOn(commonTest)
+            dependencies {
+                with(Deps.Test.JUnit5) {
+                    implementation(jupiterApi)
+                    implementation(params)
+                    runtimeOnly(engine)
+                    runtimeOnly(platformLauncher)
+                }
 
-fsPublishingConfig {
-    developerName = "Ryan Scott"
-    developerId = "fsryan"
-    developerEmail = "fsryan.developer@gmail.com"
-    siteUrl = "https://github.com/ryansgot/logging"
-    baseArtifactId = project.name
-    groupId = project.group.toString()
-    versionName = project.version.toString()
+                implementation(Deps.Test.MockK.jvm)
+            }
+        }
+        val androidMain by getting {
+            dependsOn(sharedAndroidJvmMain)
+            dependencies {
+                with(Deps.Main.AndroidX) {
+                    implementation(annotation)
+                    implementation(appCompat)
+                    implementation(coreKtx)
+                }
 
-    licenseName = "Apache License, Version 2.0"
-    licenseUrl = "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    licenseDistribution = "repo"
+                implementation(Deps.Main.JetBrains.coroutinesAndroid)
+            }
+        }
+        val androidTest by getting {
+            dependsOn(sharedAndroidJvmTest)
+            dependencies {
+            }
+        }
+        val androidAndroidTest by getting {
+            dependsOn(androidMain)
+            dependencies {
 
-//    releaseRepoUrl = "s3://repo.fsryan.com/release"
-//    snapshotRepoUrl = "s3://repo.fsryan.com/snapshot"
-//    awsAccessKeyId = if (project.hasProperty("awsMavenAccessKey")) project.property("awsMavenAccessKey").toString() else System.getenv()["AWS_ACCES_KEY_ID"]!!
-//    awsSecretKey = if (project.hasProperty("awsMavenSecretKey")) project.property("awsMavenSecretKey").toString() else System.getenv()["AWS_SECRET_KEY"]!!
+                implementation(Deps.Test.MockK.android) {
+                    exclude(module = "objenesis")
+                }
 
-    releaseRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-    releaseBasicUser = project.findProperty("com.fsryan.ossrh.release.username")?.toString().orEmpty()
-    releaseBasicPassword = project.findProperty("com.fsryan.ossrh.release.password")?.toString().orEmpty()
-    snapshotRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-    snapshotBasicUser = project.findProperty("com.fsryan.ossrh.snapshot.username")?.toString().orEmpty()
-    snapshotBasicPassword = project.findProperty("com.fsryan.ossrh.snapshot.password")?.toString().orEmpty()
-    useBasicCredentials = true
-    description = "Plugin-based Logging Facade for analytics events and developer metrics"
-    extraPomProperties = mapOf(
-        "gitrev" to GitTools.gitHash(true)
-    )
-}
+                implementation(Deps.Test.Objenesis.lib)
 
-tasks.test {
-    useJUnitPlatform {}
-}
+                with(Deps.Test.AndroidX) {
+                    implementation(coreKtx)
+                    implementation(junitKtx)
+                    implementation(rules)
+                    implementation(runner)
+                }
+            }
+        }
+        val jvmMain by getting {
+            dependsOn(sharedAndroidJvmMain)
+            dependencies {
 
-tasks.compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
+            }
+        }
+        val jvmTest by getting {
+            dependsOn(jvmMain)
+            dependsOn(sharedAndroidJvmTest)
+            dependencies {
+
+            }
+        }
+        val nonJvmMain by creating {
+            dependsOn(commonMain)
+            dependencies {
+                implementation(Deps.Main.Autodesk.coroutineWorker)
+
+                // we use stately-isolate for confining access to mutable state
+                // to a single thread, allowing all other
+                // code to run on any thread. This confines access to our
+                // loggers and metric maps to a single thread, while allowing
+                // any thread to be a caller of the logger functions
+                implementation(Deps.Main.Touchlab.statelyIsolate)
+            }
+        }
+        val jsMain by getting {
+            dependsOn(nonJvmMain)
+            dependencies {
+            }
+        }
+        val nativeMain by creating {
+            dependsOn(nonJvmMain)
+            dependencies {
+
+            }
+        }
+        val linuxX64Main by getting {
+            dependsOn(nativeMain)
+            dependencies {
+            }
+        }
+        if (Info.canBuildMacIos) {
+            val macosX64Main by getting {
+                dependsOn(nativeMain)
+                dependencies {
+                }
+            }
+            val iosMain by creating {
+                dependsOn(nonJvmMain)
+            }
+            val iosArm32Main by getting {
+                dependsOn(iosMain)
+            }
+            val iosArm64Main by getting {
+                dependsOn(iosMain)
+            }
+            val iosX64Main by getting {
+                dependsOn(iosMain)
+            }
+            val iosSimulatorArm64Main by getting {
+                dependsOn(iosMain)
+            }
+        }
     }
 }
 
-tasks.compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
+android {
+    compileSdk = Versions.Global.Android.compileSdk
+
+    defaultConfig {
+        minSdk = Versions.Global.Android.minSdk
+        targetSdk = Versions.Global.Android.targetSdk
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        getByName("debug") {
+            isMinifyEnabled = false
+            isTestCoverageEnabled = true
+
+            consumerProguardFiles("consumer-proguard-rules.pro")
+        }
+
+        getByName("release") {
+            isMinifyEnabled = false
+            consumerProguardFiles("consumer-proguard-rules.pro")
+        }
+    }
+
+    compileOptions {
+        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    sourceSets {
+        named("main") {
+            manifest.srcFile("src/androidMain/AndroidManifest.xml")
+            res.srcDirs("src/androidMain/res")
+        }
+    }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
+}
+
+afterEvaluate {
+    tasks.withType(Test::class.java).forEach {
+        it.useJUnitPlatform()
+    }
+}
+
+val TaskContainer.jvmTest
+    get() = withType(Test::class).firstOrNull {
+        it.name == "jvmTest"
+    } ?: error("cannot find jvmTest task")
+
+jacoco {
+    toolVersion = Versions.Plugin.Eclemma.jacoco
+}
+
+mergedReportConfig {
+    classFilters {
+        add(ClassFilter("debug").apply {
+            includes.add("**/com/fsryan/tools/logging/android/**")
+            excludes.addAll(
+                listOf(
+                    "**/R\$*.class",                                // generated R inner classes
+                    "**/R.class",                                   // generated R classes
+                    "**/*Test.class",                               // filter test classes
+                    "**/BuildConfig*",                              // generated BuildConfig classes
+
+                    "**/*_*.class"                                  // Butterknife/AutoValue/Dagger-generated classes
+                )
+            )
+        })
     }
 }

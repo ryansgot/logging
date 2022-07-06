@@ -7,22 +7,17 @@ buildscript {
         mavenCentral()
         google()
         maven { url = uri("https://maven.fabric.io/public") }
-        maven {
-            url = uri("s3://repo.fsryan.com/release")
-            credentials(AwsCredentials::class) {
-                setAccessKey(if (project.hasProperty("awsMavenAccessKey")) project.property("awsMavenAccessKey").toString() else System.getenv()["AWS_ACCES_KEY_ID"]!!)
-                setSecretKey(if (project.hasProperty("awsMavenSecretKey")) project.property("awsMavenSecretKey").toString() else System.getenv()["AWS_SECRET_KEY"]!!)
-            }
-        }
     }
     dependencies {
         classpath(deps.Deps.Plugin.Android.gradle)
-        classpath(deps.Deps.Plugin.JetBrains.dokka)
-        classpath(deps.Deps.Plugin.JetBrains.kotlin)
+        with(deps.Deps.Plugin.JetBrains) {
+            classpath(dokka)
+            classpath(gradle)
+        }
         classpath(deps.Deps.Plugin.Google.gms)
         classpath(deps.Deps.Plugin.Google.crashltyics)
+        classpath(deps.Deps.Plugin.FSRyan.androidJavaCoverageMerger)
         classpath(deps.Deps.Plugin.FSRyan.gradlePublishing)
-        classpath(deps.Deps.Plugin.Dcendents.androidMavenGradle)
         classpath(deps.Deps.Plugin.NewRelic.gradle)
     }
 }
@@ -34,15 +29,11 @@ allprojects {
         }
         mavenCentral()
         google()
-        maven { url = uri("https://dl.bintray.com/datadog/datadog-maven") }
-        maven {
-            url = uri("s3://repo.fsryan.com/release")
-            credentials(AwsCredentials::class) {
-                setAccessKey(if (project.hasProperty("awsMavenAccessKey")) project.property("awsMavenAccessKey").toString() else System.getenv()["AWS_ACCES_KEY_ID"]!!)
-                setSecretKey(if (project.hasProperty("awsMavenSecretKey")) project.property("awsMavenSecretKey").toString() else System.getenv()["AWS_SECRET_KEY"]!!)
-            }
-        }
+        jcenter()
     }
+
+    group = "com.fsryan.tools"
+    version = "${deps.Deps.Versions.Global.FSRyan.publication}${if (project.hasProperty("postfixDate")) ".${tools.Info.timestamp}" else ""}"
 
     fun com.android.build.gradle.LibraryExtension.applyConfig() {
         buildFeatures.buildConfig = false
@@ -56,13 +47,53 @@ allprojects {
         }
     }
 
+    var configuredPublishing = false
+    var configuredSigning = false
+    
+    if (!tools.Info.canBuildMacIos) {
+        println("Creating dummy implementation of mac/ios publication task")
+        tools.Publications.iosMacPublicationTasks().forEach { taskName ->
+            tasks.create(name = taskName) {
+                doLast {
+                    println("Cannot perform $taskName because this platform is not Mac")
+                }
+            }
+        }
+    }
+
+    if (plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
+        tasks.create(name = "release") {
+            dependsOn(tools.Publications.allPublicationTasks().toTypedArray())
+        }
+    }
+
+    fun configurePublishingIfPossible() {
+        extensions.findByType(PublishingExtension::class)?.let { publishing ->
+            publishing.repositories {
+                maven {
+                    name = "mavenCentral"
+                    url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                    credentials {
+                        username = project.findProperty("com.fsryan.ossrh.release.username")?.toString().orEmpty()
+                        password = project.findProperty("com.fsryan.ossrh.release.password")?.toString().orEmpty()
+                    }
+                }
+            }
+            configuredPublishing = true
+        }
+    }
+
     fun configureSigningIfPossible() {
-        extensions.findByType(PublishingExtension::class)?.let { publishingExtension ->
+        extensions.findByType(PublishingExtension::class)?.let { publishing ->
             extensions.findByType(SigningExtension::class)?.let { signingExtension ->
                 if (project.hasProperty("signing.keyId")) {
+                    println("signing.keyId FOUND!!!")
                     if (project.hasProperty("signing.password")) {
+                        println("signing.password FOUND!!!")
                         if (project.hasProperty("signing.secretKeyRingFile")) {
-                            signingExtension.sign(publishingExtension.publications)
+                            println("signing.secretKeyRingFile FOUND!!!")
+                            signingExtension.sign(publishing.publications)
+                            configuredSigning = true
                         } else {
                             println("Missing signing.secretKeyRingFile: cannot sign ${project.name}")
                         }
@@ -76,19 +107,28 @@ allprojects {
         }
     }
 
+    fun configurePublishingAndSigningIfPossible() {
+        if (!configuredPublishing) {
+            configurePublishingIfPossible()
+        }
+        if (!configuredSigning) {
+            configureSigningIfPossible()
+        }
+    }
+
     plugins.findPlugin(SigningPlugin::class)?.let {
         plugins.findPlugin(PublishingPlugin::class)?.let {
-            configureSigningIfPossible()
+            configurePublishingAndSigningIfPossible()
         }
     } ?: plugins.whenPluginAdded {
         if (this is SigningPlugin) {
             plugins.findPlugin(PublishingPlugin::class)?.let {
-                configureSigningIfPossible()
+                configurePublishingAndSigningIfPossible()
             }
         }
         if (this is PublishingPlugin) {
             plugins.findPlugin(SigningPlugin::class)?.let {
-                configureSigningIfPossible()
+                configurePublishingAndSigningIfPossible()
             }
         }
     }
