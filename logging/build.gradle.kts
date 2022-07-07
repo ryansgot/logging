@@ -28,7 +28,15 @@ kotlin {
             iosArm64(),
             iosSimulatorArm64(),
             iosX64(),
-            macosX64()
+            macosX64(),
+            macosArm64(),
+            tvosArm64(),
+            tvosSimulatorArm64(),
+            tvosX64(),
+            watchosX86(),
+            watchosArm32(),
+            watchosArm64(),
+            watchosSimulatorArm64()
         ).forEach {
             it.binaries.framework {
                 baseName = "fslogging"
@@ -155,21 +163,11 @@ kotlin {
         }
         val nativeMain by creating {
             dependsOn(nonJvmMain)
-            dependencies {
-
-            }
         }
         val linuxX64Main by getting {
             dependsOn(nativeMain)
-            dependencies {
-            }
         }
         if (Info.canBuildMacIos) {
-            val macosX64Main by getting {
-                dependsOn(nativeMain)
-                dependencies {
-                }
-            }
             val iosMain by creating {
                 dependsOn(nonJvmMain)
             }
@@ -183,6 +181,33 @@ kotlin {
                 dependsOn(iosMain)
             }
             val iosSimulatorArm64Main by getting {
+                dependsOn(iosMain)
+            }
+            val macosArm64Main by getting {
+                dependsOn(nativeMain)
+            }
+            val macosX64Main by getting {
+                dependsOn(nativeMain)
+            }
+            val tvosArm64Main by getting {
+                dependsOn(iosMain)
+            }
+            val tvosSimulatorArm64Main by getting {
+                dependsOn(iosMain)
+            }
+            val tvosX64Main by getting {
+                dependsOn(iosMain)
+            }
+            val watchosX86Main by getting {
+                dependsOn(iosMain)
+            }
+            val watchosArm32Main by getting {
+                dependsOn(iosMain)
+            }
+            val watchosArm64Main by getting {
+                dependsOn(iosMain)
+            }
+            val watchosSimulatorArm64Main by getting {
                 dependsOn(iosMain)
             }
         }

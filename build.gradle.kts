@@ -1,3 +1,5 @@
+import tools.Publications.configureMultiplatformPublishingFor
+
 buildscript {
     repositories {
         if (rootProject.hasProperty("fsryan.useMavenLocal")) {
@@ -48,6 +50,7 @@ allprojects {
     }
 
     var configuredPublishing = false
+    var configuredMultiplatformPublishing = false
     var configuredSigning = false
     
     if (!tools.Info.canBuildMacIos) {
@@ -60,11 +63,16 @@ allprojects {
             }
         }
     }
-
-    if (plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
-        tasks.create(name = "release") {
-            dependsOn(tools.Publications.allPublicationTasks().toTypedArray())
+    
+    fun configureMultiplatformPublishingIfPossible(publishingExtension: PublishingExtension?) {
+        if (!plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
+            return
         }
+
+        val publisingExtension = publishingExtension ?: extensions.findByType(PublishingExtension::class) ?: return
+
+        publisingExtension.configureMultiplatformPublishingFor(this)
+        configuredMultiplatformPublishing = true
     }
 
     fun configurePublishingIfPossible() {
@@ -80,6 +88,9 @@ allprojects {
                 }
             }
             configuredPublishing = true
+            if (!configuredMultiplatformPublishing) {
+                configureMultiplatformPublishingIfPossible(publishingExtension = publishing)
+            }
         }
     }
 
@@ -113,6 +124,28 @@ allprojects {
         }
         if (!configuredSigning) {
             configureSigningIfPossible()
+        }
+    }
+    
+    plugins.findPlugin("org.jetbrains.kotlin.multiplatform")?.let {
+        tasks.create(name = "release") {
+            group = "Releasing"
+            description = "Release multiplatform ${tools.Publications.allPublicationTasks()}"
+            dependsOn(tools.Publications.allPublicationTasks().toTypedArray())
+        }
+        if (!configuredMultiplatformPublishing) {
+            configureMultiplatformPublishingIfPossible(publishingExtension = null)
+        }
+    } ?: plugins.whenPluginAdded {
+        if (this is org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper) {
+            tasks.create(name = "release") {
+                group = "Releasing"
+                description = "Release multiplatform ${tools.Publications.allPublicationTasks()}"
+                dependsOn(tools.Publications.allPublicationTasks().toTypedArray())
+            }
+            if (!configuredMultiplatformPublishing) {
+                configureMultiplatformPublishingIfPossible(publishingExtension = null)
+            }
         }
     }
 
