@@ -10,7 +10,7 @@ object Deps {
                 const val targetSdk = 31
             }
             object FSRyan {
-                const val publication = "0.4.0"
+                const val publication = "0.4.1"
             }
             object JetBrains {
                 const val coroutines = "1.6.3"
