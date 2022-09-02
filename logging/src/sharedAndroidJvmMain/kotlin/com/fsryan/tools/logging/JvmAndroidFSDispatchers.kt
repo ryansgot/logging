@@ -3,7 +3,7 @@ package com.fsryan.tools.logging
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
-@OptIn(DelicateCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class)
 private val logDispatcher: CoroutineContext = newSingleThreadContext("fslogging")
 internal val logScope = CoroutineScope(SupervisorJob() + logDispatcher)
 
