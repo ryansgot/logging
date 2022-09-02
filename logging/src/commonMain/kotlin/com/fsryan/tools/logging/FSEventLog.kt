@@ -200,7 +200,6 @@ expect object FSEventLog {
         vararg destinations: String = emptyArray()
     )
 
-
     /**
      * Enables post-instantiation configuration of [FSEventLogger] instances of
      * a type the class [T]. Ideally, this function is called very early in the

@@ -5,16 +5,16 @@ object Deps {
     object Versions {
         object Global {
             object Android {
-                const val compileSdk = 31
+                const val compileSdk = 32
                 const val minSdk = 21
-                const val targetSdk = 31
+                const val targetSdk = 32
             }
             object FSRyan {
-                const val publication = "0.4.1"
+                const val publication = "0.4.2"
             }
             object JetBrains {
-                const val coroutines = "1.6.3"
-                const val kotlin = "1.6.21"
+                const val coroutines = "1.6.4"
+                const val kotlin = "1.7.10"
             }
             object NewRelic {
                 const val agent = "6.4.1"
@@ -39,7 +39,7 @@ object Deps {
                 const val jsr305 = "3.0.2"
             }
             object JetBrains {
-                const val datetime = "0.3.2"
+                const val datetime = "0.4.0"
             }
             object Microsoft {
                 const val appCenter3 = "3.3.1"
@@ -51,7 +51,7 @@ object Deps {
         }
         object Plugin {
             object Android {
-                const val gradle = "7.0.4"
+                const val gradle = "7.2.2"
             }
             object Eclemma {
                 const val jacoco = "0.8.8"
@@ -63,9 +63,6 @@ object Deps {
             object Google {
                 const val crashlytics = "2.8.1"
                 const val gms = "4.3.10"
-            }
-            object JetBrains {
-                const val dokka = "1.6.21"
             }
         }
         object Test {
@@ -155,8 +152,7 @@ object Deps {
         }
         object JetBrains {
             private val globalVersion = Versions.Global.JetBrains
-            private val version = Versions.Plugin.JetBrains
-            const val dokka = "org.jetbrains.dokka:org.jetbrains.dokka.gradle.plugin:${version.dokka}"
+            const val dokka = "org.jetbrains.dokka:org.jetbrains.dokka.gradle.plugin:${globalVersion.kotlin}"
             const val gradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${globalVersion.kotlin}"
         }
         object NewRelic {
@@ -176,7 +172,7 @@ object Deps {
             private val globalVersion = Versions.Global.JetBrains
             const val kotlinReflect = "org.jetbrains.kotlin:kotlin-reflect:${globalVersion.kotlin}"
             const val testAnnotations = "org.jetbrains.kotlin:kotlin-test-annotations-common:${globalVersion.kotlin}"
-            const val test = "org.jetbrains.kotlin:kotlin-test-annotations-common:${globalVersion.kotlin}"
+            const val test = "org.jetbrains.kotlin:kotlin-test:${globalVersion.kotlin}"
             const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${globalVersion.coroutines}"
         }
         object JUnit {
