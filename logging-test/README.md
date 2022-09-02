@@ -4,32 +4,50 @@ Contains the base objects/classes associated with testing logging, an [FSEventLo
 
 ## How To
 Declare a dependency upon logging-test in your build.gradle file's testImplementation configuration:
-```groovy
-testImplementation "com.fsryan.tools:logging-test:$fs_logging_version"
+```kotlin
+testImplementation("com.fsryan.tools:logging-test:$fs_logging_version")
+// for connected android tests
+androidTestImplementation("com.fsryan.tools:logging-test:$fs_logging_version")
+// for multiplatform
+kotlin {
+    sourceSets {
+        /* . . . */
+        val commonTest by getting {
+            dependencies {
+                implementation("com.fsryan.tools:logging-test:$fs_logging_version")
+            }
+        }
+        /* . . . */
+    }
+}
 ```
 
-Add a `com.fsryan.tools.logging.FSEventLogger` file to your test resources to declare the testing config (usually src/test/resources/META-INF/services/) with the line below:
-```
-com.fsryan.tools.logging.test.TestFSEventLogger
-```
+> **Note**
+> For Java/Android, DO NOT add `com.fsryan.tools.logging.FSEventLogger` file to your test resources to declare the testing config (usually src/test/resources/META-INF/services/)
 
 ## Usage
-All tests use a shared instance of the test logger :(. I'm sorry--this is done for expedience at the moment. Eventually, we'll create a means of attaching new instances of test loggers to the underlying logging mechansims.
+All tests use a shared instance of the test logger. This means you need to clear the test logger each test.
 
 Therefore, for JUnit4 you should: put this in your test class:
 
 ```
 @Before
 fun clearTestLogger() {
+    FSLoggingAssertions.ensureEnvironment()
     FSLoggingAssertions.resetTestFSEventLogger()
 }
 ```
 
-This library provides an extension for JUnit5 that handles the lifecycle for you. You can annotate you test this way:
+For JUnit5, you should put this in your test class
 ```
-@ExtendWith(FSLoggingTestExtension::class)
 class MyTest {
 
+    @BeforeEach
+    fun configureLogging() {
+        FSLoggingAssertions.ensureEnvironment()
+        FSLoggingAssertions.resetTestFSEventLogger()
+    }
+    
     @Test
     fun someTest() {
         doSomethingWithLogging()
@@ -37,3 +55,6 @@ class MyTest {
     }
 }
 ```
+
+> **Note**
+> The JUnit5 ExtendWith annotation is no longer supported. If this is desirable, I'll add it back.
